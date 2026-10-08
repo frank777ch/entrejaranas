@@ -1,0 +1,385 @@
+---
+// Botón + ventana de búsqueda. Atajos: "/" o Ctrl+K para abrir, Esc para cerrar.
+---
+
+<button type="button" class="buscar-boton" data-abrir-buscador aria-haspopup="dialog">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+  <span class="buscar-boton__texto">Buscar</span>
+</button>
+
+<dialog class="buscador" aria-labelledby="buscador-titulo">
+  <div class="buscador__caja">
+    <div class="buscador__cabeza">
+      <h2 id="buscador-titulo" class="visualmente-oculto">Buscar en Entre Jaranas</h2>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input
+        type="search"
+        class="buscador__campo"
+        placeholder="Busca documentales, talleres, promesas…"
+        aria-label="Buscar"
+        aria-controls="buscador-resultados"
+        autocomplete="off"
+        enterkeyhint="search"
+      />
+      <button type="button" class="buscador__cerrar" data-cerrar-buscador>
+        <span class="visualmente-oculto">Cerrar</span>
+        <span aria-hidden="true" class="tecla">Esc</span>
+        <span aria-hidden="true" class="equis">✕</span>
+      </button>
+    </div>
+    <ul id="buscador-resultados" class="buscador__resultados" aria-live="polite"></ul>
+    <p class="buscador__vacio" hidden></p>
+    <div class="buscador__sugerencias">
+      <p>Prueba con:</p>
+      <div>
+        {['cajón', 'marinera', 'museo', 'Rímac', 'quijada', 'postular'].map((s) => <button type="button" data-sugerencia={s}>{s}</button>)}
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  type Resultado = { tipo: string; titulo: string; texto: string; url: string };
+
+  const dialogo = document.querySelector<HTMLDialogElement>('.buscador')!;
+  const campo = dialogo.querySelector<HTMLInputElement>('.buscador__campo')!;
+  const lista = dialogo.querySelector<HTMLUListElement>('.buscador__resultados')!;
+  const vacio = dialogo.querySelector<HTMLParagraphElement>('.buscador__vacio')!;
+  const sugerencias = dialogo.querySelector<HTMLDivElement>('.buscador__sugerencias')!;
+
+  // Sin tildes ni mayúsculas: "cajon" encuentra "Cajón"
+  const normalizar = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+  type Entrada = Resultado & { _t: string; _x: string };
+  let indice: Entrada[] | null = null;
+  const cargar = async () => {
+    if (indice) return;
+    const datos: Resultado[] = await fetch('/buscar.json').then((r) => r.json());
+    indice = datos.map((d) => ({ ...d, _t: normalizar(d.titulo), _x: normalizar(d.texto) }));
+  };
+
+  const abrir = async () => {
+    if (dialogo.open) return;
+    document.getElementById('navegacion')?.classList.remove('abierta');
+    document.querySelector('.menu-boton')?.setAttribute('aria-expanded', 'false');
+    dialogo.showModal();
+    campo.select();
+    try {
+      await cargar();
+    } catch {
+      vacio.hidden = false;
+      vacio.textContent = 'No pudimos cargar el buscador. Recarga la página e inténtalo de nuevo.';
+      return;
+    }
+    if (campo.value) buscar();
+  };
+  const cerrar = () => dialogo.close();
+
+  const crear = (r: Resultado) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = r.url;
+    if (/^https?:/.test(r.url)) {
+      a.target = '_blank';
+      a.rel = 'noopener';
+    }
+    const tipo = document.createElement('span');
+    tipo.className = 'tipo';
+    tipo.textContent = r.tipo;
+    const titulo = document.createElement('strong');
+    titulo.textContent = r.titulo;
+    const texto = document.createElement('span');
+    texto.className = 'texto';
+    texto.textContent = r.texto;
+    a.append(tipo, titulo, texto);
+    a.addEventListener('click', cerrar);
+    li.append(a);
+    return li;
+  };
+
+  const buscar = () => {
+    if (!indice) return;
+    const consulta = normalizar(campo.value.trim());
+    lista.replaceChildren();
+    vacio.hidden = true;
+    sugerencias.hidden = consulta.length > 0;
+    if (!consulta) return;
+
+    const terminos = consulta.split(/\s+/);
+    const resultados = indice
+      .map((r) => {
+        let puntos = 0;
+        for (const t of terminos) {
+          if (r._t.includes(t)) puntos += r._t.startsWith(t) ? 3 : 2;
+          else if (r._x.includes(t)) puntos += 1;
+          else return null; // todos los términos deben aparecer
+        }
+        return { r, puntos };
+      })
+      .filter((x): x is { r: Entrada; puntos: number } => x !== null)
+      .sort((a, b) => b.puntos - a.puntos)
+      .slice(0, 8);
+
+    if (!resultados.length) {
+      vacio.hidden = false;
+      vacio.textContent = `No encontramos nada para “${campo.value.trim()}”.`;
+      return;
+    }
+    lista.append(...resultados.map(({ r }) => crear(r)));
+  };
+
+  campo.addEventListener('input', buscar);
+  campo.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') lista.querySelector('a')?.click();
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      lista.querySelector<HTMLAnchorElement>('a')?.focus();
+    }
+  });
+  lista.addEventListener('keydown', (e) => {
+    const enlaces = [...lista.querySelectorAll('a')];
+    const i = enlaces.indexOf(document.activeElement as HTMLAnchorElement);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      enlaces[Math.min(i + 1, enlaces.length - 1)]?.focus();
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      (i <= 0 ? campo : enlaces[i - 1]).focus();
+    }
+  });
+
+  document.querySelectorAll('[data-abrir-buscador]').forEach((b) => b.addEventListener('click', abrir));
+  dialogo.querySelector('[data-cerrar-buscador]')!.addEventListener('click', cerrar);
+  dialogo.querySelectorAll<HTMLButtonElement>('[data-sugerencia]').forEach((b) =>
+    b.addEventListener('click', () => {
+      campo.value = b.dataset.sugerencia!;
+      buscar();
+      campo.focus();
+    }),
+  );
+  // Esc siempre cierra (Chrome a veces lo ignora si la ventana se abrió con un atajo)
+  dialogo.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      cerrar();
+    }
+  });
+  // Clic fuera de la caja cierra
+  dialogo.addEventListener('click', (e) => e.target === dialogo && cerrar());
+
+  document.addEventListener('keydown', (e) => {
+    const escribiendo = (e.target as HTMLElement).closest('input, textarea, select, [contenteditable]');
+    if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !escribiendo)) {
+      e.preventDefault();
+      abrir();
+    }
+  });
+</script>
+
+<style>
+  .buscar-boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 44px;
+    padding: 0 1rem;
+    border: 2px solid rgb(82 32 17 / 0.2);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--cafe);
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .buscar-boton:hover {
+    border-color: var(--vino);
+  }
+  .buscar-boton svg,
+  .buscador__cabeza svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    flex: none;
+  }
+
+  .buscador {
+    width: min(640px, 100% - 2rem);
+    max-height: min(560px, 100dvh - 4rem);
+    margin: 10vh auto auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radio);
+    background: var(--crema);
+    color: var(--tinta);
+    box-shadow: 0 14px 0 var(--cafe), 0 30px 80px rgb(0 0 0 / 0.35);
+    overflow: hidden;
+  }
+  .buscador::backdrop {
+    background: rgb(82 32 17 / 0.55);
+    backdrop-filter: blur(4px);
+  }
+  .buscador[open] {
+    animation: aparecer 0.2s ease-out;
+  }
+  .buscador__caja {
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+  }
+  .buscador__cabeza {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 2px solid rgb(82 32 17 / 0.12);
+    color: var(--vino);
+  }
+  .buscador__campo {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 1.15rem;
+    color: var(--tinta);
+    padding: 0.4rem 0;
+  }
+  .buscador__campo:focus {
+    outline: none;
+  }
+  .buscador__campo::-webkit-search-cancel-button {
+    display: none;
+  }
+  .buscador__cerrar {
+    min-height: 36px;
+    padding: 0.2rem 0.6rem;
+    border: 1.5px solid rgb(82 32 17 / 0.25);
+    border-radius: 8px;
+    background: var(--blanco);
+    color: var(--cafe);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .equis {
+    display: none;
+  }
+  @media (hover: none) {
+    .tecla {
+      display: none;
+    }
+    .equis {
+      display: inline;
+      font-size: 1rem;
+    }
+  }
+  .buscador__resultados {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem;
+    overflow-y: auto;
+  }
+  .buscador__resultados:empty {
+    display: none;
+  }
+  /* Los resultados se crean con JS: necesitan :global */
+  .buscador__resultados :global(a) {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.8rem 1rem;
+    border-radius: 16px;
+    text-decoration: none;
+  }
+  .buscador__resultados :global(a:hover),
+  .buscador__resultados :global(a:focus-visible) {
+    background: var(--blanco);
+    outline: 2px solid var(--oro);
+    outline-offset: -2px;
+  }
+  .buscador__resultados :global(.tipo) {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--vino);
+  }
+  .buscador__resultados :global(strong) {
+    font-family: var(--f-titulo);
+    color: var(--cafe);
+    font-size: 1.05rem;
+  }
+  .buscador__resultados :global(.texto) {
+    font-size: 0.88rem;
+    opacity: 0.8;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .buscador__vacio {
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+    color: var(--cafe);
+  }
+  .buscador__sugerencias {
+    padding: 1rem 1.25rem 1.25rem;
+    font-size: 0.85rem;
+  }
+  .buscador__sugerencias[hidden] {
+    display: none;
+  }
+  .buscador__sugerencias p {
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    color: var(--cafe);
+  }
+  .buscador__sugerencias div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .buscador__sugerencias button {
+    min-height: 36px;
+    padding: 0.3rem 0.9rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--oro);
+    color: var(--cafe);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @keyframes aparecer {
+    from {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.98);
+    }
+  }
+
+  @media (max-width: 1180px) {
+    .buscar-boton {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      justify-content: center;
+    }
+    .buscar-boton__texto {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+    .buscador {
+      margin-top: 1rem;
+    }
+  }
+</style>

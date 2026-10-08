@@ -1,0 +1,37 @@
+---
+// Separador orgánico entre secciones (el manual pide formas curvas y libres)
+interface Props {
+  color: string;
+  fondo?: string;
+  variante?: 1 | 2 | 3;
+  invertir?: boolean;
+}
+
+const { color, fondo = 'transparent', variante = 1, invertir = false } = Astro.props;
+
+const caminos = {
+  1: 'M0,64 C180,10 330,110 520,70 C710,30 820,0 1000,40 C1150,72 1290,90 1440,50 L1440,120 L0,120 Z',
+  2: 'M0,90 C220,20 420,20 620,60 C820,100 1020,110 1220,60 C1320,35 1390,40 1440,50 L1440,120 L0,120 Z',
+  3: 'M0,40 C160,90 360,100 560,60 C760,20 900,30 1080,70 C1240,105 1350,80 1440,60 L1440,120 L0,120 Z',
+};
+---
+
+<div class="onda" class:list={{ invertir }} style={`background:${fondo}`} aria-hidden="true">
+  <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+    <path d={caminos[variante]} fill={color}></path>
+  </svg>
+</div>
+
+<style>
+  .onda {
+    line-height: 0;
+    margin-block: -1px;
+  }
+  .onda svg {
+    width: 100%;
+    height: clamp(40px, 7vw, 100px);
+  }
+  .invertir svg {
+    transform: scaleY(-1);
+  }
+</style>

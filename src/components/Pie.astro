@@ -1,0 +1,77 @@
+---
+import { Image } from 'astro:assets';
+import logoNegativo from '../assets/marca/logo-negativo.png';
+import { sitio } from '../data/sitio';
+
+const anio = new Date().getFullYear();
+---
+
+<footer class="pie">
+  <div class="contenedor pie__in">
+    <div class="pie__marca">
+      <Image src={logoNegativo} alt="Entre Jaranas" width={200} densities={[1, 2]} />
+      <p>{sitio.lema}</p>
+    </div>
+    <nav aria-label="Pie de página" class="pie__nav">
+      <a href="/#nosotros">Nosotros</a>
+      <a href="/museo-virtual">Museo Virtual</a>
+      <a href="/#experiencias">Microdocumentales</a>
+      <a href="/#talleres">Talleres</a>
+      <a href="/#promesas">Nuevas Promesas</a>
+      <a href="/#contacto">Contacto</a>
+    </nav>
+  </div>
+  <div class="contenedor pie__legal">
+    <p>© {anio} Entre Jaranas. Hecho con cariño criollo en Lima, Perú.</p>
+  </div>
+</footer>
+
+<style>
+  .pie {
+    background: var(--cafe);
+    color: var(--crema);
+    padding-block: 4rem 2rem;
+  }
+  .pie__in {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 3rem;
+  }
+  .pie__marca img {
+    width: 200px;
+    height: auto;
+    margin-bottom: 1.25rem;
+  }
+  .pie__marca p {
+    font-family: var(--f-titulo);
+    font-style: italic;
+    max-width: 30ch;
+    opacity: 0.85;
+  }
+  .pie__nav {
+    display: grid;
+    gap: 0;
+    align-content: start;
+  }
+  .pie__nav a {
+    text-decoration: none;
+    width: fit-content;
+    padding-block: 0.45rem;
+  }
+  .pie__nav a:hover {
+    color: var(--oro);
+  }
+  .pie__legal {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgb(240 231 216 / 0.2);
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
+  @media (max-width: 760px) {
+    .pie__in {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

@@ -1,0 +1,81 @@
+---
+// Palabras de la sección "Recursos gráficos" del manual
+const palabras = ['Cultura', 'Tradición', 'Legado', 'Unión', 'Jarana', 'Encuentro'];
+const fila = [...palabras, ...palabras];
+---
+
+<div class="marco">
+  <p class="visualmente-oculto">{palabras.join(', ')}</p>
+  <div class="marquesina" aria-hidden="true">
+    <div class="marquesina__pista">
+      {
+        [0, 1].map(() => (
+          <ul>
+            {fila.map((p) => (
+              <li>
+                {p}
+                <svg viewBox="0 0 24 24" class="flor">
+                  <path d="M12 2c1.6 3 1.6 5 0 7 2-1.6 4-1.6 7 0-3 1.6-5 1.6-7 0 1.6 2 1.6 4 0 7-1.6-3-1.6-5 0-7-2 1.6-4 1.6-7 0 3-1.6 5-1.6 7 0-1.6-2-1.6-4 0-7z" />
+                </svg>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Recorta la franja inclinada para que no ensanche la página en móvil */
+  .marco {
+    overflow: hidden;
+    padding-block: 1.5rem;
+    margin-block: -1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .marquesina {
+    background: var(--vino);
+    color: var(--oro);
+    overflow: hidden;
+    padding-block: 1.1rem;
+    transform: rotate(-1.5deg);
+    margin-inline: -2rem;
+    box-shadow: 0 10px 0 var(--cafe);
+  }
+  .marquesina__pista {
+    display: flex;
+    width: max-content;
+    animation: desplazar 40s linear infinite;
+  }
+  .marquesina:hover .marquesina__pista {
+    animation-play-state: paused;
+  }
+  ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding-right: 2rem;
+    font-family: var(--f-titulo);
+    font-style: italic;
+    font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+    white-space: nowrap;
+  }
+  .flor {
+    width: 1.4rem;
+    height: 1.4rem;
+    fill: var(--crema);
+  }
+  @keyframes desplazar {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>

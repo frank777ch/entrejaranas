@@ -1,0 +1,289 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/marca/logo.png';
+import logoFacultad from '../assets/marca/unmsm-letras-blanco.png';
+import { sitio } from '../data/sitio';
+import Buscador from './Buscador.astro';
+
+const enlaces = [
+  { texto: 'Nosotros', href: '/#nosotros' },
+  { texto: 'Museo Virtual', href: '/museo-virtual' },
+  { texto: 'Experiencias', href: '/#experiencias' },
+  { texto: 'Talleres', href: '/#talleres' },
+  { texto: 'Nuevas Promesas', href: '/#promesas' },
+];
+---
+
+<div class="franja">
+  <div class="contenedor franja__in">
+    <p class="franja__proyecto">
+      <span class="franja__et">Un proyecto de</span>
+      <Image src={logoFacultad} alt={sitio.proyectoDe.join(', ')} height={40} densities={[1, 2]} class="franja__logo" />
+    </p>
+    {
+      sitio.aliados.length > 0 && (
+        <p>
+          <span class="franja__et">En alianza con</span>
+          {sitio.aliados.map((a, i) => (
+            <>
+              {i > 0 && ' · '}
+              {a.url ? <a href={a.url}>{a.nombre}</a> : a.nombre}
+            </>
+          ))}
+        </p>
+      )
+    }
+  </div>
+</div>
+
+<header class="cabecera">
+  <div class="contenedor cabecera__in">
+    <a href="/" class="cabecera__logo" aria-label="Entre Jaranas, inicio">
+      <Image src={logo} alt="" width={132} densities={[1, 2]} loading="eager" />
+    </a>
+
+
+    <nav id="navegacion" class="nav" aria-label="Principal">
+      <ul>
+        {
+          enlaces.map((e) => (
+            <li>
+              <a href={e.href}>{e.texto}</a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/#contacto" class="boton boton--vino nav__cta">Contáctanos</a>
+    </nav>
+
+    <div class="cabecera__acciones">
+      <Buscador />
+      <button class="menu-boton" aria-expanded="false" aria-controls="navegacion">
+        <span class="visualmente-oculto">Abrir menú</span>
+        <span class="menu-boton__barras" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const boton = document.querySelector<HTMLButtonElement>('.menu-boton')!;
+  const nav = document.getElementById('navegacion')!;
+  const cerrar = () => {
+    boton.setAttribute('aria-expanded', 'false');
+    nav.classList.remove('abierta');
+  };
+  boton.addEventListener('click', () => {
+    const abierto = boton.getAttribute('aria-expanded') === 'true';
+    boton.setAttribute('aria-expanded', String(!abierto));
+    nav.classList.toggle('abierta', !abierto);
+  });
+  nav.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) cerrar();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav.classList.contains('abierta')) {
+      cerrar();
+      boton.focus();
+    }
+  });
+
+  const cabecera = document.querySelector('.cabecera')!;
+  const alScroll = () => cabecera.classList.toggle('compacta', window.scrollY > 40);
+  window.addEventListener('scroll', alScroll, { passive: true });
+  alScroll();
+</script>
+
+<style>
+  .franja {
+    background: var(--cafe);
+    color: var(--crema);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+  }
+  .franja__in {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 2rem;
+    padding-block: 0.55rem;
+  }
+  .franja__in p {
+    display: flex;
+    align-items: center;
+  }
+  .franja__logo {
+    height: 40px;
+    width: auto;
+  }
+  .franja__et {
+    color: var(--oro);
+    font-weight: 700;
+    margin-right: 0.4rem;
+  }
+
+  .cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgb(240 231 216 / 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s;
+  }
+  .cabecera.compacta {
+    border-color: rgb(82 32 17 / 0.12);
+    box-shadow: 0 10px 30px -20px rgb(82 32 17 / 0.5);
+  }
+  .cabecera__in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 0.75rem;
+  }
+  .cabecera__logo img {
+    width: 132px;
+    height: auto;
+    transform-origin: left center;
+    transition: transform 0.3s ease;
+  }
+  .compacta .cabecera__logo img {
+    transform: scale(0.82);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .nav ul {
+    display: flex;
+    gap: clamp(1rem, 1.6vw, 1.6rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav ul a {
+    position: relative;
+    white-space: nowrap;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--cafe);
+    padding-block: 0.3rem;
+  }
+  .nav ul a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--vino);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .nav ul a:hover::after {
+    transform: scaleX(1);
+  }
+  .nav__cta {
+    padding: 0.65rem 1.3rem;
+    white-space: nowrap;
+  }
+
+  .cabecera__logo {
+    margin-right: auto;
+  }
+  .cabecera__acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .menu-boton {
+    display: none;
+  }
+
+  /* Con el botón Buscar el menú completo necesita ~1180px */
+  @media (max-width: 1180px) {
+    .menu-boton {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--vino);
+      cursor: pointer;
+    }
+    .menu-boton__barras,
+    .menu-boton__barras::before,
+    .menu-boton__barras::after {
+      display: block;
+      width: 20px;
+      height: 2.5px;
+      border-radius: 2px;
+      background: var(--crema);
+      transition: transform 0.25s ease;
+    }
+    .menu-boton__barras {
+      position: relative;
+    }
+    .menu-boton__barras::before,
+    .menu-boton__barras::after {
+      content: '';
+      position: absolute;
+      left: 0;
+    }
+    .menu-boton__barras::before {
+      top: -6px;
+    }
+    .menu-boton__barras::after {
+      top: 6px;
+    }
+    [aria-expanded='true'] .menu-boton__barras {
+      background: transparent;
+    }
+    [aria-expanded='true'] .menu-boton__barras::before {
+      transform: translateY(6px) rotate(45deg);
+    }
+    [aria-expanded='true'] .menu-boton__barras::after {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.5rem;
+      padding: 1.5rem var(--gutter) 2rem;
+      background: var(--crema);
+      border-bottom: 4px solid var(--vino);
+      box-shadow: var(--sombra);
+      display: none;
+    }
+    .nav.abierta {
+      display: flex;
+    }
+    .nav ul {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .nav ul a {
+      display: block;
+      font-family: var(--f-titulo);
+      font-size: 1.5rem;
+      padding-block: 0.4rem;
+    }
+    .nav__cta {
+      justify-content: center;
+    }
+  }
+</style>

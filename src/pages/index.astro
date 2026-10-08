@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Marquesina from '../components/Marquesina.astro';
+import Nosotros from '../components/Nosotros.astro';
+import Proposito from '../components/Proposito.astro';
+import MuseoInvitacion from '../components/MuseoInvitacion.astro';
+import Documentales from '../components/Documentales.astro';
+import Talleres from '../components/Talleres.astro';
+import Promesas from '../components/Promesas.astro';
+import Contacto from '../components/Contacto.astro';
+import Onda from '../components/Onda.astro';
+---
+
+<Base>
+  <Portada />
+  <Marquesina />
+  <Nosotros />
+  <Onda color="var(--crema-oscuro)" fondo="var(--crema)" variante={1} />
+  <Proposito />
+  <Onda color="var(--cafe)" fondo="var(--crema-oscuro)" variante={2} />
+  <MuseoInvitacion />
+  <Onda color="var(--cafe)" fondo="var(--crema)" variante={3} invertir />
+  <Documentales />
+  <Onda color="var(--oro)" fondo="var(--crema)" variante={1} />
+  <Talleres />
+  <Onda color="var(--oro)" fondo="var(--crema)" variante={2} invertir />
+  <Promesas />
+  <Onda color="var(--vino)" fondo="var(--crema)" variante={3} />
+  <Contacto />
+</Base>

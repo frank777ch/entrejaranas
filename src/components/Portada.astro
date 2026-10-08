@@ -1,0 +1,190 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/marca/logo.png';
+import isotipo from '../assets/marca/isotipo.png';
+---
+
+<section class="portada patron-suave">
+  <div class="contenedor portada__in">
+    <div class="portada__texto">
+      <h1 class="portada__h1">
+        <Image src={logo} alt="Entre Jaranas" class="portada__logo" width={640} loading="eager" />
+      </h1>
+      <p class="portada__frase">
+        Aquí <em>nadie celebra solo.</em>
+      </p>
+      <p class="portada__bajada">
+        Música criolla, memoria y encuentro. Un proyecto que celebra nuestra cultura, la fuerza de nuestra gente y la
+        alegría de lo nuestro.
+      </p>
+      <div class="portada__acciones">
+        <a href="#experiencias" class="boton boton--vino">Ver microdocumentales</a>
+        <a href="/museo-virtual" class="boton boton--borde">Visitar el museo virtual</a>
+      </div>
+    </div>
+
+    <div class="portada__arte" aria-hidden="true">
+      <div class="sol"></div>
+      <Image src={isotipo} alt="" class="portada__isotipo" width={520} loading="eager" />
+      <span class="nota nota--1">♪</span>
+      <span class="nota nota--2">♫</span>
+      <span class="nota nota--3">♪</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .portada {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(3rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem);
+  }
+  .patron-suave::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/patron.png');
+    background-size: 110px;
+    opacity: 0.07;
+    mask-image: linear-gradient(100deg, transparent 30%, #000 75%);
+    pointer-events: none;
+  }
+  .portada__in {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  .portada__h1 {
+    line-height: 0;
+  }
+  .portada__logo {
+    width: min(100%, 560px);
+    height: auto;
+    margin-left: -0.5rem;
+    animation: entrada 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .portada__frase {
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+    font-family: var(--f-titulo);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1.1;
+    color: var(--cafe);
+    animation: entrada 1s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .portada__frase em {
+    color: var(--vino);
+    background: linear-gradient(transparent 62%, rgb(254 173 21 / 0.55) 62%);
+    padding-inline: 0.1em;
+  }
+  .portada__bajada {
+    margin-top: 1.25rem;
+    max-width: 46ch;
+    font-size: 1.1rem;
+    animation: entrada 1s 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .portada__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+    animation: entrada 1s 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .portada__acciones .boton--borde {
+    color: var(--vino);
+  }
+
+  .portada__arte {
+    position: relative;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+  .sol {
+    position: absolute;
+    inset: 6%;
+    border-radius: 46% 54% 42% 58% / 52% 44% 56% 48%;
+    background: var(--oro);
+    animation: latido 9s ease-in-out infinite;
+  }
+  .portada__isotipo {
+    position: relative;
+    width: 82%;
+    height: auto;
+    filter: drop-shadow(0 22px 30px rgb(82 32 17 / 0.35));
+    animation: vaiven 6s ease-in-out infinite;
+    transform-origin: 50% 90%;
+  }
+  .nota {
+    position: absolute;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--vino);
+    animation: flotar 5s ease-in-out infinite;
+  }
+  .nota--1 {
+    top: 4%;
+    left: 8%;
+  }
+  .nota--2 {
+    top: 14%;
+    right: 2%;
+    color: var(--cafe);
+    animation-delay: -1.6s;
+  }
+  .nota--3 {
+    bottom: 10%;
+    left: 0;
+    animation-delay: -3.2s;
+  }
+
+  @keyframes entrada {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+  /* Rotación máxima 15° según el manual; aquí se usa mucho menos */
+  @keyframes vaiven {
+    0%,
+    100% {
+      transform: rotate(-4deg);
+    }
+    50% {
+      transform: rotate(4deg) translateY(-6px);
+    }
+  }
+  @keyframes latido {
+    0%,
+    100% {
+      border-radius: 46% 54% 42% 58% / 52% 44% 56% 48%;
+      transform: rotate(0);
+    }
+    50% {
+      border-radius: 54% 46% 58% 42% / 44% 56% 48% 52%;
+      transform: rotate(8deg);
+    }
+  }
+  @keyframes flotar {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-8deg);
+      opacity: 0.85;
+    }
+    50% {
+      transform: translateY(-14px) rotate(8deg);
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .portada__in {
+      grid-template-columns: 1fr;
+    }
+    .portada__arte {
+      order: -1;
+      width: min(70%, 320px);
+      margin-inline: auto;
+    }
+  }
+</style>

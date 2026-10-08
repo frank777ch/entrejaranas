@@ -1,0 +1,280 @@
+---
+import { Image } from 'astro:assets';
+import isotipo from '../assets/marca/isotipo.png';
+import { motivos } from '../data/contacto';
+import { sitio } from '../data/sitio';
+
+const redes = Object.entries(sitio.redes).filter(([, url]) => url);
+const nombresRedes: Record<string, string> = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  tiktok: 'TikTok',
+  youtube: 'YouTube',
+};
+---
+
+<section id="contacto" class="contacto">
+  <div class="contenedor contacto__in">
+    <div class="contacto__lado revelar">
+      <Image src={isotipo} alt="" width={260} class="contacto__iso" />
+      <p class="antetitulo">Contáctanos</p>
+      <h2 class="titulo-seccion">¿Armamos <em>la jarana?</em></h2>
+      <p>Escríbenos para talleres, prensa, alianzas o si quieres ser parte de Nuevas Promesas.</p>
+      {
+        redes.length > 0 && (
+          <div class="redes">
+            <p class="redes__et">Síguenos</p>
+            <ul>
+              {redes.map(([red, url]) => (
+                <li>
+                  <a href={url} target="_blank" rel="noopener">
+                    {nombresRedes[red]}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+
+    <form class="formulario revelar" method="POST" novalidate>
+      <div class="campo">
+        <label for="f-nombre">Nombre</label>
+        <input id="f-nombre" name="nombre" autocomplete="name" required minlength="2" maxlength="120" />
+        <span class="campo__error" data-error="nombre"></span>
+      </div>
+      <div class="campo">
+        <label for="f-email">Correo</label>
+        <input id="f-email" name="email" type="email" autocomplete="email" required />
+        <span class="campo__error" data-error="email"></span>
+      </div>
+      <div class="campo">
+        <label for="f-motivo">Motivo</label>
+        <select id="f-motivo" name="motivo">
+          {Object.entries(motivos).map(([valor, texto]) => <option value={valor}>{texto}</option>)}
+        </select>
+      </div>
+      <div class="campo">
+        <label for="f-mensaje">Mensaje</label>
+        <textarea id="f-mensaje" name="mensaje" rows="5" required minlength="10" maxlength="5000"></textarea>
+        <span class="campo__error" data-error="mensaje"></span>
+      </div>
+      <!-- Campo trampa para bots -->
+      <div class="trampa" aria-hidden="true">
+        <label for="f-web">No llenar</label>
+        <input id="f-web" name="web" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <button type="submit" class="boton boton--oro">
+        <span class="enviar__texto">Enviar mensaje</span>
+      </button>
+      <p class="estado" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  import { actions, isInputError } from 'astro:actions';
+
+  const form = document.querySelector<HTMLFormElement>('.formulario')!;
+  const estado = form.querySelector<HTMLParagraphElement>('.estado')!;
+  const boton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const texto = boton.querySelector('.enviar__texto')!;
+  const motivo = form.querySelector<HTMLSelectElement>('#f-motivo')!;
+
+  // Los enlaces con data-motivo preseleccionan el motivo (ej. "Postula aquí")
+  document.querySelectorAll<HTMLAnchorElement>('a[data-motivo]').forEach((a) =>
+    a.addEventListener('click', () => {
+      motivo.value = a.dataset.motivo!;
+      setTimeout(() => form.querySelector<HTMLInputElement>('#f-nombre')?.focus({ preventScroll: true }), 600);
+    }),
+  );
+
+  const limpiarErrores = () => form.querySelectorAll('[data-error]').forEach((e) => (e.textContent = ''));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    limpiarErrores();
+    estado.className = 'estado';
+    estado.textContent = '';
+    boton.disabled = true;
+    texto.textContent = 'Enviando…';
+
+    const { error } = await actions.contacto(new FormData(form));
+
+    boton.disabled = false;
+    texto.textContent = 'Enviar mensaje';
+
+    if (error) {
+      if (isInputError(error)) {
+        for (const [campo, mensajes] of Object.entries(error.fields)) {
+          const destino = form.querySelector(`[data-error="${campo}"]`);
+          if (destino && mensajes?.length) destino.textContent = mensajes[0];
+        }
+        estado.textContent = 'Revisa los campos marcados.';
+      } else {
+        estado.textContent = 'No pudimos enviar tu mensaje. Inténtalo de nuevo en unos minutos.';
+      }
+      estado.classList.add('estado--error');
+      return;
+    }
+
+    form.reset();
+    estado.textContent = '¡Gracias! Recibimos tu mensaje y te responderemos pronto.';
+    estado.classList.add('estado--ok');
+  });
+</script>
+
+<style>
+  .contacto {
+    background: var(--vino);
+    color: var(--crema);
+    padding-block: clamp(4rem, 9vw, 7rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .contacto::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/patron.png');
+    background-size: 120px;
+    filter: brightness(2.5) saturate(0);
+    opacity: 0.06;
+    pointer-events: none;
+  }
+  .contacto__in {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+  }
+  .contacto__iso {
+    width: 120px;
+    height: auto;
+    margin-bottom: 1.5rem;
+    transform: rotate(-8deg);
+  }
+  .contacto .antetitulo {
+    color: var(--oro);
+  }
+  .contacto h2 {
+    color: var(--crema);
+    margin-bottom: 1.25rem;
+  }
+  .contacto h2 em {
+    color: var(--oro);
+  }
+  .redes {
+    margin-top: 2rem;
+  }
+  .redes__et {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .redes ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .redes a {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border: 2px solid var(--crema);
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .redes a:hover {
+    background: var(--crema);
+    color: var(--vino);
+  }
+
+  .formulario {
+    background: var(--crema);
+    color: var(--cafe);
+    border-radius: var(--radio);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    box-shadow: 0 14px 0 var(--cafe);
+    display: grid;
+    gap: 1.1rem;
+  }
+  .campo {
+    display: grid;
+    gap: 0.35rem;
+  }
+  label {
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  input,
+  select,
+  textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--tinta);
+    background: var(--blanco);
+    border: 2px solid rgb(82 32 17 / 0.2);
+    border-radius: 14px;
+    padding: 0.8rem 1rem;
+    transition: border-color 0.2s;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--vino);
+    box-shadow: 0 0 0 4px rgb(254 173 21 / 0.45);
+  }
+  textarea {
+    resize: vertical;
+  }
+  .campo__error {
+    color: var(--vino);
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-height: 0;
+  }
+  .campo__error:empty {
+    display: none;
+  }
+  .trampa {
+    position: absolute;
+    left: -9999px;
+  }
+  .formulario .boton {
+    justify-self: start;
+  }
+  .formulario .boton:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+  .estado:empty {
+    display: none;
+  }
+  .estado {
+    padding: 0.9rem 1rem;
+    border-radius: 14px;
+    font-weight: 600;
+  }
+  .estado--ok {
+    background: rgb(254 173 21 / 0.35);
+  }
+  .estado--error {
+    background: rgb(147 23 30 / 0.12);
+    color: var(--vino);
+  }
+
+  @media (max-width: 860px) {
+    .contacto__in {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

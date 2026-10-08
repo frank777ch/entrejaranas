@@ -1,0 +1,86 @@
+---
+import { Image } from 'astro:assets';
+import unmsm from '../assets/marca/unmsm.svg';
+import facultad from '../assets/marca/unmsm-letras-cafe.png';
+import { sitio } from '../data/sitio';
+---
+
+<section class="instituciones" aria-label="Instituciones">
+  <div class="contenedor instituciones__in">
+    <div class="grupo">
+      <p class="et">Un proyecto de</p>
+      <div class="logos">
+        <Image src={unmsm} alt="Universidad Nacional Mayor de San Marcos" height={64} class="logo logo--unmsm" />
+        <Image src={facultad} alt="Facultad de Letras y Ciencias Humanas" height={64} densities={[1, 2]} class="logo" />
+      </div>
+    </div>
+    {
+      sitio.aliados.length > 0 && (
+        <div class="grupo">
+          <p class="et">En alianza con</p>
+          <ul class="aliados">
+            {sitio.aliados.map((a) => (
+              <li>{a.url ? <a href={a.url}>{a.nombre}</a> : a.nombre}</li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .instituciones {
+    background: var(--crema);
+    padding-block: 2.5rem;
+    border-top: 6px solid var(--oro);
+  }
+  .instituciones__in {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem 4rem;
+  }
+  .et {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--vino);
+    margin-bottom: 1rem;
+  }
+  .logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem 3rem;
+  }
+  .logo {
+    height: 64px;
+    width: auto;
+  }
+  .logos .logo + .logo {
+    padding-left: 3rem;
+    border-left: 1px solid rgb(82 32 17 / 0.2);
+  }
+  .aliados {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    font-weight: 700;
+    color: var(--cafe);
+  }
+  @media (max-width: 640px) {
+    .logo {
+      height: 48px;
+    }
+    .logos .logo + .logo {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

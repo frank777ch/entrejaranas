@@ -1,0 +1,315 @@
+---
+import { getCollection } from 'astro:content';
+
+const promesas = (await getCollection('promesas'))
+  .map((p) => ({ id: p.id, ...p.data }))
+  .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+
+const redes = [
+  ['spotify', 'Spotify'],
+  ['instagram', 'Instagram'],
+  ['facebook', 'Facebook'],
+  ['tiktok', 'TikTok'],
+  ['youtube', 'YouTube'],
+] as const;
+---
+
+<section id="promesas" class="seccion promesas">
+  <div class="contenedor">
+    <div class="cabeza revelar">
+      <p class="antetitulo">Nuevas Promesas</p>
+      <h2 class="titulo-seccion">Nuevas promesas <em>de la música criolla</em></h2>
+      <p>
+        Jóvenes intérpretes de toda Lima que mantienen viva la tradición. Toca un chinche del mapa para conocerlos y escuchar
+        su música.
+      </p>
+    </div>
+
+    <div class="promesas__cuerpo revelar">
+      <div class="mapa" id="mapa-promesas" data-promesas={JSON.stringify(promesas)} role="region" aria-label="Mapa de Lima con las nuevas promesas">
+      </div>
+
+      <div class="lado">
+        <ul class="lista" aria-label="Lista de nuevas promesas">
+          {
+            promesas.map((p) => (
+              <li id={`promesa-${p.id}`}>
+                <button type="button" class="promesa" data-id={p.id}>
+                  <span class="promesa__pin" aria-hidden="true" />
+                  <span>
+                    <strong>{p.nombre}</strong>
+                    <small>{p.distrito}</small>
+                  </span>
+                </button>
+                <div class="promesa__detalle">
+                  <p>{p.descripcion}</p>
+                  <p class="promesa__redes">
+                    {redes.map(([clave, nombre]) =>
+                      p[clave] ? (
+                        <a href={p[clave]} target="_blank" rel="noopener">
+                          {nombre}
+                        </a>
+                      ) : null,
+                    )}
+                  </p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="postula">
+          <h3>¿Eres una nueva promesa?</h3>
+          <p>Cuéntanos de ti y te sumamos al mapa.</p>
+          <a href="#contacto" class="boton boton--vino" data-motivo="promesa">Postula aquí</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  type Promesa = {
+    id: string;
+    nombre: string;
+    distrito: string;
+    descripcion: string;
+    lat: number;
+    lng: number;
+    spotify?: string;
+    instagram?: string;
+    facebook?: string;
+    tiktok?: string;
+    youtube?: string;
+  };
+
+  const contenedor = document.getElementById('mapa-promesas');
+  if (contenedor) {
+    const promesas: Promesa[] = JSON.parse(contenedor.dataset.promesas ?? '[]');
+
+    const mapa = L.map(contenedor, { scrollWheelZoom: false, zoomControl: true }).setView([-12.06, -77.04], 11);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(mapa);
+
+    const icono = L.divIcon({
+      className: 'chinche',
+      html: '<span></span>',
+      iconSize: [34, 44],
+      iconAnchor: [17, 42],
+      popupAnchor: [0, -38],
+    });
+
+    const escapar = (t: string) => {
+      const d = document.createElement('div');
+      d.textContent = t;
+      return d.innerHTML;
+    };
+    const redes: [keyof Promesa, string][] = [
+      ['spotify', 'Spotify'],
+      ['instagram', 'Instagram'],
+      ['facebook', 'Facebook'],
+      ['tiktok', 'TikTok'],
+      ['youtube', 'YouTube'],
+    ];
+
+    const marcadores = new Map<string, L.Marker>();
+    for (const p of promesas) {
+      const enlaces = redes
+        .filter(([k]) => p[k])
+        .map(([k, n]) => `<a href="${escapar(String(p[k]))}" target="_blank" rel="noopener">${n}</a>`)
+        .join('');
+      const m = L.marker([p.lat, p.lng], { icon: icono, title: p.nombre })
+        .addTo(mapa)
+        .bindPopup(
+          `<div class="globo"><strong>${escapar(p.nombre)}</strong><small>${escapar(p.distrito)}</small><p>${escapar(p.descripcion)}</p><div class="globo__redes">${enlaces}</div></div>`,
+        );
+      marcadores.set(p.id, m);
+    }
+    if (promesas.length > 1) {
+      mapa.fitBounds(L.latLngBounds(promesas.map((p) => [p.lat, p.lng])), { padding: [50, 50], maxZoom: 13 });
+    }
+
+    const mostrar = (id: string, desplazar: boolean) => {
+      const m = marcadores.get(id);
+      if (!m) return;
+      mapa.flyTo(m.getLatLng(), 14, { duration: 0.8 });
+      m.openPopup();
+      if (desplazar) contenedor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    document.querySelectorAll<HTMLButtonElement>('.promesa').forEach((b) =>
+      b.addEventListener('click', () => mostrar(b.dataset.id!, window.matchMedia('(max-width: 900px)').matches)),
+    );
+
+    // Al llegar desde el buscador (#promesa-<id>) se abre su chinche
+    const desdeHash = () => {
+      const id = decodeURIComponent(location.hash).replace(/^#promesa-/, '');
+      if (id !== location.hash && marcadores.has(id)) mostrar(id, true);
+    };
+    window.addEventListener('hashchange', desdeHash);
+    desdeHash();
+  }
+</script>
+
+<style>
+  .promesas {
+    overflow: hidden;
+  }
+  .cabeza {
+    max-width: 720px;
+    display: grid;
+    gap: 1rem;
+  }
+  .cabeza .antetitulo {
+    margin-bottom: 0;
+  }
+  .promesas__cuerpo {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+    margin-top: 3rem;
+    align-items: start;
+  }
+  .mapa {
+    height: clamp(380px, 55vw, 560px);
+    border-radius: var(--radio);
+    border: 6px solid var(--vino);
+    box-shadow: 0 12px 0 var(--cafe);
+    overflow: hidden;
+    background: var(--crema-oscuro);
+    z-index: 1;
+  }
+
+  .lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .promesa {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.85rem 1rem;
+    border: 2px solid rgb(82 32 17 / 0.15);
+    border-radius: 18px;
+    background: var(--blanco);
+    font: inherit;
+    text-align: left;
+    color: var(--cafe);
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      transform 0.2s;
+  }
+  .promesa:hover {
+    border-color: var(--vino);
+    transform: translateX(4px);
+  }
+  .promesa strong {
+    display: block;
+    font-family: var(--f-titulo);
+  }
+  .promesa small {
+    color: var(--vino);
+    font-weight: 600;
+  }
+  .promesa__pin {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: var(--vino);
+    box-shadow: 0 0 0 4px rgb(254 173 21 / 0.6);
+  }
+  /* El detalle es para lectores de pantalla y sin JS; con mapa basta el globo */
+  .promesa__detalle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .postula {
+    margin-top: 1.5rem;
+    padding: 1.75rem;
+    border-radius: var(--radio);
+    background: var(--oro);
+    color: var(--cafe);
+  }
+  .postula h3 {
+    font-size: 1.4rem;
+  }
+  .postula p {
+    margin-block: 0.5rem 1.25rem;
+  }
+
+  /* Estilos de Leaflet generados por JS: necesitan :global */
+  /* Tono cálido para que el mapa combine con la paleta */
+  .mapa :global(.leaflet-tile-pane) {
+    filter: sepia(0.45) saturate(0.85) contrast(0.95);
+  }
+  :global(.chinche span) {
+    display: block;
+    width: 34px;
+    height: 34px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: var(--vino);
+    border: 4px solid var(--oro);
+    box-shadow: 0 6px 12px rgb(82 32 17 / 0.4);
+    transition: transform 0.2s;
+  }
+  :global(.chinche:hover span) {
+    transform: rotate(-45deg) scale(1.15);
+  }
+  :global(.leaflet-popup-content-wrapper) {
+    background: var(--crema);
+    color: var(--cafe);
+    border-radius: 18px;
+    font-family: var(--f-cuerpo);
+  }
+  :global(.leaflet-popup-tip) {
+    background: var(--crema);
+  }
+  :global(.globo strong) {
+    display: block;
+    font-family: var(--f-titulo);
+    font-size: 1.1rem;
+  }
+  :global(.globo small) {
+    color: var(--vino);
+    font-weight: 700;
+  }
+  :global(.globo p) {
+    margin: 0.5rem 0 0.75rem;
+  }
+  :global(.globo__redes) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  :global(.globo__redes a) {
+    background: var(--vino);
+    color: var(--crema) !important;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 900px) {
+    .promesas__cuerpo {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

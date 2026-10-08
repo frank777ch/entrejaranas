@@ -1,0 +1,129 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Video from './Video.astro';
+
+const talleres = (await getCollection('talleres')).sort((a, b) => a.data.orden - b.data.orden);
+---
+
+<section id="talleres" class="seccion talleres">
+  <div class="contenedor">
+    <div class="cabeza revelar">
+      <p class="antetitulo">Minitalleres</p>
+      <h2 class="titulo-seccion">Aprende a <em>armar la jarana</em></h2>
+      <p>Módulos con video para dar tus primeros pasos en el cajón, el baile y la guitarra criolla.</p>
+    </div>
+
+    <ol class="modulos">
+      {
+        talleres.map((t, i) => (
+          <li id={`taller-${t.id}`} class="modulo revelar" style={`--i:${i}`}>
+            <div class="modulo__medio">
+              {t.data.video ? (
+                <Video url={t.data.video} titulo={t.data.titulo} />
+              ) : t.data.imagen ? (
+                <Image src={t.data.imagen} alt="" width={600} />
+              ) : (
+                <span class="modulo__pronto">Video próximamente</span>
+              )}
+            </div>
+            <div class="modulo__cuerpo">
+              <span class="modulo__etiqueta">Módulo {i + 1}</span>
+              <h3>{t.data.titulo}</h3>
+              <p>{t.data.descripcion}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .talleres {
+    background: var(--oro);
+    color: var(--cafe);
+  }
+  .talleres .antetitulo,
+  .talleres .titulo-seccion em {
+    color: var(--vino);
+  }
+  .cabeza {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 1rem;
+    max-width: 680px;
+    margin-inline: auto;
+  }
+  .cabeza .antetitulo {
+    margin-bottom: 0;
+  }
+
+  .modulos {
+    list-style: none;
+    margin: 3.5rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(1rem, 3vw, 2rem);
+  }
+  .modulo {
+    background: var(--crema);
+    border-radius: var(--radio);
+    overflow: hidden;
+    box-shadow: 0 10px 0 var(--cafe);
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      opacity 0.8s ease;
+    transition-delay: calc(var(--i) * 0.1s);
+  }
+  .modulo:hover {
+    transform: translateY(-6px) rotate(-1deg);
+    box-shadow: 0 16px 0 var(--cafe);
+    transition-delay: 0s;
+  }
+  .modulo__medio {
+    aspect-ratio: 16 / 10;
+    background: var(--vino);
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .modulo__medio::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/patron.png');
+    background-size: 70px;
+    filter: brightness(2.5) saturate(0);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .modulo__medio img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .modulo__pronto {
+    position: relative;
+    color: var(--crema);
+    font-family: var(--f-titulo);
+    font-style: italic;
+  }
+  .modulo__cuerpo {
+    padding: 1.5rem 1.5rem 2rem;
+  }
+  .modulo__etiqueta {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--vino);
+  }
+  .modulo h3 {
+    font-size: 1.5rem;
+    margin-block: 0.4rem 0.75rem;
+  }
+</style>

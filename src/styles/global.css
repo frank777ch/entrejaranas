@@ -1,0 +1,220 @@
+/* Paleta y tipografía según el Manual de Identidad de Entre Jaranas */
+:root {
+  --vino: #93171e;
+  --cafe: #522011;
+  --oro: #fead15;
+  --crema: #f0e7d8;
+  --teja: #a52f32;
+  --negro: #000000;
+  --blanco: #ffffff;
+
+  --crema-oscuro: #e6d9c3;
+  --tinta: #3a160c;
+
+  /* Libre Baskerville: títulos. Agrandir: cuerpo (si está instalada); Archivo expandida como alternativa web */
+  --f-titulo: 'Libre Baskerville', Georgia, serif;
+  --f-cuerpo: 'Agrandir', 'Archivo', system-ui, sans-serif;
+
+  --ancho: 1200px;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --radio: 28px;
+  --sombra: 0 18px 40px -18px rgb(82 32 17 / 0.45);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--crema);
+  color: var(--tinta);
+  font-family: var(--f-cuerpo);
+  font-stretch: 112%;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  overflow-x: clip;
+}
+
+img,
+svg,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--f-titulo);
+  font-weight: 700;
+  line-height: 1.08;
+  margin: 0;
+  color: var(--cafe);
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--oro);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.contenedor {
+  width: min(var(--ancho), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+.seccion {
+  padding-block: clamp(4rem, 9vw, 7.5rem);
+  position: relative;
+}
+
+/* Etiqueta pequeña sobre los títulos */
+.antetitulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vino);
+  margin-bottom: 1rem;
+}
+.antetitulo::before {
+  content: '';
+  width: 2.2rem;
+  height: 3px;
+  border-radius: 3px;
+  background: currentColor;
+}
+
+.titulo-seccion {
+  font-size: clamp(1.75rem, 4.5vw + 0.75rem, 4rem);
+  letter-spacing: -0.02em;
+  /* Palabras largas como "Microdocumentales" en pantallas de 320px */
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+.titulo-seccion em {
+  color: var(--vino);
+  font-weight: 400;
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.boton:hover {
+  transform: translateY(-2px) rotate(-1deg);
+}
+.boton--vino {
+  background: var(--vino);
+  color: var(--crema);
+  box-shadow: 0 6px 0 var(--cafe);
+}
+.boton--vino:hover {
+  box-shadow: 0 8px 0 var(--cafe);
+}
+.boton--oro {
+  background: var(--oro);
+  color: var(--cafe);
+  box-shadow: 0 6px 0 var(--cafe);
+}
+.boton--borde {
+  border-color: currentColor;
+  background: transparent;
+}
+
+.patron {
+  background-image: url('/patron.png');
+  background-size: 120px;
+}
+
+.visualmente-oculto {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Elemento al que se llega desde el buscador */
+li:target,
+aside:target {
+  animation: destello 2s ease-out;
+  border-radius: var(--radio);
+}
+@keyframes destello {
+  0%,
+  40% {
+    box-shadow: 0 0 0 6px var(--oro);
+  }
+  100% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+/* Aparición al hacer scroll (solo si hay JS, para no ocultar contenido) */
+.js .revelar {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.js .revelar.visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .js .revelar {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,0 +1,237 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import isotipo from '../assets/marca/isotipo.png';
+
+const noticias = (await getCollection('noticias'))
+  .sort((a, b) => b.data.fecha.getTime() - a.data.fecha.getTime())
+  .slice(0, 4);
+
+// Foto grupal: basta con poner el archivo en src/assets/fotos/equipo.jpg (o .png / .webp)
+const fotos = import.meta.glob<{ default: ImageMetadata }>('../assets/fotos/equipo.{jpg,jpeg,png,webp}', { eager: true });
+const fotoEquipo = Object.values(fotos)[0]?.default;
+
+const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+
+<section id="nosotros" class="seccion">
+  <div class="contenedor nosotros">
+    <div class="nosotros__principal">
+      <div class="revelar">
+        <p class="antetitulo">Quiénes somos</p>
+        <h2 class="titulo-seccion">Donde lo de uno <em>se vuelve de todos</em></h2>
+      </div>
+
+      <div class="nosotros__cuerpo">
+        <figure class="foto revelar">
+          {
+            fotoEquipo ? (
+              <Image
+                src={fotoEquipo}
+                alt="El equipo de Entre Jaranas"
+                widths={[480, 720, 960, 1280]}
+                sizes="(max-width: 720px) calc(100vw - 4rem), (max-width: 1080px) 55vw, 460px"
+                class="foto__img"
+              />
+            ) : (
+              <div class="foto__vacia">
+                <Image src={isotipo} alt="" width={180} />
+                <span>Aquí irá la foto grupal del equipo</span>
+              </div>
+            )
+          }
+          <figcaption>El equipo de Entre Jaranas · San Marcos</figcaption>
+        </figure>
+
+        <div class="nosotros__texto revelar">
+          <p class="destacado">
+            Los peruanos siempre encontramos un motivo para celebrar. El ritmo criollo que llevamos en la sangre nació así,
+            en un rincón donde la música y la tradición se abrazaban.
+          </p>
+          <p>
+            <strong>Entre Jaranas</strong> nace de ese lugar donde lo de uno se vuelve de todos. <em>“Entre”</em> es el espacio
+            del encuentro, donde las personas se juntan, conectan y nadie celebra solo. <em>“Jaranas”</em> es la fiesta criolla
+            que nos devuelve ese instante en que la familia y la comunidad se reúnen.
+          </p>
+          <p>
+            Juntas, nos recuerdan aquello que nos une: la celebración no pertenece a un solo hogar ni a una sola tradición,
+            sino al encuentro de todos.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <aside id="prensa" class="prensa revelar" aria-labelledby="prensa-titulo">
+      <h2 id="prensa-titulo" class="prensa__titulo">Prensa</h2>
+      <ol>
+        {
+          noticias.map((n) => (
+            <li id={`noticia-${n.id}`}>
+              <article class="noticia">
+                <time datetime={n.data.fecha.toISOString()}>{formatoFecha.format(n.data.fecha)}</time>
+                <h3>
+                  {n.data.enlace ? (
+                    <a href={n.data.enlace} target="_blank" rel="noopener">
+                      {n.data.titulo}
+                    </a>
+                  ) : (
+                    n.data.titulo
+                  )}
+                </h3>
+                <p>{n.data.resumen}</p>
+              </article>
+            </li>
+          ))
+        }
+      </ol>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .nosotros {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  .nosotros__cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    margin-top: 2.5rem;
+    align-items: start;
+  }
+
+  .foto {
+    margin: 0;
+    background: var(--blanco);
+    padding: 0.9rem 0.9rem 0;
+    border-radius: 6px;
+    box-shadow: var(--sombra);
+    transform: rotate(-3deg);
+    transition: transform 0.4s ease;
+  }
+  .foto:hover {
+    transform: rotate(0) scale(1.02);
+  }
+  .foto__img,
+  .foto__vacia {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    border-radius: 3px;
+  }
+  .foto__img {
+    height: auto;
+    object-fit: cover;
+  }
+  .foto__vacia {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 1rem;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 3px;
+    background: var(--vino);
+    color: var(--crema);
+    font-size: 0.9rem;
+  }
+  .foto__vacia img {
+    width: 40%;
+    height: auto;
+  }
+  .foto figcaption {
+    font-family: var(--f-titulo);
+    font-style: italic;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.8rem 0 1rem;
+    color: var(--cafe);
+  }
+
+  .nosotros__texto {
+    display: grid;
+    gap: 1.1rem;
+  }
+  .destacado {
+    font-family: var(--f-titulo);
+    font-size: 1.3rem;
+    line-height: 1.45;
+    color: var(--cafe);
+  }
+
+  .prensa {
+    position: sticky;
+    top: 6.5rem;
+    background: var(--cafe);
+    color: var(--crema);
+    border-radius: var(--radio);
+    padding: 1.75rem 1.5rem;
+  }
+  .prensa__titulo {
+    color: var(--oro);
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  .prensa ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .prensa li + li {
+    border-top: 1px dashed rgb(240 231 216 / 0.25);
+  }
+  .noticia {
+    padding-block: 1rem;
+  }
+  .noticia time {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--oro);
+    color: var(--cafe);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+  }
+  .noticia h3 {
+    color: var(--crema);
+    font-size: 1.05rem;
+    margin-block: 0.6rem 0.4rem;
+  }
+  .noticia h3 a {
+    text-decoration-color: var(--oro);
+  }
+  .noticia p {
+    font-size: 0.88rem;
+    opacity: 0.8;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 1080px) {
+    .nosotros {
+      grid-template-columns: 1fr;
+    }
+    .prensa {
+      position: static;
+    }
+    .prensa ol {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0 1.5rem;
+    }
+    .prensa li + li {
+      border-top: 0;
+    }
+  }
+  @media (max-width: 720px) {
+    .nosotros__cuerpo {
+      grid-template-columns: 1fr;
+    }
+    .foto {
+      max-width: 420px;
+    }
+  }
+</style>

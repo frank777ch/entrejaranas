@@ -1,0 +1,88 @@
+---
+import '../styles/global.css';
+import Encabezado from '../components/Encabezado.astro';
+import Pie from '../components/Pie.astro';
+import Instituciones from '../components/Instituciones.astro';
+import { sitio } from '../data/sitio';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+}
+
+const { titulo, descripcion = sitio.descripcion } = Astro.props;
+const tituloCompleto = titulo ? `${titulo} · ${sitio.nombre}` : `${sitio.nombre} · Música y tradición criolla`;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content="#93171e" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_PE" />
+    <meta property="og:image" content={new URL('/og.png', Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <Encabezado />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Instituciones />
+    <Pie />
+
+    <script>
+      // Revela las secciones al entrar en pantalla
+      const observador = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              observador.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -10% 0px' },
+      );
+      document.querySelectorAll('.revelar').forEach((el) => observador.observe(el));
+    </script>
+  </body>
+</html>
+
+<style>
+  .saltar {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    background: var(--oro);
+    color: var(--cafe);
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    font-weight: 700;
+  }
+  .saltar:focus {
+    top: 1rem;
+  }
+</style>
