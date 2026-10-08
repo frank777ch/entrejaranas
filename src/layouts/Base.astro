@@ -11,6 +11,9 @@ interface Props {
 }
 
 const { titulo, descripcion = sitio.descripcion } = Astro.props;
+// public/og.jpg: imagen de 1200×630 que se ve al compartir el link
+const imagen = new URL('/og.jpg', Astro.site).href;
+const canonica = new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site).href;
 const tituloCompleto = titulo ? `${titulo} · ${sitio.nombre}` : `${sitio.nombre} · Música y tradición criolla`;
 ---
 
@@ -24,15 +27,25 @@ const tituloCompleto = titulo ? `${titulo} · ${sitio.nombre}` : `${sitio.nombre
     <meta name="theme-color" content="#93171e" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={canonica} />
+
+    <!-- Vista previa al compartir (WhatsApp, Facebook, X, Telegram) -->
+    <meta property="og:site_name" content={sitio.nombre} />
     <meta property="og:title" content={tituloCompleto} />
     <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonica} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_PE" />
-    <meta property="og:image" content={new URL('/og.png', Astro.site)} />
+    <meta property="og:image" content={imagen} />
+    <meta property="og:image:secure_url" content={imagen} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Entre Jaranas: Aquí nadie celebra solo" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta name="twitter:title" content={tituloCompleto} />
+    <meta name="twitter:description" content={descripcion} />
+    <meta name="twitter:image" content={imagen} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

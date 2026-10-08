@@ -38,7 +38,7 @@ const nombresRedes: Record<string, string> = {
       }
     </div>
 
-    <form class="formulario revelar" method="POST" novalidate>
+    <form class="formulario revelar" method="POST" action="/api/contacto" novalidate>
       <div class="campo">
         <label for="f-nombre">Nombre</label>
         <input id="f-nombre" name="nombre" autocomplete="name" required minlength="2" maxlength="120" />
@@ -75,8 +75,6 @@ const nombresRedes: Record<string, string> = {
 </section>
 
 <script>
-  import { actions, isInputError } from 'astro:actions';
-
   const form = document.querySelector<HTMLFormElement>('.formulario')!;
   const estado = form.querySelector<HTMLParagraphElement>('.estado')!;
   const boton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
@@ -101,16 +99,23 @@ const nombresRedes: Record<string, string> = {
     boton.disabled = true;
     texto.textContent = 'Enviando…';
 
-    const { error } = await actions.contacto(new FormData(form));
+    // Pages Function: functions/api/contacto.ts
+    let resultado: { ok: boolean; errores?: Record<string, string> } = { ok: false };
+    try {
+      const r = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+      resultado = await r.json();
+    } catch {
+      // sin conexión o la función no está disponible (p. ej. en `npm run dev`)
+    }
 
     boton.disabled = false;
     texto.textContent = 'Enviar mensaje';
 
-    if (error) {
-      if (isInputError(error)) {
-        for (const [campo, mensajes] of Object.entries(error.fields)) {
+    if (!resultado.ok) {
+      if (resultado.errores) {
+        for (const [campo, mensaje] of Object.entries(resultado.errores)) {
           const destino = form.querySelector(`[data-error="${campo}"]`);
-          if (destino && mensajes?.length) destino.textContent = mensajes[0];
+          if (destino) destino.textContent = mensaje;
         }
         estado.textContent = 'Revisa los campos marcados.';
       } else {

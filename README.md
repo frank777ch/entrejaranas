@@ -6,25 +6,26 @@ Landing page del proyecto **Entre Jaranas** (Facultad de Letras y Ciencias Human
 
 ```sh
 npm install
-cp .env.example .env   # y completar valores
 npm run dev            # http://localhost:4321
 npm run build          # compila para producción
 ```
 
-Sin `RESEND_API_KEY`, el formulario funciona igual pero el mensaje se imprime en la consola en vez de enviarse.
 
-## Publicar en Cloudflare
+## Publicar en Cloudflare Pages
 
-El sitio usa `@astrojs/cloudflare`, que publica en **Cloudflare Workers** (el reemplazo que Cloudflare recomienda hoy en lugar de Pages; mismo panel).
+El sitio es estático y el formulario es una **Pages Function** (`functions/api/contacto.ts`). La configuración está en `wrangler.jsonc` (carpeta de salida: `dist`).
 
-1. Cloudflare → *Workers & Pages* → *Create* → *Import a repository* → elegir este repo de GitHub.
-2. Build command: `npm run build` · Deploy command: `npx wrangler deploy` (vienen por defecto).
-3. En *Settings → Variables and Secrets* agregar `CONTACT_TO_EMAIL` y `RESEND_API_KEY` como **Secret**.
-4. Cada `git push` a `main` vuelve a publicar.
+1. Cloudflare → *Workers & Pages* → *Create* → pestaña **Pages** → *Connect to Git* → elegir este repo.
+2. Framework preset: **Astro** · Build command: `npm run build` · Build output directory: `dist`.
+3. En *Settings → Variables and Secrets* (Production) agregar `CONTACT_TO_EMAIL` y `RESEND_API_KEY` como **Secret**.
+4. Cada `git push` a `main` vuelve a publicar. Queda en `https://entrejaranas.pages.dev`.
 
-También se puede publicar desde la terminal: `npm run build && npx wrangler deploy`.
+Cuando haya dominio propio, cambiar `site` en `astro.config.mjs` (lo usan los links para compartir en WhatsApp).
 
-Cuando haya dominio propio, cambiar `site` en `astro.config.mjs`.
+### Probar en local
+
+- `npm run dev`: sitio con recarga automática. El formulario **no** envía aquí (la función solo corre en Cloudflare).
+- `npm run preview:cf`: compila y corre el sitio con la función, igual que en Cloudflare. Las variables van en `.dev.vars` (copiar de `.env.example`).
 
 ## Foto grupal
 
@@ -32,7 +33,7 @@ Poner el archivo en `src/assets/fotos/equipo.jpg` (o `.png` / `.webp`), horizont
 
 ## Cómo actualizar el contenido
 
-Todo se edita en archivos; al hacer `git push`, Cloudflare publica los cambios en 1–2 minutos.
+Todo se edita en archivos; al hacer `git push`, Cloudflare Pages publica los cambios en 1–2 minutos.
 
 | Qué | Dónde |
 |---|---|
@@ -98,9 +99,7 @@ Botón "Buscar" en el encabezado (atajos: `/` o `Ctrl+K`). El índice se genera 
 
 ## Formulario de contacto
 
-Usa Astro Actions (`src/actions/index.ts`) y [Resend](https://resend.com) para enviar el correo.
-
-Variables de entorno (en Cloudflare: *Workers & Pages → entrejaranas → Settings → Variables and Secrets*, tipo **Secret**). Para desarrollo local van en `.env`:
+`functions/api/contacto.ts` valida los datos y envía el correo con la API de [Resend](https://resend.com). Las opciones del selector "Motivo" están en `src/data/contacto.ts`.
 
 | Variable | Para qué |
 |---|---|
@@ -111,6 +110,10 @@ Variables de entorno (en Cloudflare: *Workers & Pages → entrejaranas → Setti
 **Importante:** sin un dominio propio verificado en Resend, el remitente `onboarding@resend.dev` solo puede enviar al correo con el que se creó la cuenta de Resend. Crear la cuenta de Resend con el mismo correo de `CONTACT_TO_EMAIL`, o verificar un dominio para enviar a cualquier correo.
 
 Incluye un campo oculto anti-spam (honeypot). Si llega spam, el siguiente paso es agregar Cloudflare Turnstile.
+
+## Vista previa al compartir
+
+Título y descripción salen de `src/data/sitio.ts`; la imagen es `public/og.jpg` (1200 × 630). WhatsApp guarda la vista previa en caché: si se cambia, puede tardar en actualizarse.
 
 ## Marca
 
