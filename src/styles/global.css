@@ -15,7 +15,8 @@
   --f-titulo: 'Libre Baskerville', Georgia, serif;
   --f-cuerpo: 'Agrandir', 'Archivo', system-ui, sans-serif;
 
-  --ancho: 1200px;
+  /* En rem: crece si la persona usa letra más grande en su navegador */
+  --ancho: 75rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --radio: 28px;
   --sombra: 0 18px 40px -18px rgb(82 32 17 / 0.45);
@@ -113,7 +114,7 @@ a {
   letter-spacing: -0.02em;
   /* Palabras largas como "Microdocumentales" en pantallas de 320px */
   hyphens: auto;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 .titulo-seccion em {
   color: var(--vino);

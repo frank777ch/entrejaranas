@@ -364,20 +364,21 @@
     }
   }
 
-  @media (max-width: 1180px) {
-    .buscar-boton {
-      width: 48px;
-      height: 48px;
-      padding: 0;
-      justify-content: center;
-    }
-    .buscar-boton__texto {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0 0 0 0);
-    }
+  /* Encabezado en modo hamburguesa (ver Encabezado.astro): solo la lupa */
+  :global(.cabecera--movil) .buscar-boton {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+  }
+  :global(.cabecera--movil) .buscar-boton__texto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  @media (max-width: 760px) {
     .buscador {
       margin-top: 1rem;
     }

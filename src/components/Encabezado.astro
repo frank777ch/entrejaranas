@@ -42,7 +42,6 @@ const enlaces = [
       <Image src={logo} alt="" width={132} densities={[1, 2]} loading="eager" />
     </a>
 
-
     <nav id="navegacion" class="nav" aria-label="Principal">
       <ul>
         {
@@ -65,6 +64,22 @@ const enlaces = [
     </div>
   </div>
 </header>
+
+<script is:inline>
+  // Cambia a menú hamburguesa si el menú completo no cabe en una línea.
+  // Corre apenas se lee el header (antes de pintar) y otra vez al cargar fuentes o redimensionar.
+  (() => {
+    const cabecera = document.querySelector('.cabecera');
+    const fila = cabecera.querySelector('.cabecera__in');
+    const ajustar = () => {
+      cabecera.classList.remove('cabecera--movil');
+      cabecera.classList.toggle('cabecera--movil', fila.scrollWidth > fila.clientWidth + 1);
+    };
+    ajustar();
+    addEventListener('resize', ajustar);
+    document.fonts?.ready.then(ajustar);
+  })();
+</script>
 
 <script>
   const boton = document.querySelector<HTMLButtonElement>('.menu-boton')!;
@@ -145,7 +160,8 @@ const enlaces = [
     padding-block: 0.75rem;
   }
   .cabecera__logo img {
-    width: 132px;
+    width: 8.25rem;
+    max-width: none;
     height: auto;
     transform-origin: left center;
     transition: transform 0.3s ease;
@@ -198,6 +214,11 @@ const enlaces = [
 
   .cabecera__logo {
     margin-right: auto;
+    flex: none;
+  }
+  .nav,
+  .cabecera__acciones {
+    flex: none;
   }
   .cabecera__acciones {
     display: flex;
@@ -208,82 +229,81 @@ const enlaces = [
     display: none;
   }
 
-  /* Con el botón Buscar el menú completo necesita ~1180px */
-  @media (max-width: 1180px) {
-    .menu-boton {
-      display: grid;
-      place-items: center;
-      width: 48px;
-      height: 48px;
-      border: 0;
-      border-radius: 50%;
-      background: var(--vino);
-      cursor: pointer;
-    }
-    .menu-boton__barras,
-    .menu-boton__barras::before,
-    .menu-boton__barras::after {
-      display: block;
-      width: 20px;
-      height: 2.5px;
-      border-radius: 2px;
-      background: var(--crema);
-      transition: transform 0.25s ease;
-    }
-    .menu-boton__barras {
-      position: relative;
-    }
-    .menu-boton__barras::before,
-    .menu-boton__barras::after {
-      content: '';
-      position: absolute;
-      left: 0;
-    }
-    .menu-boton__barras::before {
-      top: -6px;
-    }
-    .menu-boton__barras::after {
-      top: 6px;
-    }
-    [aria-expanded='true'] .menu-boton__barras {
-      background: transparent;
-    }
-    [aria-expanded='true'] .menu-boton__barras::before {
-      transform: translateY(6px) rotate(45deg);
-    }
-    [aria-expanded='true'] .menu-boton__barras::after {
-      transform: translateY(-6px) rotate(-45deg);
-    }
+  /* Menú hamburguesa: se activa cuando el menú completo no cabe (lo mide el script de arriba),
+     así funciona con cualquier fuente, zoom o tamaño de pantalla */
+  .cabecera--movil .menu-boton {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--vino);
+    cursor: pointer;
+  }
+  .cabecera--movil .menu-boton__barras,
+  .cabecera--movil .menu-boton__barras::before,
+  .cabecera--movil .menu-boton__barras::after {
+    display: block;
+    width: 20px;
+    height: 2.5px;
+    border-radius: 2px;
+    background: var(--crema);
+    transition: transform 0.25s ease;
+  }
+  .cabecera--movil .menu-boton__barras {
+    position: relative;
+  }
+  .cabecera--movil .menu-boton__barras::before,
+  .cabecera--movil .menu-boton__barras::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+  .cabecera--movil .menu-boton__barras::before {
+    top: -6px;
+  }
+  .cabecera--movil .menu-boton__barras::after {
+    top: 6px;
+  }
+  .cabecera--movil [aria-expanded='true'] .menu-boton__barras {
+    background: transparent;
+  }
+  .cabecera--movil [aria-expanded='true'] .menu-boton__barras::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .cabecera--movil [aria-expanded='true'] .menu-boton__barras::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
 
-    .nav {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1.5rem;
-      padding: 1.5rem var(--gutter) 2rem;
-      background: var(--crema);
-      border-bottom: 4px solid var(--vino);
-      box-shadow: var(--sombra);
-      display: none;
-    }
-    .nav.abierta {
-      display: flex;
-    }
-    .nav ul {
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-    .nav ul a {
-      display: block;
-      font-family: var(--f-titulo);
-      font-size: 1.5rem;
-      padding-block: 0.4rem;
-    }
-    .nav__cta {
-      justify-content: center;
-    }
+  .cabecera--movil .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding: 1.5rem var(--gutter) 2rem;
+    background: var(--crema);
+    border-bottom: 4px solid var(--vino);
+    box-shadow: var(--sombra);
+    display: none;
+  }
+  .cabecera--movil .nav.abierta {
+    display: flex;
+  }
+  .cabecera--movil .nav ul {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .cabecera--movil .nav ul a {
+    display: block;
+    font-family: var(--f-titulo);
+    font-size: 1.5rem;
+    padding-block: 0.4rem;
+  }
+  .cabecera--movil .nav__cta {
+    justify-content: center;
   }
 </style>
