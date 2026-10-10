@@ -15,9 +15,8 @@ export const sitio = {
     nombre: 'Museo Virtual de la Jarana',
     descripcion:
       'Recorre salas dedicadas a los instrumentos, las voces y los barrios que hicieron la música criolla. Acércate a cada pieza, escucha su historia y vuelve cuando quieras: las salas se irán ampliando.',
-    // Pegar aquí el enlace para incrustar (Artsteps, Kuula, Matterport, etc.).
-    // Mientras esté vacío, la página muestra "Próximamente".
-    embedUrl: '',
+    // Primera sala en 3D (src/scripts/museo). Las piezas se editan en src/scripts/museo/piezas.ts
+    sala: 'Mi museo criollo',
   },
 
   // Dejar en '' las redes que no existan y no se mostrarán

@@ -30,3 +30,7 @@ pnpm-debug.log*
 # material de referencia (no se publica)
 *.pdf
 capturas/
+
+# material de trabajo del museo 3D (imágenes para la IA y modelos originales);
+# la web usa lo optimizado en public/museo
+museo-3d/

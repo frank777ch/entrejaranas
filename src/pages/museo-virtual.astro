@@ -1,36 +1,114 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import isotipo from '../assets/marca/isotipo.png';
 import { sitio } from '../data/sitio';
+import { piezas } from '../scripts/museo/piezas';
 
-const { nombre, descripcion, embedUrl } = sitio.museoVirtual;
+const { nombre, descripcion, sala } = sitio.museoVirtual;
 ---
 
 <Base titulo="Museo Virtual" descripcion={descripcion}>
   <section class="seccion">
     <div class="contenedor">
-      <p class="antetitulo">Museo virtual</p>
+      <p class="antetitulo">Museo virtual · Sala 1</p>
       <h1 class="titulo-seccion">{nombre}</h1>
       <p class="desc">{descripcion}</p>
 
-      <div class="marco">
-        {
-          embedUrl ? (
-            <iframe src={embedUrl} title={nombre} allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen />
-          ) : (
-            <div class="pronto">
-              <Image src={isotipo} alt="" width={220} />
-              <p class="pronto__titulo">Estamos preparando las salas</p>
-              <p>Muy pronto podrás recorrer el museo desde aquí.</p>
-              <a href="/" class="boton boton--oro">Volver al inicio</a>
+      <div id="museo" class="museo-3d en-intro">
+        <div class="escenario">
+          <canvas aria-label={`Sala en 3D: ${sala}`} role="img"></canvas>
+
+          <div class="marcadores" aria-label="Piezas de la sala"></div>
+
+          <div class="cabecera">
+            <img src="/museo/texturas/logo-mi-museo-criollo.webp" alt={sala} width="1073" height="367" class="cabecera__logo" />
+          </div>
+
+          <div class="herr">
+            <p class="contador" role="status">
+              <span class="contador__puntos" aria-hidden="true"></span>
+              <span class="contador__n">0/{piezas.length}</span>
+            </p>
+            <button type="button" class="herr__boton herr__general" aria-label="Vista general de la sala" title="Vista general">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7M5 10v10h5v-6h4v6h5V10" /></svg>
+            </button>
+            <button type="button" class="herr__boton herr__pantalla" aria-label="Pantalla completa" aria-pressed="false" title="Pantalla completa">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+            </button>
+          </div>
+
+          <p class="pista" aria-hidden="true">Arrastra para mirar · Toca un objeto para conocerlo</p>
+
+          <aside class="ficha" role="dialog" aria-labelledby="ficha-titulo" hidden>
+            <button type="button" class="ficha__cerrar" aria-label="Cerrar ficha">×</button>
+            <p class="ficha__num"></p>
+            <h2 class="ficha__titulo" id="ficha-titulo" tabindex="-1"></h2>
+            <p class="ficha__subtitulo"></p>
+            <p class="ficha__texto"></p>
+            <div class="ficha__dato">
+              <strong>¿Sabías que…?</strong>
+              <p></p>
             </div>
-          )
-        }
+            <div class="ficha__pie">
+              <button type="button" class="ficha__flecha ficha__ant" aria-label="Pieza anterior">←</button>
+              <button type="button" class="ficha__hecho">Hecho</button>
+              <button type="button" class="ficha__flecha ficha__sig" aria-label="Pieza siguiente">→</button>
+            </div>
+          </aside>
+
+          <div class="intro">
+            <img src="/museo/texturas/logo-mi-museo-criollo.webp" alt="" width="1073" height="367" class="intro__logo" />
+            <p class="intro__texto">Siete piezas de nuestra tradición te esperan. Recorre la sala a tu ritmo y descúbrelas todas.</p>
+            <div class="intro__barra" aria-hidden="true"><span></span></div>
+            <p class="intro__estado" role="status">Preparando la sala…</p>
+            <button type="button" class="boton boton--oro intro__entrar" hidden>Entrar a la sala</button>
+          </div>
+
+          <div class="final" role="dialog" aria-labelledby="final-titulo" hidden>
+            <div class="confeti" aria-hidden="true"></div>
+            <div class="final__caja">
+              <p class="antetitulo">¡{piezas.length} de {piezas.length}!</p>
+              <h2 id="final-titulo" tabindex="-1">Recorriste todo el museo</h2>
+              <p>Ya conoces cada pieza de {sala}. Y como aquí nadie celebra solo, compártelo con tu gente.</p>
+              <div class="final__botones">
+                <button type="button" class="boton boton--oro final__compartir">Compartir</button>
+                <button type="button" class="boton boton--borde final__seguir">Seguir recorriendo</button>
+              </div>
+              <button type="button" class="final__reiniciar">Empezar de nuevo</button>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <p class="creditos">
+        Modelos 3D generados con <a href="https://www.meshy.ai" rel="noopener">Meshy</a> (CC BY 4.0) a partir de las ilustraciones del equipo de Entre Jaranas.
+      </p>
+
+      <details class="lista">
+        <summary>Ver las piezas de la sala en texto</summary>
+        <ol>
+          {
+            piezas.map((p) => (
+              <li>
+                <h3>
+                  {p.titulo} <span>· {p.subtitulo}</span>
+                </h3>
+                <p>{p.texto}</p>
+                <p class="lista__dato">
+                  <strong>¿Sabías que…?</strong> {p.dato}
+                </p>
+              </li>
+            ))
+          }
+        </ol>
+      </details>
     </div>
   </section>
 </Base>
+
+<script>
+  import { iniciarMuseo } from '../scripts/museo/app';
+  iniciarMuseo(document.getElementById('museo')!);
+</script>
 
 <style>
   .desc {
@@ -38,46 +116,600 @@ const { nombre, descripcion, embedUrl } = sitio.museoVirtual;
     margin-top: 1.25rem;
     font-size: 1.1rem;
   }
-  .marco {
+
+  .museo-3d {
     margin-top: 2.5rem;
-    aspect-ratio: 16 / 9;
+  }
+  /* Las capas usan display: grid/flex; sin esto, "hidden" no las oculta y tapan los clics */
+  .museo-3d [hidden] {
+    display: none !important;
+  }
+  .escenario {
+    position: relative;
+    height: clamp(30rem, 78svh, 50rem);
     border-radius: var(--radio);
     border: 8px solid var(--vino);
     box-shadow: 0 14px 0 var(--cafe);
     overflow: hidden;
-    background: var(--cafe);
+    background: #140a06;
+    isolation: isolate;
+    color: var(--crema);
   }
-  iframe {
-    width: 100%;
+  .escenario:fullscreen,
+  .completo .escenario {
     height: 100%;
     border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
-  .pronto {
+  .completo .escenario {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    height: 100dvh;
+  }
+  canvas {
+    display: block;
+    width: 100%;
     height: 100%;
+  }
+
+  /* ---------- Cabecera, como en el boceto ---------- */
+  .cabecera {
+    position: absolute;
+    top: 0.9rem;
+    left: 1rem;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  .cabecera__logo {
+    width: clamp(150px, 22vw, 250px);
+    height: auto;
+    filter: drop-shadow(0 4px 10px rgb(0 0 0 / 0.5));
+  }
+  .en-intro .cabecera,
+  .en-intro .herr {
+    opacity: 0;
+  }
+
+  .herr {
+    position: absolute;
+    top: 0.9rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: opacity 0.5s;
+  }
+  .contador {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: rgb(40 16 8 / 0.78);
+    backdrop-filter: blur(6px);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .contador__puntos {
+    display: flex;
+    gap: 4px;
+  }
+  .contador :global(.contador__punto) {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--oro);
+    transition: background 0.3s;
+  }
+  .contador :global(.contador__punto.lleno) {
+    background: var(--oro);
+  }
+  .contador:global(.latido) {
+    animation: latido 0.6s ease;
+  }
+  @keyframes latido {
+    40% {
+      transform: scale(1.15);
+      background: var(--vino);
+    }
+  }
+  .herr__boton {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    border: 0;
+    background: rgb(40 16 8 / 0.78);
+    backdrop-filter: blur(6px);
+    color: var(--crema);
+    cursor: pointer;
+  }
+  .herr__boton:hover {
+    background: var(--vino);
+  }
+  .herr__boton svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .pista {
+    position: absolute;
+    left: 50%;
+    bottom: 1.2rem;
+    translate: -50% 0;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    background: rgb(40 16 8 / 0.8);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.6s;
+    pointer-events: none;
+  }
+  .pista:global(.visible) {
+    opacity: 1;
+  }
+
+  /* ---------- Marcadores sobre cada pieza ---------- */
+  .marcadores {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .marcadores:global(.oculto) {
+    opacity: 0;
+  }
+  .marcadores:global(.oculto) :global(.marcador) {
+    pointer-events: none;
+  }
+  .marcadores :global(.marcador) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: -1.1rem 0 0 -1.1rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--cafe);
+    font: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .marcadores :global(.marcador.fuera) {
+    visibility: hidden;
+  }
+  .marcadores :global(.marcador__num) {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: var(--oro);
+    font-weight: 800;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.45);
+  }
+  .marcadores :global(.marcador__num)::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid var(--oro);
+    animation: pulso 2.2s ease-out infinite;
+  }
+  .marcadores :global(.marcador.visto .marcador__num) {
+    background: var(--crema);
+  }
+  .marcadores :global(.marcador.visto .marcador__num)::after {
+    animation: none;
+    opacity: 0;
+  }
+  .marcadores :global(.marcador.visto .marcador__num)::before {
+    content: '✓';
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    display: grid;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: #2f7d32;
+    color: #fff;
+    font-size: 0.65rem;
+  }
+  .marcadores :global(.marcador__nombre) {
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: rgb(40 16 8 / 0.85);
+    color: var(--crema);
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    translate: -6px 0;
+    transition:
+      opacity 0.25s,
+      translate 0.25s;
+  }
+  .marcadores :global(.marcador.activo .marcador__nombre),
+  .marcadores :global(.marcador:focus-visible .marcador__nombre) {
+    opacity: 1;
+    translate: 0 0;
+  }
+  @keyframes pulso {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.9;
+    }
+    100% {
+      transform: scale(1.7);
+      opacity: 0;
+    }
+  }
+
+  /* ---------- Ficha marrón con botón HECHO, como en el boceto ---------- */
+  .ficha {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    width: min(23rem, 42%);
+    overflow-y: auto;
+    padding: 1.6rem 1.5rem 1.3rem;
+    border-radius: 22px;
+    background:
+      linear-gradient(160deg, rgb(255 255 255 / 0.06), transparent 40%),
+      #5e2716;
+    border: 2px solid rgb(254 173 21 / 0.35);
+    box-shadow: 0 20px 50px rgb(0 0 0 / 0.55);
+    transform: translateX(calc(100% + 2rem));
+    transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .ficha:global(.abierta) {
+    transform: none;
+  }
+  .ficha__cerrar {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.7rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--crema);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .ficha__cerrar:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+  .ficha__num {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--oro);
+  }
+  .ficha__titulo {
+    color: var(--crema);
+    font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+    outline: none;
+  }
+  .ficha__subtitulo {
+    margin-top: -0.4rem;
+    font-family: var(--f-titulo);
+    font-style: italic;
+    color: var(--oro);
+  }
+  .ficha__texto {
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+  .ficha__dato {
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgb(254 173 21 / 0.28);
+    background: rgb(0 0 0 / 0.22);
+    font-size: 0.92rem;
+  }
+  .ficha__dato strong {
+    display: block;
+    color: var(--oro);
+  }
+  .ficha__pie {
+    position: sticky;
+    bottom: -1.3rem;
+    margin: auto -1.5rem -1.3rem;
+    padding: 0.8rem 1.5rem 1.1rem;
+    background: #5e2716;
+    border-top: 1px solid rgb(240 231 216 / 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+  .ficha__hecho {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--crema);
+    color: var(--cafe);
+    font: inherit;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #c7b79b;
+    transition: transform 0.15s;
+  }
+  .ficha__hecho:hover {
+    background: var(--oro);
+  }
+  .ficha__hecho:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #c7b79b;
+  }
+  .ficha__flecha {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    border: 1.5px solid rgb(240 231 216 / 0.4);
+    background: transparent;
+    color: var(--crema);
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  .ficha__flecha:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  /* ---------- Pantalla de entrada ---------- */
+  .intro {
+    position: absolute;
+    inset: 0;
     display: grid;
     place-items: center;
     align-content: center;
-    gap: 0.75rem;
+    gap: 1rem;
     padding: 2rem;
     text-align: center;
-    color: var(--crema);
+    background:
+      radial-gradient(ellipse at 50% 40%, rgb(147 23 30 / 0.55), transparent 65%),
+      #1e0d07;
+    transition:
+      opacity 0.9s,
+      transform 0.9s;
   }
-  .pronto img {
-    width: 110px;
+  .intro::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/patron.png');
+    background-size: 90px;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+  .intro:global(.saliendo) {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+  }
+  .intro__logo {
+    position: relative;
+    width: min(440px, 80%);
     height: auto;
-    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 10px 30px rgb(0 0 0 / 0.6));
   }
-  .pronto__titulo {
-    font-family: var(--f-titulo);
-    font-size: clamp(1.4rem, 3vw, 2rem);
+  .intro__texto {
+    position: relative;
+    max-width: 34ch;
+    font-size: 1.1rem;
+  }
+  .intro__barra {
+    position: relative;
+    width: min(260px, 70%);
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(240 231 216 / 0.15);
+    overflow: hidden;
+  }
+  .intro__barra span {
+    display: block;
+    height: 100%;
+    background: var(--oro);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .intro__estado {
+    position: relative;
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
+  .intro__entrar {
+    position: relative;
+    margin-top: 0.4rem;
+    animation: aparecer 0.6s ease both;
+  }
+  @keyframes aparecer {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  .sin-3d .intro__barra {
+    display: none;
+  }
+
+  /* ---------- Final ---------- */
+  .final {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgb(20 8 4 / 0.6);
+    opacity: 0;
+    transition: opacity 0.5s;
+    overflow: hidden;
+  }
+  .final:global(.visible) {
+    opacity: 1;
+  }
+  .final__caja {
+    position: relative;
+    max-width: 26rem;
+    padding: 2rem 1.75rem 1.5rem;
+    border-radius: 22px;
+    background: #5e2716;
+    border: 2px solid var(--oro);
+    text-align: center;
+    display: grid;
+    gap: 0.9rem;
+    justify-items: center;
+  }
+  .final__caja .antetitulo {
     color: var(--oro);
   }
-  .pronto .boton {
+  .final__caja h2 {
+    color: var(--crema);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    outline: none;
+  }
+  .final__botones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+  }
+  .final .boton--borde {
+    color: var(--crema);
+    border-color: rgb(240 231 216 / 0.5);
+  }
+  .final__reiniciar {
+    border: 0;
+    background: none;
+    color: var(--crema);
+    opacity: 0.7;
+    text-decoration: underline;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .confeti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .confeti :global(i) {
+    position: absolute;
+    top: -20px;
+    width: 9px;
+    height: 14px;
+    border-radius: 2px;
+    animation: caer linear forwards;
+  }
+  @keyframes caer {
+    to {
+      transform: translateY(110vh) rotate(var(--giro));
+    }
+  }
+
+  .creditos {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
+
+  .lista {
     margin-top: 1rem;
   }
-  @media (max-width: 640px) {
-    .marco {
-      aspect-ratio: 3 / 4;
+  .lista summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--vino);
+  }
+  .lista ol {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+    padding-left: 1.25rem;
+  }
+  .lista h3 {
+    font-size: 1.15rem;
+  }
+  .lista h3 span {
+    font-weight: 400;
+    font-style: italic;
+  }
+  .lista p {
+    max-width: 70ch;
+    margin-top: 0.35rem;
+  }
+  .lista__dato {
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+
+  @media (max-width: 720px) {
+    .escenario {
+      height: 80svh;
+      border-width: 5px;
+    }
+    .ficha {
+      top: auto;
+      left: 0.6rem;
+      right: 0.6rem;
+      bottom: 0.6rem;
+      width: auto;
+      max-height: 58%;
+      padding: 1.3rem 1.1rem 1rem;
+      transform: translateY(calc(100% + 2rem));
+    }
+    .ficha__pie {
+      bottom: -1rem;
+      margin: auto -1.1rem -1rem;
+      padding: 0.7rem 1.1rem 0.9rem;
+    }
+    .cabecera__logo {
+      width: 130px;
+    }
+    .contador__puntos {
+      display: none;
+    }
+    .pista {
+      font-size: 0.78rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ficha,
+    .intro,
+    .final {
+      transition: none;
+    }
+    .marcadores :global(.marcador__num)::after {
+      animation: none;
     }
   }
 </style>
