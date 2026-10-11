@@ -204,10 +204,11 @@ export async function crearSala(o: Opciones) {
     grupo.rotation.y = THREE.MathUtils.degToRad(p.giro);
     escena.add(grupo);
 
-    const base = construirBase(p, grupo);
+    let base: ReturnType<typeof construirBase>;
     let objeto: THREE.Object3D;
 
     if (p.base === 'pared') {
+      base = construirBase(p, grupo);
       objeto = construirCuadro(p, grupo, cargarTex(p.archivo));
     } else {
       const g = await gltf.loadAsync(`${RUTA}/modelos/${p.archivo}`);
@@ -229,6 +230,8 @@ export async function crearSala(o: Opciones) {
       const escala = p.tam / (p.medida === 'ancho' ? Math.max(tam.x, tam.z) : tam.y);
       envoltura.scale.setScalar(escala);
       caja.setFromObject(envoltura);
+      // La base se arma después del modelo: así cada vitrina se mide según lo que guarda
+      base = construirBase(p, grupo, caja.getSize(new THREE.Vector3()));
       const c = caja.getCenter(new THREE.Vector3());
       envoltura.position.set(-c.x, base.alto - caja.min.y, -c.z);
       grupo.add(envoltura);
@@ -325,7 +328,7 @@ export async function crearSala(o: Opciones) {
     return m;
   }
 
-  function construirBase(p: Pieza, grupo: THREE.Group) {
+  function construirBase(p: Pieza, grupo: THREE.Group, medida = new THREE.Vector3()) {
     const cuerpo = new THREE.Group();
     grupo.add(cuerpo);
     const madera = tex.matMadera();
@@ -385,23 +388,30 @@ export async function crearSala(o: Opciones) {
 
     let alto = 0;
     switch (p.base) {
+      // Las vitrinas crecen si el modelo no entra (p. ej. el vuelo de la falda), con aire alrededor
       case 'vitrina-alta': {
-        caja(1.15, 0.36, 0.92, 0.18);
-        caja(1.19, 0.03, 0.96, 0.375, tex.matMaderaOscura());
+        const w = Math.max(1.08, medida.x + 0.2);
+        const d = Math.max(0.86, medida.z + 0.2);
+        const h = Math.max(1.95, medida.y + 0.2);
+        caja(w + 0.07, 0.36, d + 0.06, 0.18);
+        caja(w + 0.11, 0.03, d + 0.1, 0.375, tex.matMaderaOscura());
         alto = 0.39;
-        vidrio(1.08, 1.95, 0.86, alto);
-        ponerPlaca(0.62, 0.2, 0.46);
-        sombraPiso(2.0);
+        vidrio(w, h, d, alto);
+        ponerPlaca(0.62, 0.2, (d + 0.06) / 2);
+        sombraPiso(Math.max(w, d) * 1.8);
         break;
       }
       case 'vitrina-baja': {
-        caja(0.74, 0.98, 0.62, 0.49);
-        caja(0.8, 0.04, 0.68, 1.0, tex.matMaderaOscura());
-        caja(0.66, 0.05, 0.54, 1.045, new THREE.MeshStandardMaterial({ color: 0x7a0f16, roughness: 0.95 }));
+        const w = Math.max(0.7, medida.x + 0.14);
+        const d = Math.max(0.58, medida.z + 0.14);
+        const h = Math.max(0.6, medida.y + 0.14);
+        caja(w + 0.04, 0.98, d + 0.04, 0.49);
+        caja(w + 0.1, 0.04, d + 0.1, 1.0, tex.matMaderaOscura());
+        caja(w - 0.04, 0.05, d - 0.04, 1.045, new THREE.MeshStandardMaterial({ color: 0x7a0f16, roughness: 0.95 }));
         alto = 1.07;
-        vidrio(0.7, 0.6, 0.58, 1.02);
-        ponerPlaca(0.44, 0.72, 0.31, true);
-        sombraPiso(1.3);
+        vidrio(w, h, d, 1.02);
+        ponerPlaca(0.44, 0.72, (d + 0.04) / 2, true);
+        sombraPiso(Math.max(w, d) * 1.8);
         break;
       }
       case 'columna': {
