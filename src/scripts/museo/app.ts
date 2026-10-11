@@ -121,7 +121,7 @@ export async function iniciarMuseo(raiz: HTMLElement) {
     setTimeout(() => (intro.hidden = true), 900);
     sala.entrar();
     // En celular la sala pasa a pantalla completa: así no compite con el menú de la página
-    if (matchMedia('(hover: none)').matches) pantallaCompleta(true);
+    if (matchMedia('(hover: none), (max-width: 720px)').matches) pantallaCompleta(true);
     else escenario.scrollIntoView({ behavior: movimientoReducido ? 'auto' : 'smooth', block: 'center' });
     setTimeout(() => pista.classList.add('visible'), movimientoReducido ? 0 : 3200);
   });
@@ -137,7 +137,7 @@ export async function iniciarMuseo(raiz: HTMLElement) {
     $('.ficha__texto').textContent = p.texto;
     $('.ficha__dato p').textContent = p.dato;
     const hecho = $<HTMLButtonElement>('.ficha__hecho');
-    hecho.textContent = vistas.has(p.id) ? 'Volver a la sala' : 'Hecho';
+    hecho.textContent = vistas.has(p.id) ? 'Volver' : 'Hecho';
     ficha.hidden = false;
     requestAnimationFrame(() => ficha.classList.add('abierta'));
     ficha.scrollTop = 0;

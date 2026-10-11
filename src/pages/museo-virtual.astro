@@ -457,6 +457,7 @@ const { nombre, descripcion, sala } = sitio.museoVirtual;
   }
   .ficha__hecho {
     flex: 1;
+    white-space: nowrap;
     padding: 0.75rem 1rem;
     border: 0;
     border-radius: 999px;
@@ -698,24 +699,28 @@ const { nombre, descripcion, sala } = sitio.museoVirtual;
       border-radius: 18px;
       transform: translateY(calc(100% + 2rem));
     }
+    /* La letra de la marca es ancha: en celular se angosta y achica para que entre más texto */
+    .ficha {
+      font-stretch: 100%;
+    }
     .ficha__num {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
     }
     .ficha__titulo {
-      font-size: 1.3rem;
+      font-size: 1.15rem;
       padding-right: 2rem;
     }
     .ficha__subtitulo {
-      margin-top: -0.3rem;
-      font-size: 0.95rem;
+      margin-top: -0.35rem;
+      font-size: 0.85rem;
     }
     .ficha__texto {
-      font-size: 0.9rem;
+      font-size: 0.82rem;
       line-height: 1.5;
     }
     .ficha__dato {
-      padding: 0.6rem 0.8rem;
-      font-size: 0.84rem;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.78rem;
     }
     .ficha__pie {
       bottom: -0.9rem;
@@ -723,7 +728,9 @@ const { nombre, descripcion, sala } = sitio.museoVirtual;
       padding: 0.55rem 1rem 0.75rem;
     }
     .ficha__hecho {
-      padding: 0.6rem 1rem;
+      padding: 0.55rem 0.8rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
     }
     .ficha__flecha {
       width: 2.3rem;

@@ -1,0 +1,68 @@
+---
+// Botones de redes sociales con su logo. Los enlaces se editan en src/data/sitio.ts
+// Logos de simple-icons (CC0): se insertan al compilar, no agregan JavaScript.
+import { siFacebook, siInstagram, siTiktok, siWhatsapp, siYoutube } from 'simple-icons';
+import { nombresRedes, redesActivas } from '../data/sitio';
+
+const iconos: Record<string, { path: string }> = {
+  instagram: siInstagram,
+  tiktok: siTiktok,
+  facebook: siFacebook,
+  whatsapp: siWhatsapp,
+  youtube: siYoutube,
+};
+---
+
+{
+  redesActivas.length > 0 && (
+    <ul class="redes" aria-label="Redes sociales">
+      {redesActivas.map(([red, url]) => (
+        <li>
+          <a href={url} target="_blank" rel="noopener">
+            {iconos[red] && (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d={iconos[red].path} />
+              </svg>
+            )}
+            <span>{nombresRedes[red]}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .redes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.95rem 0.4rem 0.75rem;
+    border: 1.5px solid color-mix(in srgb, currentColor 50%, transparent);
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.88rem;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+  a:hover {
+    color: var(--oro);
+    border-color: var(--oro);
+  }
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+</style>

@@ -2,7 +2,8 @@
 import { Image } from 'astro:assets';
 import isotipo from '../assets/marca/isotipo.png';
 import { motivos } from '../data/contacto';
-import { nombresRedes, redesActivas as redes } from '../data/sitio';
+import { redesActivas } from '../data/sitio';
+import Redes from './Redes.astro';
 ---
 
 <section id="contacto" class="contacto">
@@ -13,18 +14,10 @@ import { nombresRedes, redesActivas as redes } from '../data/sitio';
       <h2 class="titulo-seccion">¿Armamos <em>la jarana?</em></h2>
       <p>Escríbenos para talleres, prensa, alianzas o si quieres ser parte de Nuevas Promesas.</p>
       {
-        redes.length > 0 && (
-          <div class="redes">
-            <p class="redes__et">Síguenos</p>
-            <ul>
-              {redes.map(([red, url]) => (
-                <li>
-                  <a href={url} target="_blank" rel="noopener">
-                    {nombresRedes[red]}
-                  </a>
-                </li>
-              ))}
-            </ul>
+        redesActivas.length > 0 && (
+          <div class="siguenos">
+            <p class="siguenos__et">Síguenos</p>
+            <Redes />
           </div>
         )
       }
@@ -164,33 +157,12 @@ import { nombresRedes, redesActivas as redes } from '../data/sitio';
   .contacto h2 em {
     color: var(--oro);
   }
-  .redes {
+  .siguenos {
     margin-top: 2rem;
   }
-  .redes__et {
+  .siguenos__et {
     font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-  .redes ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .redes a {
-    display: inline-block;
-    padding: 0.4rem 1rem;
-    border: 2px solid var(--crema);
-    border-radius: 999px;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.9rem;
-  }
-  .redes a:hover {
-    background: var(--crema);
-    color: var(--vino);
+    margin-bottom: 0.6rem;
   }
 
   .formulario {
