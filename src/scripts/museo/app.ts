@@ -95,9 +95,11 @@ export async function iniciarMuseo(raiz: HTMLElement) {
     for (const p of piezas) {
       const b = botones.get(p.id)!;
       const pos = sala.proyectar(p.id);
-      const visible = !!pos && pos.visible && pos.x > 10 && pos.x < escenario.clientWidth - 10 && pos.y > 10;
+      const w = escenario.clientWidth;
+      // Si la pieza asoma por el borde, su marcador se queda dentro de la pantalla
+      const visible = !!pos && pos.visible && pos.x > -60 && pos.x < w + 60 && pos.y > 10;
       b.classList.toggle('fuera', !visible);
-      if (pos) b.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      if (pos) b.style.transform = `translate(${Math.min(Math.max(pos.x, 24), w - 24)}px, ${pos.y}px)`;
       b.classList.toggle('visto', vistas.has(p.id));
     }
   });
@@ -118,7 +120,9 @@ export async function iniciarMuseo(raiz: HTMLElement) {
     intro.classList.add('saliendo');
     setTimeout(() => (intro.hidden = true), 900);
     sala.entrar();
-    escenario.scrollIntoView({ behavior: movimientoReducido ? 'auto' : 'smooth', block: 'center' });
+    // En celular la sala pasa a pantalla completa: así no compite con el menú de la página
+    if (matchMedia('(hover: none)').matches) pantallaCompleta(true);
+    else escenario.scrollIntoView({ behavior: movimientoReducido ? 'auto' : 'smooth', block: 'center' });
     setTimeout(() => pista.classList.add('visible'), movimientoReducido ? 0 : 3200);
   });
   escenario.addEventListener('pointerdown', () => pista.classList.remove('visible'), { once: false });
@@ -196,23 +200,27 @@ export async function iniciarMuseo(raiz: HTMLElement) {
 
   const botonPantalla = $<HTMLButtonElement>('.herr__pantalla');
   const enPantallaCompleta = () => !!document.fullscreenElement || raiz.classList.contains('completo');
-  botonPantalla.addEventListener('click', async () => {
-    if (enPantallaCompleta()) {
-      if (document.fullscreenElement) await document.exitFullscreen();
+  const marcarPantalla = () => {
+    const activa = enPantallaCompleta();
+    botonPantalla.setAttribute('aria-pressed', String(activa));
+    botonPantalla.setAttribute('aria-label', activa ? 'Salir de pantalla completa' : 'Pantalla completa');
+    // Con la sala a toda pantalla, la página de atrás no se desplaza
+    document.documentElement.style.overflow = raiz.classList.contains('completo') ? 'hidden' : '';
+  };
+  async function pantallaCompleta(activar: boolean) {
+    if (!activar) {
+      if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
       raiz.classList.remove('completo');
     } else if (escenario.requestFullscreen) {
-      try {
-        await escenario.requestFullscreen();
-      } catch {
-        raiz.classList.add('completo');
-      }
+      await escenario.requestFullscreen().catch(() => raiz.classList.add('completo'));
     } else {
       // iPhone: sin API de pantalla completa, la sala ocupa toda la ventana
       raiz.classList.add('completo');
     }
-    botonPantalla.setAttribute('aria-pressed', String(enPantallaCompleta()));
-  });
-  document.addEventListener('fullscreenchange', () => botonPantalla.setAttribute('aria-pressed', String(enPantallaCompleta())));
+    marcarPantalla();
+  }
+  botonPantalla.addEventListener('click', () => pantallaCompleta(!enPantallaCompleta()));
+  document.addEventListener('fullscreenchange', marcarPantalla);
 
   // ---------- Final ----------
   function celebrar() {

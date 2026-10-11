@@ -13,10 +13,10 @@ export const GET: APIRoute = async () => {
     {
       tipo: 'Sección',
       titulo: 'Quiénes somos',
-      texto: 'Entre Jaranas nace de ese lugar donde lo de uno se vuelve de todos. Concepto, equipo, nosotros.',
+      texto: 'Somos Entre Jaranas, una iniciativa de sanmarquinos para que la música criolla siga sonando. Equipo, nosotros.',
       url: '/#nosotros',
     },
-    { tipo: 'Sección', titulo: 'Nuestro propósito', texto: 'Misión, visión y valores: cultura, tradición, legado y unión.', url: '/#proposito' },
+    { tipo: 'Sección', titulo: 'Nuestro propósito', texto: 'Misión, visión y valores: pertenencia, innovación, responsabilidad sociocultural, alegría, creatividad y jovialidad.', url: '/#proposito' },
     { tipo: 'Sección', titulo: sitio.museoVirtual.nombre, texto: sitio.museoVirtual.descripcion, url: '/museo-virtual' },
     { tipo: 'Sección', titulo: 'Microdocumentales', texto: 'Experiencias: historias de la música criolla.', url: '/#experiencias' },
     { tipo: 'Sección', titulo: 'Minitalleres', texto: 'Cajón, baile, marinera, guitarra criolla.', url: '/#talleres' },

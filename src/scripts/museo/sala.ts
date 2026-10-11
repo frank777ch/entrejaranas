@@ -22,8 +22,8 @@ const VISTA_GENERAL = {
 };
 // En pantallas verticales la cámara retrocede y sube para que entre toda la sala
 const VISTA_VERTICAL = {
-  pos: new THREE.Vector3(0, 2.05, 4.2),
-  mira: new THREE.Vector3(0, 1.1, -1.6),
+  pos: new THREE.Vector3(0, 2.45, 4.25),
+  mira: new THREE.Vector3(0, 0.75, -1.2),
 };
 const VISTA_ENTRADA = new THREE.Vector3(0, 2.3, 7.5);
 
@@ -48,8 +48,11 @@ interface Montada {
 }
 
 export async function crearSala(o: Opciones) {
-  const renderer = new THREE.WebGLRenderer({ canvas: o.lienzo, antialias: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+  // Modo liviano para pantallas táctiles: sin mouse no hay contorno al pasar, y la GPU del celular agradece
+  const liviano = matchMedia('(hover: none)').matches;
+  const renderer = new THREE.WebGLRenderer({ canvas: o.lienzo, antialias: liviano, powerPreference: 'high-performance' });
+  let nitidez = Math.min(window.devicePixelRatio, liviano ? 1.5 : 1.75);
+  renderer.setPixelRatio(nitidez);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -73,19 +76,23 @@ export async function crearSala(o: Opciones) {
   controles.target.copy(VISTA_GENERAL.mira);
   controles.enabled = false;
 
-  // Postproceso: contorno blanco al pasar el mouse, como en el boceto
-  const destino = new THREE.WebGLRenderTarget(512, 512, { samples: 4, type: THREE.HalfFloatType });
-  const composer = new EffectComposer(renderer, destino);
-  composer.addPass(new RenderPass(escena, camara));
-  // Tamaño inicial real: con 1×1 sus búferes reducidos quedan en 0 px y WebGL se queja
-  const contorno = new OutlinePass(new THREE.Vector2(512, 512), escena, camara);
-  contorno.visibleEdgeColor.set(0xffffff);
-  contorno.hiddenEdgeColor.set(0xffe6b0);
-  contorno.edgeStrength = 5;
-  contorno.edgeThickness = 1.6;
-  contorno.edgeGlow = 0.4;
-  composer.addPass(contorno);
-  composer.addPass(new OutputPass());
+  // Postproceso: contorno blanco al pasar el mouse, como en el boceto (solo con mouse)
+  let composer: EffectComposer | null = null;
+  let contorno: OutlinePass | null = null;
+  if (!liviano) {
+    const destino = new THREE.WebGLRenderTarget(512, 512, { samples: 4, type: THREE.HalfFloatType });
+    composer = new EffectComposer(renderer, destino);
+    composer.addPass(new RenderPass(escena, camara));
+    // Tamaño inicial real: con 1×1 sus búferes reducidos quedan en 0 px y WebGL se queja
+    contorno = new OutlinePass(new THREE.Vector2(512, 512), escena, camara);
+    contorno.visibleEdgeColor.set(0xffffff);
+    contorno.hiddenEdgeColor.set(0xffe6b0);
+    contorno.edgeStrength = 5;
+    contorno.edgeThickness = 1.6;
+    contorno.edgeGlow = 0.4;
+    composer.addPass(contorno);
+    composer.addPass(new OutputPass());
+  }
 
   // ---------- Sala ----------
   const cargador = new THREE.LoadingManager();
@@ -252,7 +259,7 @@ export async function crearSala(o: Opciones) {
     foco.target.position.copy(centro);
     escena.add(foco, foco.target);
     escena.add(lampara(desde));
-    if (p.base !== 'pared') conos.push(conoDeLuz(desde, new THREE.Vector3(centro.x, 0, centro.z)));
+    if (p.base !== 'pared' && !liviano) conos.push(conoDeLuz(desde, new THREE.Vector3(centro.x, 0, centro.z)));
 
     montadas.push({ pieza: p, grupo, objeto, centro, ancla, foco, potencia });
   });
@@ -468,7 +475,7 @@ export async function crearSala(o: Opciones) {
   }
 
   // ---------- Polvo flotando en la luz ----------
-  const N = 420;
+  const N = liviano ? 150 : 420;
   const posiciones = new Float32Array(N * 3);
   const fases = new Float32Array(N);
   for (let i = 0; i < N; i++) {
@@ -517,7 +524,7 @@ export async function crearSala(o: Opciones) {
   const resaltar = (m: Montada | null) => {
     if (m === sobre) return;
     sobre = m;
-    contorno.selectedObjects = m ? [m.objeto] : [];
+    if (contorno) contorno.selectedObjects = m ? [m.objeto] : [];
     o.lienzo.style.cursor = m ? 'pointer' : '';
     o.alPasarSobre(m?.pieza ?? null);
   };
@@ -620,17 +627,35 @@ export async function crearSala(o: Opciones) {
     ancho = o.contenedor.clientWidth;
     alto = o.contenedor.clientHeight;
     camara.aspect = ancho / alto;
-    camara.fov = ancho < alto ? 82 : 55;
+    // En vertical se fija el ángulo horizontal (~74°) para que entre la sala de lado a lado
+    const vertical = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(37)) / camara.aspect));
+    camara.fov = camara.aspect < 1 ? Math.min(vertical, 100) : 55;
     camara.updateProjectionMatrix();
     renderer.setSize(ancho, alto, false);
-    composer.setSize(ancho, alto);
-    contorno.resolution.set(ancho, alto);
+    composer?.setPixelRatio(nitidez);
+    composer?.setSize(ancho, alto);
   };
   new ResizeObserver(redimensionar).observe(o.contenedor);
   redimensionar();
 
   let activo = true;
   new IntersectionObserver(([e]) => (activo = e.isIntersecting)).observe(o.contenedor);
+
+  // Resolución adaptable: si el equipo no llega a ~45 cuadros por segundo, baja la nitidez de a pocos
+  let medido = 0;
+  let cuadros = 0;
+  const medir = (dt: number) => {
+    medido += dt;
+    cuadros++;
+    if (medido < 2) return;
+    if (cuadros / medido < 45 && nitidez > 1) {
+      nitidez = Math.max(1, nitidez - 0.25);
+      renderer.setPixelRatio(nitidez);
+      redimensionar();
+    }
+    medido = 0;
+    cuadros = 0;
+  };
 
   const reloj = new THREE.Clock();
   const alCuadro: ((t: number) => void)[] = [];
@@ -700,7 +725,9 @@ export async function crearSala(o: Opciones) {
     if (Math.abs(desfase.x) + Math.abs(desfase.y) > 0.5) camara.setViewOffset(ancho, alto, desfase.x, desfase.y, ancho, alto);
     else if (camara.view?.enabled) camara.clearViewOffset();
 
-    composer.render();
+    if (composer) composer.render();
+    else renderer.render(escena, camara);
+    if (encendido > 0) medir(dt);
     for (const f of alCuadro) f(t);
   });
 

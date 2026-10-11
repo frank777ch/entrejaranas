@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import logoNegativo from '../assets/marca/logo-negativo.png';
-import { sitio } from '../data/sitio';
+import { sitio, nombresRedes, redesActivas } from '../data/sitio';
 
 const anio = new Date().getFullYear();
 ---
@@ -11,6 +11,19 @@ const anio = new Date().getFullYear();
     <div class="pie__marca">
       <Image src={logoNegativo} alt="Entre Jaranas" width={200} densities={[1, 2]} />
       <p>{sitio.lema}</p>
+      {
+        redesActivas.length > 0 && (
+          <ul class="pie__redes" aria-label="Redes sociales">
+            {redesActivas.map(([red, url]) => (
+              <li>
+                <a href={url} target="_blank" rel="noopener">
+                  {nombresRedes[red]}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
     <nav aria-label="Pie de página" class="pie__nav">
       <a href="/#nosotros">Nosotros</a>
@@ -47,6 +60,27 @@ const anio = new Date().getFullYear();
     font-style: italic;
     max-width: 30ch;
     opacity: 0.85;
+  }
+  .pie__redes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+  }
+  .pie__redes a {
+    display: inline-block;
+    padding: 0.35rem 0.95rem;
+    border: 1.5px solid rgb(240 231 216 / 0.45);
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+  .pie__redes a:hover {
+    border-color: var(--oro);
+    color: var(--oro);
   }
   .pie__nav {
     display: grid;

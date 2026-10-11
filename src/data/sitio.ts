@@ -21,9 +21,21 @@ export const sitio = {
 
   // Dejar en '' las redes que no existan y no se mostrarán
   redes: {
-    instagram: '',
-    facebook: '',
-    tiktok: '',
+    instagram: 'https://www.instagram.com/entrejaranas/',
+    tiktok: 'https://www.tiktok.com/@entrejaranas.proyecto',
+    facebook: 'https://www.facebook.com/profile.php?id=61595196627374',
+    whatsapp: 'https://whatsapp.com/channel/0029Vb9128ZGOj9vdZ9wBt38',
     youtube: '',
   },
 };
+
+// Cómo se muestra el nombre de cada red en los botones
+export const nombresRedes: Record<string, string> = {
+  instagram: 'Instagram',
+  tiktok: 'TikTok',
+  facebook: 'Facebook',
+  whatsapp: 'Canal de WhatsApp',
+  youtube: 'YouTube',
+};
+
+export const redesActivas = Object.entries(sitio.redes).filter(([, url]) => url);

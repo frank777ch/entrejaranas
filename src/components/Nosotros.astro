@@ -19,7 +19,7 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     <div class="nosotros__principal">
       <div class="revelar">
         <p class="antetitulo">Quiénes somos</p>
-        <h2 class="titulo-seccion">Donde lo de uno <em>se vuelve de todos</em></h2>
+        <h2 class="titulo-seccion">Que lo nuestro <em>siga sonando</em></h2>
       </div>
 
       <div class="nosotros__cuerpo">
@@ -45,17 +45,19 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
 
         <div class="nosotros__texto revelar">
           <p class="destacado">
-            Los peruanos siempre encontramos un motivo para celebrar. El ritmo criollo que llevamos en la sangre nació así,
-            en un rincón donde la música y la tradición se abrazaban.
+            Somos <strong>Entre Jaranas</strong>, una iniciativa que nació de sanmarquinos con ganas de hacer que lo nuestro
+            siga sonando.
           </p>
           <p>
-            <strong>Entre Jaranas</strong> nace de ese lugar donde lo de uno se vuelve de todos. <em>“Entre”</em> es el espacio
-            del encuentro, donde las personas se juntan, conectan y nadie celebra solo. <em>“Jaranas”</em> es la fiesta criolla
-            que nos devuelve ese instante en que la familia y la comunidad se reúnen.
+            Creamos experiencias presenciales y digitales para que más jóvenes se encuentren con la música criolla, conozcan
+            sus historias, sus espacios y, sobre todo, a las personas que la viven y la mantienen presente.
           </p>
           <p>
-            Juntas, nos recuerdan aquello que nos une: la celebración no pertenece a un solo hogar ni a una sola tradición,
-            sino al encuentro de todos.
+            Porque no, la música criolla no está muerta. Sigue en quienes la cantan, la bailan, la tocan, la enseñan y se
+            reúnen alrededor de ella.
+          </p>
+          <p>
+            Nosotros solo queremos acercarte un poquito más a esa jarana. <a href="#contacto" class="sumate">¿Te sumas?</a>
           </p>
         </div>
       </div>
@@ -153,6 +155,15 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
   .nosotros__texto {
     display: grid;
     gap: 1.1rem;
+  }
+  .sumate {
+    font-weight: 700;
+    color: var(--vino);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .sumate:hover {
+    color: var(--teja);
   }
   .destacado {
     font-family: var(--f-titulo);

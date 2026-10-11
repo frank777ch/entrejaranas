@@ -32,11 +32,12 @@ const { nombre, descripcion, sala } = sitio.museoVirtual;
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7M5 10v10h5v-6h4v6h5V10" /></svg>
             </button>
             <button type="button" class="herr__boton herr__pantalla" aria-label="Pantalla completa" aria-pressed="false" title="Pantalla completa">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icono-abrir"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icono-cerrar"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>
             </button>
           </div>
 
-          <p class="pista" aria-hidden="true">Arrastra para mirar · Toca un objeto para conocerlo</p>
+          <p class="pista" aria-hidden="true">Arrastra para mirar<span class="pista__extra"> · Toca un objeto para conocerlo</span></p>
 
           <aside class="ficha" role="dialog" aria-labelledby="ficha-titulo" hidden>
             <button type="button" class="ficha__cerrar" aria-label="Cerrar ficha">×</button>
@@ -230,6 +231,13 @@ const { nombre, descripcion, sala } = sitio.museoVirtual;
   .herr__boton:hover {
     background: var(--vino);
   }
+  .herr__pantalla .icono-cerrar,
+  .herr__pantalla[aria-pressed='true'] .icono-abrir {
+    display: none;
+  }
+  .herr__pantalla[aria-pressed='true'] .icono-cerrar {
+    display: block;
+  }
   .herr__boton svg {
     width: 1.25rem;
     height: 1.25rem;
@@ -377,6 +385,7 @@ const { nombre, descripcion, sala } = sitio.museoVirtual;
     box-shadow: 0 20px 50px rgb(0 0 0 / 0.55);
     transform: translateX(calc(100% + 2rem));
     transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overscroll-behavior: contain;
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
@@ -676,29 +685,78 @@ const { nombre, descripcion, sala } = sitio.museoVirtual;
       height: 80svh;
       border-width: 5px;
     }
+    /* Ficha tipo hoja inferior: compacta para que se lea el texto, no solo el título */
     .ficha {
       top: auto;
-      left: 0.6rem;
-      right: 0.6rem;
-      bottom: 0.6rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      bottom: 0.5rem;
       width: auto;
-      max-height: 58%;
-      padding: 1.3rem 1.1rem 1rem;
+      max-height: 62%;
+      padding: 1rem 1rem 0.9rem;
+      gap: 0.55rem;
+      border-radius: 18px;
       transform: translateY(calc(100% + 2rem));
     }
+    .ficha__num {
+      font-size: 0.72rem;
+    }
+    .ficha__titulo {
+      font-size: 1.3rem;
+      padding-right: 2rem;
+    }
+    .ficha__subtitulo {
+      margin-top: -0.3rem;
+      font-size: 0.95rem;
+    }
+    .ficha__texto {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .ficha__dato {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.84rem;
+    }
     .ficha__pie {
-      bottom: -1rem;
-      margin: auto -1.1rem -1rem;
-      padding: 0.7rem 1.1rem 0.9rem;
+      bottom: -0.9rem;
+      margin: auto -1rem -0.9rem;
+      padding: 0.55rem 1rem 0.75rem;
+    }
+    .ficha__hecho {
+      padding: 0.6rem 1rem;
+    }
+    .ficha__flecha {
+      width: 2.3rem;
+      height: 2.3rem;
+    }
+    .cabecera {
+      top: 0.7rem;
+      left: 0.7rem;
     }
     .cabecera__logo {
-      width: 130px;
+      width: clamp(96px, 30vw, 130px);
+    }
+    .herr {
+      top: 0.7rem;
+      right: 0.7rem;
+      gap: 0.35rem;
+    }
+    .herr__boton {
+      width: 2.3rem;
+      height: 2.3rem;
+    }
+    .contador {
+      padding: 0.35rem 0.65rem;
     }
     .contador__puntos {
       display: none;
     }
     .pista {
-      font-size: 0.78rem;
+      bottom: 0.8rem;
+      font-size: 0.8rem;
+    }
+    .pista__extra {
+      display: none;
     }
   }
 

@@ -2,15 +2,7 @@
 import { Image } from 'astro:assets';
 import isotipo from '../assets/marca/isotipo.png';
 import { motivos } from '../data/contacto';
-import { sitio } from '../data/sitio';
-
-const redes = Object.entries(sitio.redes).filter(([, url]) => url);
-const nombresRedes: Record<string, string> = {
-  instagram: 'Instagram',
-  facebook: 'Facebook',
-  tiktok: 'TikTok',
-  youtube: 'YouTube',
-};
+import { nombresRedes, redesActivas as redes } from '../data/sitio';
 ---
 
 <section id="contacto" class="contacto">
