@@ -30,10 +30,10 @@ export const piezas: Pieza[] = [
   {
     id: 'abanico',
     titulo: 'Abanico',
-    subtitulo: 'Polka criolla',
+    subtitulo: 'Polka peruano',
     texto:
-      'La polka llegó de Europa central en el siglo XIX y en Lima se volvió criolla: alegre, saltarina y de compás binario. Las damas la bailaban con abanico en mano, un accesorio para refrescarse… y también para coquetear.',
-    dato: 'En la polka criolla la pareja avanza con pasitos saltados y vueltas rápidas: es de los ritmos más alegres del repertorio criollo.',
+      'En sus representaciones, este accesorio evoca la elegancia de los antiguos salones; tiene raíces ceremoniales y de distinción social.',
+    dato: 'Su encanto despertó controversias. Pues en 1929, El Comercio realizó una encuesta que dividió a Lima en quienes defendían su gracia y quienes preferían tener las manos libres, generando un debate sobre la libertad femenina.',
     archivo: '05-abanico.glb',
     base: 'vitrina-baja',
     x: -2.35,
@@ -48,8 +48,8 @@ export const piezas: Pieza[] = [
     titulo: 'Felipe Pinglo Alva',
     subtitulo: 'El bardo inmortal',
     texto:
-      'Nacido en Barrios Altos (Lima, 1899–1936), es considerado el padre de la música criolla. Compuso valses, polkas, marineras y one-steps que retratan la vida, los amores y las penas del pueblo limeño.',
-    dato: 'Su vals «El plebeyo» es una de las canciones más queridas y cantadas del Perú.',
+      'Nació en Barrios Altos en 1899. Renovó el vals criollo convirtiendo el barrio, el amor y las desigualdades en poesía musical. Murió de tuberculosis en 1936, a los 36 años.',
+    dato: 'Su creatividad lo llevó a componer otros ritmos como el foxtrot y el onestep. En 2016, sus obras fueron declaradas Patrimonio cultural de la Nación.',
     archivo: '04-busto-pinglo.glb',
     base: 'columna',
     x: -2.55,
@@ -63,7 +63,7 @@ export const piezas: Pieza[] = [
     titulo: 'La marinera limeña',
     subtitulo: 'Vestimenta de la dama',
     texto:
-      'Es el baile de pareja más representativo del Perú. En Lima se baila con elegancia y picardía, pañuelo en mano, al compás de guitarras y cajón. Su nombre se lo dio en 1879 Abelardo Gamarra, «El Tunante», en homenaje a la Marina de Guerra; antes se la conocía como zamacueca o chilena.',
+      'La vestimenta se extiende hasta los tobillos, con encajes y una falda de amplio vuelo que acompaña sus movimientos. Tiene sus raíces en la zamacueca. En 1879, Abelardo Gamarra, El Tunante, le dio el nombre en homenaje a la Marina de Guerra.',
     dato: 'La marinera limeña también se llama «canto de jarana»: se canta en tres marineras seguidas, luego viene la resbalosa y al final las fugas.',
     archivo: '01-marinera-vestido.glb',
     base: 'vitrina-alta',
@@ -76,10 +76,10 @@ export const piezas: Pieza[] = [
   {
     id: 'quijada',
     titulo: 'Quijada de burro',
-    subtitulo: 'Instrumento criollo',
+    subtitulo: 'Dientes que hacen música',
     texto:
-      'Es la mandíbula seca de un burro, caballo o mula. Al golpearla con el puño, los dientes sueltos vibran en sus cavidades y suenan como una sonaja; también se raspa con un palo sobre las muelas. Es un instrumento de percusión de origen afroperuano.',
-    dato: 'Acompaña al cajón en el festejo, el landó y la zamacueca. ¡Es de los pocos instrumentos que nacen de un hueso!',
+      'Literalmente una mandíbula seca, la quijada acompaña expresiones como el festejo y el son de los Diablos. Entre golpes y raspados, su sonido dialoga con el cajón y celebra la creatividad de la tradición musical afroperuana.',
+    dato: 'La quijada también se emplea en México. Allí acompaña al son jarocho. Un mismo hueso, distintos ritmos.',
     archivo: '06-quijada-burro.glb',
     base: 'pedestal',
     x: -0.05,
@@ -93,10 +93,10 @@ export const piezas: Pieza[] = [
   {
     id: 'vals',
     titulo: 'Vals peruano',
-    subtitulo: 'Ritmo de nuestra tierra',
+    subtitulo: 'Todo un barrio en la voz',
     texto:
-      'Llegó de Europa en el siglo XIX y en los callejones y solares de Lima se volvió nuestro: más ágil, más pícaro, con guitarra y cajón. Se baila en pareja, con giros cortos, mucha cercanía y complicidad.',
-    dato: 'Cada 31 de octubre celebramos el Día de la Canción Criolla, instituido en 1944.',
+      'De raíces europeas, encontró en el Perú una cadencia propia. Entre jaranas, se transformó en canción para contar amores, ausencias y desigualdades. Sus versos guardan la memoria de quienes hicieron de la música una manera de narrar la vida.',
+    dato: 'Algunos valses fueron poemas antes de ser canciones. Es el caso de Ódiame, cuya letra procede de un poema de Federico Barreto.',
     archivo: '02-vals-pareja.glb',
     base: 'plinto-redondo',
     x: 1.35,
@@ -108,10 +108,10 @@ export const piezas: Pieza[] = [
   {
     id: 'tondero',
     titulo: 'Tondero',
-    subtitulo: 'Vestimenta del varón',
+    subtitulo: 'Vestimenta masculina',
     texto:
-      'Baile alegre del norte del Perú, sobre todo de Piura y Lambayeque. Representa el cortejo de una pareja, inspirado en el galanteo de las aves. El varón luce sombrero de paja, camisa blanca, faja, pañuelo y una manta tejida al hombro.',
-    dato: 'El tondero tiene tres partes: glosa, dulce y fuga. Se acompaña con guitarra y cajón.',
+      'Sombrero de paja, camisa y pantalón componen el atuendo, evocando la vida campesina del norte. Según la localidad, se añaden fajas, alforjas y ponchos de hilo. El pañuelo acompaña el galanteo, mientras el vestido cobra movimiento entre rodeos y zapateos.',
+    dato: 'La alforja que integra algunas versiones sirve para transportar provisiones. Su presencia lleva al baile una huella de la vida cotidiana.',
     archivo: '03-tondero-varon.glb',
     base: 'plinto',
     x: 2.3,
@@ -125,8 +125,8 @@ export const piezas: Pieza[] = [
     titulo: 'La Plaza Mayor de Lima',
     subtitulo: 'La Ciudad de los Reyes',
     texto:
-      'Desde la fundación de Lima, la Plaza Mayor fue su corazón. A su alrededor se levantan la Catedral, el Palacio de Gobierno y la Municipalidad, y en ella se cruzaban vendedores, paseantes, aguadores y músicos: el escenario donde nació el alma criolla.',
-    dato: 'Francisco Pizarro fundó Lima el 18 de enero de 1535 con el nombre de Ciudad de los Reyes.',
+      'Escenario de la fundación española de Lima en 1535 y de la proclamación de la emancipación en 1821. Entre balcones, portales y su antigua pileta, la vida cotidiana se entrelaza con los grandes acontecimientos del Perú.',
+    dato: 'Antes de sus jardines, existió un mercado. Este abastecía a la ciudad y hacía circular sus noticias. Trasladado al Mercado Central, inaugurado en 1852, transformó su rostro: donde hoy contemplamos monumentos, antes se negociaba la compra del día.',
     archivo: 'cuadro-plaza.webp',
     base: 'pared',
     x: 3.47,
