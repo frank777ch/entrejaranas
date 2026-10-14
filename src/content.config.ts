@@ -9,13 +9,17 @@ const enlace = () => z.url({ protocol: /^https?$/ });
 
 const noticias = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/noticias' }),
-  schema: z.object({
-    titulo: z.string(),
-    fecha: z.coerce.date(),
-    resumen: z.string(),
-    // Enlace a la nota completa (medio de prensa, post en redes, etc.)
-    enlace: enlace().optional(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      titulo: z.string(),
+      fecha: z.coerce.date(),
+      resumen: z.string(),
+      // Enlace a la nota completa (medio de prensa, post en redes, etc.).
+      // Sin enlace, si el archivo tiene texto debajo del encabezado, se publica en /prensa/<archivo>
+      enlace: enlace().optional(),
+      imagen: image().optional(),
+      imagenAlt: z.string().optional(),
+    }),
 });
 
 const documentales = defineCollection({
@@ -23,7 +27,9 @@ const documentales = defineCollection({
   schema: ({ image }) =>
     z.object({
       titulo: z.string(),
+      subtitulo: z.string().optional(),
       descripcion: z.string(),
+      // Portada; se muestra mientras no haya video
       imagen: image().optional(),
       // Enlace de YouTube o Vimeo
       video: enlace().optional(),
@@ -45,19 +51,22 @@ const talleres = defineCollection({
 
 const promesas = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/promesas' }),
-  schema: z.object({
-    nombre: z.string(),
-    distrito: z.string(),
-    descripcion: z.string(),
-    // Coordenadas del chinche en el mapa (clic derecho en Google Maps → copiar coordenadas)
-    lat: z.number(),
-    lng: z.number(),
-    spotify: enlace().optional(),
-    instagram: enlace().optional(),
-    facebook: enlace().optional(),
-    tiktok: enlace().optional(),
-    youtube: enlace().optional(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      nombre: z.string(),
+      // Uno o varios distritos separados por " · "
+      distrito: z.string(),
+      descripcion: z.string(),
+      foto: image().optional(),
+      // Coordenadas del chinche en el mapa (clic derecho en Google Maps → copiar coordenadas)
+      lat: z.number(),
+      lng: z.number(),
+      spotify: enlace().optional(),
+      instagram: enlace().optional(),
+      facebook: enlace().optional(),
+      tiktok: enlace().optional(),
+      youtube: enlace().optional(),
+    }),
 });
 
 export const collections = { noticias, documentales, talleres, promesas };

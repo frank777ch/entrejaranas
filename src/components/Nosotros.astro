@@ -5,7 +5,12 @@ import isotipo from '../assets/marca/isotipo.png';
 
 const noticias = (await getCollection('noticias'))
   .sort((a, b) => b.data.fecha.getTime() - a.data.fecha.getTime())
-  .slice(0, 4);
+  .slice(0, 4)
+  .map((n) => ({
+    ...n,
+    // Enlace externo, o la página propia de la nota si tiene texto completo
+    href: n.data.enlace ?? (n.body?.trim() ? `/prensa/${n.id}` : undefined),
+  }));
 
 // Foto grupal: basta con poner el archivo en src/assets/fotos/equipo.jpg (o .png / .webp)
 const fotos = import.meta.glob<{ default: ImageMetadata }>('../assets/fotos/equipo.{jpg,jpeg,png,webp}', { eager: true });
@@ -76,11 +81,18 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
                     <a href={n.data.enlace} target="_blank" rel="noopener">
                       {n.data.titulo}
                     </a>
+                  ) : n.href ? (
+                    <a href={n.href}>{n.data.titulo}</a>
                   ) : (
                     n.data.titulo
                   )}
                 </h3>
                 <p>{n.data.resumen}</p>
+                {n.href && !n.data.enlace && (
+                  <a href={n.href} class="noticia__mas">
+                    Leer la nota
+                  </a>
+                )}
               </article>
             </li>
           ))
@@ -219,6 +231,14 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     font-size: 0.88rem;
     opacity: 0.8;
     line-height: 1.5;
+  }
+  .noticia__mas {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--oro);
+    text-underline-offset: 3px;
   }
 
   @media (max-width: 1080px) {

@@ -5,7 +5,7 @@ export const sitio = {
   lema: 'Una marca que celebra nuestra cultura, la fuerza de nuestra gente y la alegría de lo nuestro.',
   // Texto que aparece en Google y al compartir el link por WhatsApp / redes
   descripcion:
-    'Aquí nadie celebra solo. Microdocumentales, museo virtual, talleres y nuevas promesas de la música criolla peruana. Un proyecto de Letras, UNMSM.',
+    'Aquí nadie celebra solo. Microdocumentales, museo virtual y nuevas promesas de la música criolla peruana. Un proyecto de Letras, UNMSM.',
 
   proyectoDe: ['Facultad de Letras y Ciencias Humanas', 'Universidad Nacional Mayor de San Marcos'],
   // Agregar aliados cuando existan: { nombre: 'Aliado', url: 'https://...' }

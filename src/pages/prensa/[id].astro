@@ -1,0 +1,136 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+
+// Una página por cada nota de prensa que tenga texto completo y no apunte a un medio externo
+export const getStaticPaths = (async () => {
+  const noticias = await getCollection('noticias', (n) => !n.data.enlace && Boolean(n.body?.trim()));
+  return noticias.map((noticia) => ({ params: { id: noticia.id }, props: { noticia } }));
+}) satisfies GetStaticPaths;
+
+const { noticia } = Astro.props;
+const { Content } = await render(noticia);
+const { titulo, resumen, fecha, imagen, imagenAlt } = noticia.data;
+const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+
+<Base titulo={titulo} descripcion={resumen}>
+  <article class="seccion">
+    <div class="contenedor nota">
+      <a href="/#prensa" class="nota__volver">← Volver a Prensa</a>
+      <header class="nota__cabeza">
+        <p class="antetitulo">Nota de prensa</p>
+        <h1 class="titulo-seccion">{titulo}</h1>
+        <p class="nota__bajada">{resumen}</p>
+        <time datetime={fecha.toISOString()}>{formatoFecha.format(fecha)}</time>
+      </header>
+
+      <div class="nota__cuerpo">
+        <div class="nota__texto">
+          <Content />
+        </div>
+        {
+          imagen && (
+            <figure class="nota__imagen">
+              <a href={imagen.src} target="_blank" rel="noopener">
+                <Image src={imagen} alt={imagenAlt ?? ''} widths={[400, 640, 900]} sizes="(max-width: 900px) 100vw, 380px" />
+              </a>
+            </figure>
+          )
+        }
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .nota__volver {
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    color: var(--vino);
+    text-underline-offset: 3px;
+  }
+  .nota__cabeza {
+    max-width: 52rem;
+    display: grid;
+    gap: 1rem;
+  }
+  .nota__cabeza .antetitulo {
+    margin-bottom: 0;
+  }
+  .nota__bajada {
+    font-family: var(--f-titulo);
+    font-size: 1.3rem;
+    line-height: 1.45;
+    color: var(--cafe);
+  }
+  .nota__cabeza time {
+    justify-self: start;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--oro);
+    color: var(--cafe);
+    border-radius: 999px;
+    padding: 0.2rem 0.75rem;
+  }
+
+  .nota__cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  }
+  .nota__texto {
+    max-width: 68ch;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .nota__texto :global(h2) {
+    font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+    margin-top: 1rem;
+  }
+  .nota__texto :global(ul) {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .nota__texto :global(a) {
+    color: var(--vino);
+    text-underline-offset: 3px;
+  }
+
+  .nota__imagen {
+    margin: 0;
+    position: sticky;
+    top: 6.5rem;
+    background: var(--blanco);
+    padding: 0.8rem;
+    border-radius: 6px;
+    box-shadow: var(--sombra);
+    transform: rotate(2deg);
+  }
+  .nota__imagen img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+  }
+
+  @media (max-width: 900px) {
+    .nota__cuerpo {
+      grid-template-columns: 1fr;
+    }
+    .nota__imagen {
+      position: static;
+      max-width: 420px;
+      transform: none;
+    }
+  }
+</style>

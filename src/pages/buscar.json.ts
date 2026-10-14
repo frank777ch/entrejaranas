@@ -19,7 +19,6 @@ export const GET: APIRoute = async () => {
     { tipo: 'Sección', titulo: 'Nuestro propósito', texto: 'Misión, visión y valores: pertenencia, innovación, responsabilidad sociocultural, alegría, creatividad y jovialidad.', url: '/#proposito' },
     { tipo: 'Sección', titulo: sitio.museoVirtual.nombre, texto: sitio.museoVirtual.descripcion, url: '/museo-virtual' },
     { tipo: 'Sección', titulo: 'Microdocumentales', texto: 'Experiencias: historias de la música criolla.', url: '/#experiencias' },
-    { tipo: 'Sección', titulo: 'Minitalleres', texto: 'Cajón, baile, marinera, guitarra criolla.', url: '/#talleres' },
     { tipo: 'Sección', titulo: 'Nuevas Promesas', texto: 'Mapa de jóvenes intérpretes de música criolla en Lima. Postula.', url: '/#promesas' },
     { tipo: 'Sección', titulo: 'Prensa', texto: 'Noticias y notas de prensa.', url: '/#prensa' },
     { tipo: 'Sección', titulo: 'Contacto', texto: 'Escríbenos: talleres, prensa, alianzas, formulario, correo.', url: '/#contacto' },
@@ -29,19 +28,13 @@ export const GET: APIRoute = async () => {
     tipo: 'Prensa',
     titulo: n.data.titulo,
     texto: n.data.resumen,
-    url: n.data.enlace ?? `/#noticia-${n.id}`,
+    url: n.data.enlace ?? (n.body?.trim() ? `/prensa/${n.id}` : `/#noticia-${n.id}`),
   }));
   const documentales = (await getCollection('documentales')).map((d) => ({
     tipo: 'Documental',
     titulo: d.data.titulo,
     texto: d.data.descripcion,
     url: `/#documental-${d.id}`,
-  }));
-  const talleres = (await getCollection('talleres')).map((t) => ({
-    tipo: 'Taller',
-    titulo: t.data.titulo,
-    texto: t.data.descripcion,
-    url: `/#taller-${t.id}`,
   }));
   const promesas = (await getCollection('promesas')).map((p) => ({
     tipo: 'Nueva promesa',
@@ -50,6 +43,6 @@ export const GET: APIRoute = async () => {
     url: `/#promesa-${p.id}`,
   }));
 
-  const indice: Resultado[] = [...secciones, ...documentales, ...talleres, ...promesas, ...noticias];
+  const indice: Resultado[] = [...secciones, ...documentales, ...promesas, ...noticias];
   return new Response(JSON.stringify(indice), { headers: { 'Content-Type': 'application/json' } });
 };

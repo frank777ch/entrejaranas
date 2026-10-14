@@ -1,9 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 
-const promesas = (await getCollection('promesas'))
-  .map((p) => ({ id: p.id, ...p.data }))
-  .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+const promesas = (
+  await Promise.all(
+    (await getCollection('promesas')).map(async ({ id, data: { foto, ...datos } }) => ({
+      id,
+      ...datos,
+      // Foto completa (sin recortar) para la lista y el globo del mapa
+      foto: foto ? (await getImage({ src: foto, width: 360, format: 'webp' })).src : undefined,
+      fotoProporcion: foto ? foto.width / foto.height : undefined,
+    })),
+  )
+).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
 
 const redes = [
   ['spotify', 'Spotify'],
@@ -20,8 +29,8 @@ const redes = [
       <p class="antetitulo">Nuevas Promesas</p>
       <h2 class="titulo-seccion">Nuevas promesas <em>de la música criolla</em></h2>
       <p>
-        Jóvenes intérpretes de toda Lima que mantienen viva la tradición. Toca un chinche del mapa para conocerlos y escuchar
-        su música.
+        Jóvenes intérpretes de toda Lima que mantienen viva la tradición. Toca un chinche del mapa para conocerlos y seguirlos
+        en redes.
       </p>
     </div>
 
@@ -35,7 +44,11 @@ const redes = [
             promesas.map((p) => (
               <li id={`promesa-${p.id}`}>
                 <button type="button" class="promesa" data-id={p.id}>
-                  <span class="promesa__pin" aria-hidden="true" />
+                  {p.foto ? (
+                    <img src={p.foto} alt="" class="promesa__foto" width="48" height="48" loading="lazy" />
+                  ) : (
+                    <span class="promesa__pin" aria-hidden="true" />
+                  )}
                   <span>
                     <strong>{p.nombre}</strong>
                     <small>{p.distrito}</small>
@@ -77,6 +90,8 @@ const redes = [
     nombre: string;
     distrito: string;
     descripcion: string;
+    foto?: string;
+    fotoProporcion?: number;
     lat: number;
     lng: number;
     spotify?: string;
@@ -126,7 +141,8 @@ const redes = [
       const m = L.marker([p.lat, p.lng], { icon: icono, title: p.nombre })
         .addTo(mapa)
         .bindPopup(
-          `<div class="globo"><strong>${escapar(p.nombre)}</strong><small>${escapar(p.distrito)}</small><p>${escapar(p.descripcion)}</p><div class="globo__redes">${enlaces}</div></div>`,
+          `<div class="globo">${p.foto ? `<img src="${escapar(p.foto)}" alt="" class="globo__foto" style="aspect-ratio:${p.fotoProporcion}">` : ''}<div><strong>${escapar(p.nombre)}</strong><small>${escapar(p.distrito)}</small><p>${escapar(p.descripcion)}</p><div class="globo__redes">${enlaces}</div></div></div>`,
+          { autoPan: false, maxWidth: 400 },
         );
       marcadores.set(p.id, m);
     }
@@ -134,11 +150,32 @@ const redes = [
       mapa.fitBounds(L.latLngBounds(promesas.map((p) => [p.lat, p.lng])), { padding: [50, 50], maxZoom: 13 });
     }
 
+    // Mueve el mapa para que el globo y su chinche se vean completos (centrados si caben)
+    const encuadrar = (latlng: L.LatLng, globo: HTMLElement, zoom: number) => {
+      const alto = mapa.getSize().y;
+      const bloque = globo.offsetHeight + 56; // globo + chinche + respiro
+      const yChinche = bloque <= alto - 40 ? (alto + bloque) / 2 : Math.min(20 + bloque, alto - 4);
+      const centro = mapa.unproject(mapa.project(latlng, zoom).subtract([0, yChinche - alto / 2]), zoom);
+      if (zoom === mapa.getZoom()) mapa.panTo(centro, { duration: 0.5 });
+      else mapa.flyTo(centro, zoom, { duration: 0.8 });
+    };
+    let zoomDestino: number | null = null;
+    mapa.on('popupopen', (e) => {
+      const globo = e.popup.getElement();
+      if (globo) encuadrar(e.popup.getLatLng()!, globo, zoomDestino ?? mapa.getZoom());
+      zoomDestino = null;
+    });
+
     const mostrar = (id: string, desplazar: boolean) => {
       const m = marcadores.get(id);
       if (!m) return;
-      mapa.flyTo(m.getLatLng(), 14, { duration: 0.8 });
-      m.openPopup();
+      const globo = m.getPopup()?.getElement();
+      // Si ya estaba abierto no se dispara 'popupopen': se encuadra directamente
+      if (m.isPopupOpen() && globo) encuadrar(m.getLatLng(), globo, 14);
+      else {
+        zoomDestino = 14;
+        m.openPopup();
+      }
       if (desplazar) contenedor.scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
     document.querySelectorAll<HTMLButtonElement>('.promesa').forEach((b) =>
@@ -220,6 +257,14 @@ const redes = [
     color: var(--vino);
     font-weight: 600;
   }
+  .promesa__foto {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--oro);
+  }
   .promesa__pin {
     flex: none;
     width: 14px;
@@ -280,6 +325,25 @@ const redes = [
   :global(.leaflet-popup-tip) {
     background: var(--crema);
   }
+  /* Foto a la izquierda con su proporción original, texto a la derecha */
+  :global(.globo) {
+    display: flex;
+    gap: 0.9rem;
+    align-items: center;
+  }
+  :global(.globo > div) {
+    min-width: 0;
+    width: 11rem;
+  }
+  :global(.globo__foto) {
+    flex: none;
+    display: block;
+    height: 170px;
+    width: auto;
+    max-width: 170px;
+    object-fit: contain;
+    border-radius: 12px;
+  }
   :global(.globo strong) {
     display: block;
     font-family: var(--f-titulo);
@@ -310,6 +374,16 @@ const redes = [
   @media (max-width: 900px) {
     .promesas__cuerpo {
       grid-template-columns: 1fr;
+    }
+  }
+  /* En celular el mapa es más bajo: globo más compacto */
+  @media (max-width: 600px) {
+    :global(.globo__foto) {
+      height: 120px;
+      max-width: 120px;
+    }
+    :global(.globo > div) {
+      width: 9.5rem;
     }
   }
 </style>
