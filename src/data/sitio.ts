@@ -25,7 +25,7 @@ export const sitio = {
     tiktok: 'https://www.tiktok.com/@entrejaranas.proyecto',
     facebook: 'https://www.facebook.com/profile.php?id=61595196627374',
     whatsapp: 'https://whatsapp.com/channel/0029Vb9128ZGOj9vdZ9wBt38',
-    youtube: '',
+    youtube: 'https://www.youtube.com/@EntreJaranasWeb',
   },
 };
 
