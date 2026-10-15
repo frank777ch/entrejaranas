@@ -10,13 +10,13 @@ imagenAlt: 'Afiche del evento de lanzamiento de Entre Jaranas: 14 de octubre, de
 
 Somos estudiantes del 8.º ciclo de la carrera de Comunicación Social de la Facultad de Letras y Ciencias Humanas (FLCH) de la Universidad Nacional Mayor de San Marcos (UNMSM), y queremos que las nuevas generaciones se dejen conquistar por lo nuestro.
 
-Así nace _Entre Jaranas_, una iniciativa que busca mantener viva nuestra identidad cultural y acercar la música criolla a los jóvenes. Porque lo criollo tiene su encanto y merece sonar más allá de una fecha en el calendario. _“Nos hemos propuesto mantener vivo lo que nos identifica y así garantizar su cotidianidad para las próximas generaciones”_, afirma Wendy…, vocera institucional del proyecto.
+Así nace _Entre Jaranas_, una iniciativa que busca mantener viva nuestra identidad cultural y acercar la música criolla a los jóvenes. Porque lo criollo tiene su encanto y merece sonar más allá de una fecha en el calendario. _“Nos hemos propuesto mantener vivo lo que nos identifica y así garantizar su cotidianidad para las próximas generaciones”_, afirma Wendy Malpartida, vocera institucional del proyecto.
 
 ## Las redes sociales como puente generacional
 
 Aunque la música criolla nos resulte cercana, su difusión suele reservarse para fechas conmemorativas. Pero lo nuestro tiene encanto para enamorar todo el año. Por eso, _Entre Jaranas_ apuesta por el alcance de las redes sociales y el formato de historias para acercarse a los jóvenes y demostrar que lo criollo todavía tiene mucho por cantar.
 
-Alejandro…, coordinador general, destaca que la cultura se mantiene viva gracias a los aportes del ámbito académico, los elencos de baile y música, los compositores y los cantantes. Cada uno, desde su espacio, pone lo suyo para que la tradición siga encontrando nuevas voces.
+Alejandro Rodríguez, coordinador general, destaca que la cultura se mantiene viva gracias a los aportes del ámbito académico, los elencos de baile y música, los compositores y los cantantes. Cada uno, desde su espacio, pone lo suyo para que la tradición siga encontrando nuevas voces.
 
 _“Lo más valioso es que se está construyendo un puente entre generaciones. Nos demuestran que es posible amar lo nuestro sin renunciar a lo que identifica a su generación. Porque la cultura no solo se hereda, también se reinventa desde la mirada de nuestros jóvenes”_, sostiene Janeth Villegas, docente asesora del proyecto.
 
