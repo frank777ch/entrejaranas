@@ -1,0 +1,248 @@
+---
+import Prototipo from '../../layouts/Prototipo.astro';
+
+const opciones = [
+  {
+    letra: 'A',
+    nombre: '2D ilustrado',
+    lema: 'Como una novela visual',
+    href: '/prototipos/museo-2d',
+    imagen: '/prototipos/portada-2d.webp',
+    texto:
+      'Escenas dibujadas con fondos detallados. La cámara cambia de plano con fundidos y acercamientos, tal como describe la propuesta.',
+    puntos: ['La más liviana: carga al instante en cualquier celular', 'Estilo cálido y cercano, como un libro ilustrado', 'Requiere ilustrar cada ambiente'],
+  },
+  {
+    letra: 'B',
+    nombre: 'Vista 3D · 360°',
+    lema: 'Se ve 3D, pesa como una imagen',
+    href: '/prototipos/museo-360',
+    imagen: '/prototipos/portada-360.webp',
+    texto:
+      'Cada sala se modela en 3D y se convierte en una imagen panorámica. El visitante gira la mirada arrastrando o con las flechas, sin caminar.',
+    puntos: ['Sensación de estar dentro de la casona', 'Liviana: una imagen por sala, sin motor 3D', 'Reutiliza los modelos 3D que ya existen'],
+  },
+];
+---
+
+<Prototipo titulo="Prototipos del museo virtual">
+  <main class="hub">
+    <header class="hub__cabecera">
+      <img src="/museo/texturas/logo-mi-museo-criollo.webp" alt="Mi museo criollo" width="1073" height="367" class="hub__logo" />
+      <p class="hub__ante">Rediseño del museo virtual · Prototipos</p>
+      <h1>Dos maneras de recorrer la casona</h1>
+      <p class="hub__intro">
+        Ambos prototipos siguen la misma propuesta: una casona limeña con cinco arcos, uno por género. Te asomas a cada sala, entras y conoces
+        sus objetos. Para probar, la <strong>sala de marinera limeña</strong> está completa; las demás llegan hasta el asomo.
+      </p>
+    </header>
+
+    <div class="hub__opciones">
+      {
+        opciones.map((o) => (
+          <a class="opcion" href={o.href}>
+            <div class="opcion__imagen">
+              <img src={o.imagen} alt="" width="1280" height="720" loading="lazy" />
+              <span class="opcion__letra">{o.letra}</span>
+            </div>
+            <div class="opcion__cuerpo">
+              <p class="opcion__lema">{o.lema}</p>
+              <h2>{o.nombre}</h2>
+              <p>{o.texto}</p>
+              <ul>
+                {o.puntos.map((p) => (
+                  <li>{p}</li>
+                ))}
+              </ul>
+              <span class="boton boton--oro opcion__boton">Abrir prototipo {o.letra}</span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+
+    <section class="hub__nota">
+      <h2>Cómo probarlo</h2>
+      <ul>
+        <li><strong>Mirar alrededor:</strong> flechas en los bordes (o las teclas de flecha).</li>
+        <li><strong>Asomarse a una sala:</strong> toca un arco. Tócalo otra vez para entrar.</li>
+        <li><strong>Conocer un objeto:</strong> tócalo para ver su ficha.</li>
+        <li><strong>Volver:</strong> botón inferior izquierdo.</li>
+      </ul>
+      <p>
+        Funciona en computadora y celular. Las imágenes y los textos son de muestra: la versión final llevará arte, audios y contenidos validados.
+      </p>
+    </section>
+  </main>
+</Prototipo>
+
+<style>
+  :global(body.cuerpo-proto) {
+    overflow: auto;
+    background: radial-gradient(circle at 50% 0%, #4a2112, #1c0d07 60%) fixed;
+  }
+
+  .hub {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: clamp(2rem, 6vw, 4rem) var(--gutter) 4rem;
+  }
+
+  .hub__cabecera {
+    text-align: center;
+    max-width: 44rem;
+    margin: 0 auto;
+  }
+
+  .hub__logo {
+    width: min(15rem, 60vw);
+    height: auto;
+    margin: 0 auto 1.5rem;
+  }
+
+  .hub__ante {
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--oro);
+  }
+
+  h1 {
+    margin: 0.4rem 0 0.8rem;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    line-height: 1.15;
+    color: var(--crema);
+  }
+
+  .hub__intro {
+    margin: 0;
+    color: rgb(240 231 216 / 0.85);
+  }
+
+  .hub__opciones {
+    margin-top: clamp(2rem, 5vw, 3rem);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 1.5rem;
+  }
+
+  .opcion {
+    display: flex;
+    flex-direction: column;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #f6efe2;
+    color: var(--tinta);
+    text-decoration: none;
+    box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.8);
+    transition:
+      transform 0.25s,
+      box-shadow 0.25s;
+  }
+
+  .opcion:hover,
+  .opcion:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.9);
+  }
+
+  .opcion__imagen {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #3a1a0d;
+  }
+
+  .opcion__imagen img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .opcion__letra {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 2.6rem;
+    height: 2.6rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--vino);
+    color: var(--crema);
+    font-family: var(--f-titulo);
+    font-weight: 700;
+    font-size: 1.2rem;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 0.4);
+  }
+
+  .opcion__cuerpo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.4rem 1.5rem 1.6rem;
+  }
+
+  .opcion__lema {
+    margin: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--teja);
+  }
+
+  .opcion h2 {
+    margin: 0.2rem 0 0.5rem;
+    font-size: 1.6rem;
+    color: var(--cafe);
+  }
+
+  .opcion p {
+    margin: 0;
+    font-size: 0.97rem;
+  }
+
+  .opcion ul {
+    margin: 0.9rem 0 1.4rem;
+    padding-left: 1.1rem;
+    font-size: 0.93rem;
+  }
+
+  .opcion li + li {
+    margin-top: 0.25rem;
+  }
+
+  .opcion__boton {
+    margin-top: auto;
+    align-self: flex-start;
+  }
+
+  .hub__nota {
+    margin-top: 2.5rem;
+    padding: 1.5rem 1.75rem;
+    border-radius: 20px;
+    background: rgb(240 231 216 / 0.06);
+    border: 1px solid rgb(240 231 216 / 0.14);
+    color: rgb(240 231 216 / 0.88);
+  }
+
+  .hub__nota h2 {
+    margin: 0 0 0.6rem;
+    font-size: 1.2rem;
+    color: var(--crema);
+  }
+
+  .hub__nota ul {
+    margin: 0 0 0.8rem;
+    padding-left: 1.1rem;
+  }
+
+  .hub__nota p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: rgb(240 231 216 / 0.7);
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+// Prototipo B: casona y sala de la marinera como panoramas 360° prerenderizados
+import Prototipo from '../../layouts/Prototipo.astro';
+import Interfaz from '../../components/prototipo/Interfaz.astro';
+---
+
+<Prototipo titulo="Museo 360° · Prototipo B">
+  <link rel="preload" href="/prototipos/360/casona-2048.webp" as="fetch" crossorigin="anonymous" />
+  <Interfaz etiqueta="Prototipo B · Vista 3D 360°">
+    <canvas class="visor-360" role="img" aria-label="Vista 360° de la casona limeña. Arrastra o usa las flechas para mirar alrededor."></canvas>
+    <div class="puntos-360"></div>
+  </Interfaz>
+</Prototipo>
+
+<style is:global>
+  .visor-360 {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .visor-360.arrastrando {
+    cursor: grabbing;
+  }
+
+  .puntos-360 {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .puntos-360 .punto {
+    pointer-events: auto;
+    will-change: transform;
+  }
+
+  .puntos-360--ocultos {
+    opacity: 0;
+  }
+
+  .puntos-360--ocultos .punto {
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  import '../../scripts/prototipo/motor-360';
+</script>

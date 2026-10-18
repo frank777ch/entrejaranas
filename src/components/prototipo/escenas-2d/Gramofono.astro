@@ -1,0 +1,37 @@
+---
+// Gramófono sobre una mesita; (x, y) es el centro de la base de la mesita en el piso
+interface Props {
+  x: number;
+  y: number;
+  escala?: number;
+}
+
+const { x, y, escala = 1 } = Astro.props;
+---
+
+<g transform={`translate(${x} ${y}) scale(${escala})`}>
+  <ellipse cx="0" cy="4" rx="120" ry="14" fill="#1c0b03" opacity="0.35" />
+  <!-- Mesita -->
+  <path d="M-92 -226 C-96 -150 -70 -60 -84 0 M92 -226 C96 -150 70 -60 84 0" fill="none" stroke="url(#g-madera)" stroke-width="14" stroke-linecap="round" />
+  <rect x="-80" y="-90" width="160" height="10" rx="3" fill="url(#g-madera)" />
+  <rect x="-118" y="-244" width="236" height="22" rx="5" fill="url(#g-madera)" />
+  <rect x="-118" y="-244" width="236" height="5" rx="2" fill="#c78a4e" opacity="0.7" />
+  <!-- Caja -->
+  <g transform="translate(0 -244)">
+    <rect x="-78" y="-84" width="156" height="84" rx="6" fill="url(#g-madera-h)" stroke="#3a1d08" stroke-width="2" />
+    <rect x="-64" y="-70" width="128" height="56" rx="4" fill="none" stroke="#d9a640" stroke-width="3" opacity="0.8" />
+    <circle cx="70" cy="-44" r="9" fill="url(#g-oro)" />
+    <path d="M78 -44 h22 v-14" fill="none" stroke="url(#g-oro)" stroke-width="5" stroke-linecap="round" />
+    <ellipse cx="-8" cy="-88" rx="66" ry="12" fill="#1a0d06" />
+    <ellipse cx="-8" cy="-88" rx="44" ry="8" fill="none" stroke="#3b2a20" stroke-width="2" />
+    <ellipse cx="-8" cy="-88" rx="14" ry="3" fill="#b8323a" />
+    <!-- Bocina -->
+    <path d="M40 -96 C 46 -140 30 -190 -10 -246 L 70 -300 C 70 -230 64 -150 52 -96 Z" fill="url(#g-bronce)" stroke="#6b4510" stroke-width="2" />
+    <ellipse cx="30" cy="-282" rx="58" ry="26" transform="rotate(-33 30 -282)" fill="url(#g-bronce)" stroke="#6b4510" stroke-width="3" />
+    <ellipse cx="30" cy="-282" rx="46" ry="17" transform="rotate(-33 30 -282)" fill="#4a2e0a" />
+    <ellipse cx="34" cy="-276" rx="28" ry="8" transform="rotate(-33 34 -276)" fill="#2a1804" />
+    <path d="M44 -100 C 48 -150 40 -200 18 -258 M48 -100 C 56 -160 58 -220 54 -290" fill="none" stroke="#fff0b8" stroke-width="2" opacity="0.5" />
+    <path d="M40 -96 L-10 -92" stroke="url(#g-oro)" stroke-width="6" stroke-linecap="round" />
+    <circle cx="44" cy="-96" r="8" fill="url(#g-oro)" />
+  </g>
+</g>

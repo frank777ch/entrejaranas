@@ -1,0 +1,176 @@
+---
+// Degradados, texturas y filtros compartidos por todas las escenas 2D.
+// Va en un SVG oculto (sin display:none, para que los degradados funcionen en todos los navegadores).
+---
+
+<svg class="defs-2d" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="g-pared" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ecd3a2" />
+      <stop offset="0.55" stop-color="#e2bf83" />
+      <stop offset="1" stop-color="#cfa264" />
+    </linearGradient>
+    <linearGradient id="g-pared-lat-izq" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#9c6c39" />
+      <stop offset="1" stop-color="#c39257" />
+    </linearGradient>
+    <linearGradient id="g-pared-lat-der" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#9c6c39" />
+      <stop offset="1" stop-color="#c39257" />
+    </linearGradient>
+    <linearGradient id="g-techo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b200e" />
+      <stop offset="1" stop-color="#6a3d1c" />
+    </linearGradient>
+    <linearGradient id="g-madera" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9a5f2e" />
+      <stop offset="1" stop-color="#5e3417" />
+    </linearGradient>
+    <linearGradient id="g-madera-h" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5e3417" />
+      <stop offset="0.5" stop-color="#9a5f2e" />
+      <stop offset="1" stop-color="#5e3417" />
+    </linearGradient>
+    <linearGradient id="g-madera-osc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a3317" />
+      <stop offset="1" stop-color="#2f1809" />
+    </linearGradient>
+    <linearGradient id="g-oro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbe39a" />
+      <stop offset="0.45" stop-color="#d9a640" />
+      <stop offset="1" stop-color="#8f6418" />
+    </linearGradient>
+    <linearGradient id="g-oro-h" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbe39a" />
+      <stop offset="0.5" stop-color="#c9922c" />
+      <stop offset="1" stop-color="#f0cd70" />
+    </linearGradient>
+    <linearGradient id="g-piedra" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6e7c6" />
+      <stop offset="1" stop-color="#d5b685" />
+    </linearGradient>
+    <linearGradient id="g-zocalo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0" />
+      <stop offset="1" stop-color="#2a1205" stop-opacity="0.35" />
+    </linearGradient>
+    <linearGradient id="g-piso-sombra" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c0b03" stop-opacity="0.45" />
+      <stop offset="0.35" stop-color="#1c0b03" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="g-cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bcd4e2" />
+      <stop offset="0.7" stop-color="#f3e3c2" />
+      <stop offset="1" stop-color="#f8d9a0" />
+    </linearGradient>
+    <linearGradient id="g-terciopelo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c0303a" />
+      <stop offset="1" stop-color="#6e0f14" />
+    </linearGradient>
+    <linearGradient id="g-bronce" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0b8" />
+      <stop offset="0.35" stop-color="#e2b04c" />
+      <stop offset="0.75" stop-color="#9d6a1c" />
+      <stop offset="1" stop-color="#5f3c0c" />
+    </linearGradient>
+    <linearGradient id="g-espejo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9f0ee" />
+      <stop offset="0.45" stop-color="#9fb3b4" />
+      <stop offset="0.55" stop-color="#c9d6d4" />
+      <stop offset="1" stop-color="#6d8384" />
+    </linearGradient>
+    <linearGradient id="g-rayo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3d1" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#fff3d1" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="g-ceramica" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7b3a1d" />
+      <stop offset="0.4" stop-color="#c8693a" />
+      <stop offset="1" stop-color="#6b2f16" />
+    </linearGradient>
+    <linearGradient id="g-tela" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="1" stop-color="#e3dccd" />
+    </linearGradient>
+    <radialGradient id="g-luz" cx="0.5" cy="0.12" r="0.75">
+      <stop offset="0" stop-color="#fff2cf" stop-opacity="0.55" />
+      <stop offset="0.5" stop-color="#ffe2a8" stop-opacity="0.12" />
+      <stop offset="1" stop-color="#ffe2a8" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="g-vineta" cx="0.5" cy="0.5" r="0.75">
+      <stop offset="0.55" stop-color="#1c0a02" stop-opacity="0" />
+      <stop offset="1" stop-color="#1c0a02" stop-opacity="0.55" />
+    </radialGradient>
+    <radialGradient id="g-halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff1c4" stop-opacity="0.9" />
+      <stop offset="0.35" stop-color="#ffd27a" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#ffd27a" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="g-hoja" cx="0.3" cy="0.3" r="0.9">
+      <stop offset="0" stop-color="#7fa34a" />
+      <stop offset="1" stop-color="#2f5223" />
+    </radialGradient>
+
+    <!-- Azulejo sevillano del zócalo -->
+    <pattern id="p-azulejo" width="44" height="44" patternUnits="userSpaceOnUse">
+      <rect width="44" height="44" fill="#f1e6cb" />
+      <path d="M22 4 C27 14 30 17 40 22 C30 27 27 30 22 40 C17 30 14 27 4 22 C14 17 17 14 22 4Z" fill="#2f5a8a" />
+      <circle cx="22" cy="22" r="5" fill="#e3a63a" />
+      <circle cx="22" cy="22" r="2" fill="#f1e6cb" />
+      <path d="M0 0h9a9 9 0 0 1-9 9zM44 0h-9a9 9 0 0 0 9 9zM0 44h9a9 9 0 0 0-9-9zM44 44h-9a9 9 0 0 1 9-9z" fill="#e3a63a" />
+      <rect width="44" height="44" fill="none" stroke="#c9b48a" stroke-width="1" />
+    </pattern>
+
+    <!-- Damasco de la sala de marinera -->
+    <pattern id="p-damasco" width="120" height="150" patternUnits="userSpaceOnUse">
+      <rect width="120" height="150" fill="#7d141b" />
+      <g fill="#8f1f26">
+        <path d="M60 14c10 14 26 20 26 40s-16 28-26 44c-10-16-26-24-26-44s16-26 26-40z" />
+        <path d="M0 89c8 10 18 14 18 28S8 135 0 146zM120 89c-8 10-18 14-18 28s10 18 18 29z" />
+      </g>
+      <g fill="#a32a31" opacity="0.7">
+        <path d="M60 34c4 7 11 10 11 20s-7 14-11 22c-4-8-11-12-11-22s7-13 11-20z" />
+        <circle cx="60" cy="128" r="4" />
+        <circle cx="0" cy="54" r="4" />
+        <circle cx="120" cy="54" r="4" />
+      </g>
+    </pattern>
+
+    <!-- Tablas de madera del piso de la sala -->
+    <pattern id="p-tablas" width="160" height="40" patternUnits="userSpaceOnUse">
+      <rect width="160" height="40" fill="#7a4520" />
+      <rect y="0" width="160" height="20" fill="#8a5129" />
+      <path d="M0 20h160M0 0h160M60 0v20M130 20v20" stroke="#4e2a10" stroke-width="2" />
+    </pattern>
+
+    <!-- Celosía de los balcones -->
+    <pattern id="p-celosia" width="18" height="18" patternUnits="userSpaceOnUse">
+      <rect width="18" height="18" fill="#2b1608" />
+      <path d="M0 9 9 0 18 9 9 18Z" fill="none" stroke="#7a4a22" stroke-width="3" />
+    </pattern>
+
+    <filter id="f-brillo" x="-30%" y="-30%" width="160%" height="160%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="borde" />
+      <feGaussianBlur in="borde" stdDeviation="9" result="difuso" />
+      <feFlood flood-color="#ffd77a" flood-opacity="0.95" />
+      <feComposite in2="difuso" operator="in" result="halo" />
+      <feMerge>
+        <feMergeNode in="halo" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="f-sombra" x="-20%" y="-20%" width="140%" height="150%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" />
+      <feOffset dy="10" result="s" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.45" /></feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="f-difuso" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" />
+    </filter>
+  </defs>
+</svg>

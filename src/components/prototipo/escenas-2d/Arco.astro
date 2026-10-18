@@ -1,0 +1,118 @@
+---
+// Arco sin puerta de la casona: marco de piedra, letrero con el género
+// y, a través de la abertura, un vistazo de la sala en su color.
+// Lo que se ve dentro de la sala entra por el slot (coordenadas de la escena).
+import type { Genero } from '../../../data/museo-prototipo';
+import { PARED, arco, mezcla, pts } from './geometria';
+
+interface Props {
+  genero: Genero;
+  cx: number;
+  ancho: number;
+  alto: number;
+}
+
+const { genero: g, cx, ancho, alto } = Astro.props;
+const base = PARED.y1;
+const r = ancho / 2;
+const borde = 16;
+const exterior = arco(cx, ancho, alto, base);
+const interior = arco(cx, ancho - borde * 2, alto - borde, base);
+
+// Caja de la sala vista a través del arco
+const fondoY = base - alto * 0.17;
+const fx0 = cx - ancho * 0.24;
+const fx1 = cx + ancho * 0.24;
+const arriba = base - alto - 10;
+const ri = r - borde;
+const colorFondo = mezcla(g.color, '#f3e6cc', 0.35);
+const colorLado = mezcla(g.color, "#140603", 0.5);
+const colorPiso = mezcla(g.color, '#2a1406', 0.55);
+const letreroAncho = Math.max(ancho * 0.78, g.nombre.length * (ancho > 340 ? 17 : 14) + 50);
+const letreroY = base - alto - 74;
+const fuente = ancho > 340 ? 26 : 21;
+const centroY = base - alto * 0.45;
+---
+
+<g
+  class="interactivo arco-2d"
+  role="button"
+  tabindex="0"
+  aria-label={`Asomarse a la sala: ${g.nombre}`}
+  data-genero={g.id}
+  data-cx={cx}
+  data-cy={centroY}
+  data-ancho={ancho}
+  data-alto={alto}
+>
+  <clipPath id={`clip-${g.id}`}>
+    <path d={interior} />
+  </clipPath>
+  <radialGradient id={`brillo-${g.id}`} cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color={mezcla(g.color, '#fff4d6', 0.75)} stop-opacity="0.85" />
+    <stop offset="1" stop-color={g.color} stop-opacity="0" />
+  </radialGradient>
+
+  <!-- Sombra sobre la pared -->
+  <path d={exterior} fill="#3a1a08" opacity="0.28" transform={`translate(10 6)`} filter="url(#f-difuso)" />
+
+  <!-- Marco de piedra y grosor del muro -->
+  <path d={exterior} fill="none" stroke="url(#g-piedra)" stroke-width="34" />
+  <path d={exterior} fill="#9c6f3c" />
+
+  <!-- Interior de la sala -->
+  <g clip-path={`url(#clip-${g.id})`}>
+    <rect x={cx - r} y={arriba} width={ancho} height={alto + 20} fill={colorFondo} />
+    <polygon points={pts([[cx - ri, arriba], [fx0, arriba + alto * 0.12], [fx0, fondoY], [cx - ri, base]])} fill={colorLado} />
+    <polygon points={pts([[cx + ri, arriba], [fx1, arriba + alto * 0.12], [fx1, fondoY], [cx + ri, base]])} fill={colorLado} />
+    <polygon points={pts([[fx0, fondoY], [fx1, fondoY], [cx + ri, base], [cx - ri, base]])} fill={colorPiso} />
+    <rect x={fx0} y={fondoY - 26} width={fx1 - fx0} height="26" fill={mezcla(g.color, '#140603', 0.15)} opacity="0.7" />
+    <ellipse cx={cx} cy={fondoY - alto * 0.25} rx={ancho * 0.45} ry={alto * 0.4} fill={`url(#brillo-${g.id})`} />
+    <slot />
+    <rect x={cx - r} y={arriba} width={ancho} height={alto * 0.3} fill="#140603" opacity="0.18" />
+  </g>
+
+  <!-- Impostas, basas y clave -->
+  <rect x={cx - r - 26} y={base - alto + r - 14} width="52" height="20" rx="3" fill="url(#g-piedra)" stroke="#b28b57" stroke-width="2" />
+  <rect x={cx + r - 26} y={base - alto + r - 14} width="52" height="20" rx="3" fill="url(#g-piedra)" stroke="#b28b57" stroke-width="2" />
+  <rect x={cx - r - 26} y={base - 34} width="52" height="34" fill="url(#g-piedra)" stroke="#b28b57" stroke-width="2" />
+  <rect x={cx + r - 26} y={base - 34} width="52" height="34" fill="url(#g-piedra)" stroke="#b28b57" stroke-width="2" />
+  <path
+    d={`M${cx - 22} ${base - alto - 18} h44 l-8 52 h-28 z`}
+    fill="url(#g-piedra)"
+    stroke="#b28b57"
+    stroke-width="2"
+  />
+  <circle cx={cx} cy={base - alto + 6} r="6" fill={g.color} />
+
+  <!-- Letrero -->
+  <g filter="url(#f-sombra)">
+    <rect
+      x={cx - letreroAncho / 2}
+      y={letreroY}
+      width={letreroAncho}
+      height={fuente * 1.9}
+      rx="8"
+      fill={g.color}
+      stroke="url(#g-oro)"
+      stroke-width="4"
+    />
+  </g>
+  <text
+    x={cx}
+    y={letreroY + fuente * 1.28}
+    text-anchor="middle"
+    font-family="'Libre Baskerville', Georgia, serif"
+    font-weight="700"
+    font-size={fuente}
+    letter-spacing="1.5"
+    fill="#fbefd6">{g.nombre}</text
+  >
+
+  <!-- Indicador táctil -->
+  <g class="indicador" transform={`translate(${cx} ${centroY})`}>
+    <circle r="22" class="indicador__onda" />
+    <circle r="15" class="indicador__aro" />
+    <circle r="6" class="indicador__centro" />
+  </g>
+</g>

@@ -1,0 +1,33 @@
+---
+// Objeto que se toca para abrir su ficha. (cx, cy, alto) indican a dónde se acerca la cámara;
+// (ix, iy) es donde aparece el indicador en pantallas táctiles.
+interface Props {
+  id: string;
+  nombre: string;
+  cx: number;
+  cy: number;
+  alto: number;
+  ix?: number;
+  iy?: number;
+}
+
+const { id, nombre, cx, cy, alto, ix = cx, iy = cy } = Astro.props;
+---
+
+<g
+  class="interactivo objeto-2d"
+  role="button"
+  tabindex="0"
+  aria-label={`Ver ficha: ${nombre}`}
+  data-objeto={id}
+  data-cx={cx}
+  data-cy={cy}
+  data-alto={alto}
+>
+  <slot />
+  <g class="indicador" transform={`translate(${ix} ${iy})`}>
+    <circle r="22" class="indicador__onda" />
+    <circle r="15" class="indicador__aro" />
+    <circle r="6" class="indicador__centro" />
+  </g>
+</g>
