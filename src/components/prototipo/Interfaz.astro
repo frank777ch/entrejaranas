@@ -72,10 +72,16 @@ const { etiqueta } = Astro.props;
     <p class="ficha__categoria"></p>
     <h2 class="ficha__titulo" id="ficha-titulo" tabindex="-1"></h2>
     <p class="ficha__texto"></p>
-    <div class="ficha__audio">
-      <span class="ficha__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg></span>
-      <span><strong>Escuchar</strong> <span class="ficha__audio-texto"></span></span>
-    </div>
+    <button type="button" class="ficha__audio" aria-pressed="false">
+      <span class="ficha__play" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="icono-play"><path d="M8 5v14l11-7z" /></svg>
+        <svg viewBox="0 0 24 24" class="icono-pausa"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+      </span>
+      <span class="ficha__audio-info">
+        <span><strong class="ficha__audio-accion">Escuchar</strong> <span class="ficha__audio-texto"></span></span>
+        <span class="ficha__barra" aria-hidden="true"><span></span></span>
+      </span>
+    </button>
     <div class="ficha__dato">
       <strong>¿Sabías que…?</strong>
       <p></p>

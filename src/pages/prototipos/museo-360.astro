@@ -1,11 +1,11 @@
 ---
-// Prototipo B: casona y sala de la marinera como panoramas 360° prerenderizados
+// Prototipo B: casona y las cinco salas como panoramas 360° prerenderizados (cubemaps)
 import Prototipo from '../../layouts/Prototipo.astro';
 import Interfaz from '../../components/prototipo/Interfaz.astro';
 ---
 
 <Prototipo titulo="Museo 360° · Prototipo B">
-  <link rel="preload" href="/prototipos/360/casona-2048.webp" as="fetch" crossorigin="anonymous" />
+  {['px', 'nx', 'py', 'ny', 'pz', 'nz'].map((c) => <link rel="preload" href={`/prototipos/360/casona-1024-${c}.webp`} as="fetch" crossorigin="anonymous" />)}
   <Interfaz etiqueta="Prototipo B · Vista 3D 360°">
     <canvas class="visor-360" role="img" aria-label="Vista 360° de la casona limeña. Arrastra o usa las flechas para mirar alrededor."></canvas>
     <div class="puntos-360"></div>

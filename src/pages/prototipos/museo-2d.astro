@@ -4,15 +4,14 @@ import Prototipo from '../../layouts/Prototipo.astro';
 import Interfaz from '../../components/prototipo/Interfaz.astro';
 import Defs from '../../components/prototipo/escenas-2d/Defs.astro';
 import Casona from '../../components/prototipo/escenas-2d/Casona.astro';
-import SalaMarinera from '../../components/prototipo/escenas-2d/SalaMarinera.astro';
 ---
 
 <Prototipo titulo="Prototipo A · Museo 2D ilustrado">
   <Interfaz etiqueta="Prototipo A · 2D ilustrado">
     <Defs />
+    <!-- Las salas se descargan al asomarse (src/pages/prototipos/salas-2d) -->
     <div class="mundo-2d" aria-label="Casona limeña ilustrada">
       <Casona />
-      <SalaMarinera />
     </div>
   </Interfaz>
 </Prototipo>

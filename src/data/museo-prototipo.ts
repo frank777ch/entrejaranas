@@ -104,7 +104,7 @@ export const generos: Genero[] = [
         nombre: 'Abanico',
         texto:
           'En los salones limeños, el abanico era señal de elegancia y distinción. Servía para refrescarse, pero también para coquetear y comunicarse con discreción.',
-        audio: 'Murmullo de salón y guitarra',
+        audio: 'Guitarra de salón',
         dato: 'En 1929, El Comercio hizo una encuesta que dividió a Lima entre quienes defendían la gracia del abanico y quienes preferían tener las manos libres.',
       },
       {
@@ -113,7 +113,7 @@ export const generos: Genero[] = [
         nombre: 'Cuadro de una pareja bailando',
         texto:
           'Las pinturas costumbristas retrataron la vida de Lima: sus fiestas, sus calles y sus bailes. Una pareja bailando resume el espíritu de la jarana.',
-        audio: 'Canto de jarana',
+        audio: 'Marinera con guitarra y cajón',
         dato: 'Pancho Fierro, acuarelista limeño del siglo XIX, pintó escenas de bailes populares que hoy son una fuente para conocer esa época.',
       },
     ],
@@ -125,10 +125,57 @@ export const generos: Genero[] = [
     pared: 'derecha',
     posicion: 0,
     ambientacion: 'Casa norteña de luz clara, con algarrobos y paisaje de Piura al fondo.',
-    intro: 'Baile alegre del norte del Perú, sobre todo de Piura y Lambayeque. Evoca el cortejo de las aves y el campo norteño.',
+    intro:
+      'Baile alegre del norte del Perú, sobre todo de Piura y Lambayeque. Recrea el cortejo de las aves: la pareja se busca, se esquiva y se enamora al ritmo de guitarras, cajón y checo.',
     interpretes: [],
-    completa: false,
-    objetos: [],
+    completa: true,
+    objetos: [
+      {
+        id: 'sombrero',
+        categoria: 'Vestimenta',
+        nombre: 'Sombrero de paja',
+        texto:
+          'En Piura el sombrero de paja se teje a mano, con paciencia y paja muy fina. Protege del sol del norte y completa el traje del bailarín de tondero.',
+        audio: 'Tondero con guitarra y cajón',
+        dato: 'El tondero se baila en tres partes: la glosa, el dulce y la fuga.',
+      },
+      {
+        id: 'checo',
+        categoria: 'Instrumento',
+        nombre: 'Checo',
+        texto:
+          'Es una calabaza seca y hueca, abierta por un lado, que se golpea con las manos. Su sonido grave y redondo marca el ritmo de la música norteña.',
+        audio: 'Ritmo de checo',
+        dato: 'El checo nace del campo: se hace con un mate o calabaza, un fruto que se cultiva en la costa norte.',
+      },
+      {
+        id: 'panuelo-color',
+        categoria: 'Accesorio de baile',
+        nombre: 'Pañuelo de color',
+        texto:
+          'Como en la marinera, el pañuelo guía el cortejo. En el tondero suele ser de colores vivos y acompaña giros, persecuciones y coqueteos.',
+        audio: 'Guitarra y palmas',
+        dato: 'Muchos pasos del tondero imitan el vuelo y el cortejo de las aves.',
+      },
+      {
+        id: 'canasta',
+        categoria: 'Vida cotidiana',
+        nombre: 'Canasta de cosecha',
+        texto:
+          'La canasta recuerda la vida del campo piurano: la cosecha, los mercados y las fiestas del pueblo, donde el tondero no podía faltar.',
+        audio: 'Fiesta de pueblo norteño',
+        dato: 'El algarrobo, árbol del bosque seco, es un símbolo de Piura y de la costa norte.',
+      },
+      {
+        id: 'mapa',
+        categoria: 'Símbolo visual',
+        nombre: 'Mapa de Piura',
+        texto:
+          'Piura es la cuna del tondero. Desde sus valles y pueblos, el baile se extendió por toda la costa norte del Perú.',
+        audio: 'Tondero completo',
+        dato: 'El tondero es fruto de la mezcla de herencias españolas, africanas e indígenas en la costa norte.',
+      },
+    ],
   },
   {
     id: 'vals',
@@ -137,10 +184,57 @@ export const generos: Genero[] = [
     pared: 'derecha',
     posicion: 1,
     ambientacion: 'Salón nocturno de luz tenue, con farolas y balcón con vista a la ciudad.',
-    intro: 'El vals criollo nació en los barrios de Lima y se volvió la voz de la ciudad. Felipe Pinglo Alva es su gran compositor.',
-    interpretes: [],
-    completa: false,
-    objetos: [],
+    intro:
+      'El vals criollo nació en los barrios y callejones de Lima y se volvió la voz de la ciudad: canciones de amor, de barrio y de nostalgia, en compás de tres tiempos y con guitarras.',
+    interpretes: ['Felipe Pinglo Alva', 'Chabuca Granda', 'Lucha Reyes', 'Óscar Avilés', 'Jesús Vásquez', 'Arturo "Zambo" Cavero'],
+    completa: true,
+    objetos: [
+      {
+        id: 'saco',
+        categoria: 'Vestimenta',
+        nombre: 'Saco elegante',
+        texto:
+          'Para las serenatas y las reuniones, los músicos criollos vestían saco, camisa blanca y, a veces, pañuelo al cuello. La elegancia era una forma de respeto a la música.',
+        audio: 'Vals instrumental',
+        dato: 'El Día de la Canción Criolla, cada 31 de octubre, se instituyó en 1944.',
+      },
+      {
+        id: 'guitarra',
+        categoria: 'Instrumento',
+        nombre: 'Guitarra criolla',
+        texto:
+          'La guitarra es el alma del vals: una lleva los acordes y otra, la primera guitarra, adorna la melodía con punteos y bordoneos.',
+        audio: 'Punteo de guitarra criolla',
+        dato: 'Óscar Avilés fue llamado "la primera guitarra del Perú".',
+      },
+      {
+        id: 'partitura',
+        categoria: 'Accesorio de baile',
+        nombre: 'Partitura musical',
+        texto:
+          'Muchos valses se aprendían de oído, de jarana en jarana. Otros quedaron escritos en partituras y cancioneros que pasaban de mano en mano por los barrios.',
+        audio: 'Melodía del vals',
+        dato: 'Felipe Pinglo Alva compuso "El plebeyo", uno de los valses más queridos del Perú.',
+      },
+      {
+        id: 'farol',
+        categoria: 'Vida cotidiana',
+        nombre: 'Farol antiguo',
+        texto:
+          'Los faroles iluminaban las calles y callejones de la Lima antigua, escenario de serenatas y jaranas que duraban hasta el amanecer.',
+        audio: 'Vals nocturno',
+        dato: 'Chabuca Granda compuso "La flor de la canela" (1950), un paseo por la Lima antigua, del puente a la alameda.',
+      },
+      {
+        id: 'disco',
+        categoria: 'Símbolo visual',
+        nombre: 'Disco de vinilo',
+        texto:
+          'Con los discos y la radio, el vals criollo salió de los barrios y llegó a todo el país. Cada familia tenía sus valses favoritos.',
+        audio: 'Vals de disco antiguo',
+        dato: 'Lucha Reyes, "la Morena de Oro del Perú", grabó valses que siguen sonando en cada fiesta.',
+      },
+    ],
   },
   {
     id: 'polka',
@@ -149,10 +243,57 @@ export const generos: Genero[] = [
     pared: 'izquierda',
     posicion: 0,
     ambientacion: 'Salón de baile social de época, con guirnaldas y pista de baile.',
-    intro: 'La polka llegó de Europa en el siglo XIX y en Lima se acriolló: más rápida, juguetona y bailable.',
+    intro:
+      'La polka llegó de Europa en el siglo XIX y en Lima se acriolló: rápida, juguetona y bailable, en compás de dos tiempos, con guitarras y mandolinas.',
     interpretes: [],
-    completa: false,
-    objetos: [],
+    completa: true,
+    objetos: [
+      {
+        id: 'chaleco',
+        categoria: 'Vestimenta',
+        nombre: 'Chaleco de época',
+        texto:
+          'En los bailes sociales de época, los caballeros vestían chaleco, saco y corbata. La polka se bailaba en salones, clubes y fiestas de barrio.',
+        audio: 'Polka instrumental',
+        dato: 'La polka nació en Bohemia, en la actual República Checa, hacia 1830.',
+      },
+      {
+        id: 'mandolina',
+        categoria: 'Instrumento',
+        nombre: 'Mandolina',
+        texto:
+          'De cuerdas dobles y sonido brillante, la mandolina adorna la melodía con trémolos rápidos, ideales para el ritmo saltarín de la polka.',
+        audio: 'Mandolina en trémolo',
+        dato: 'Las estudiantinas, grupos con mandolinas, bandurrias y guitarras, fueron muy populares en el Perú a inicios del siglo XX.',
+      },
+      {
+        id: 'zapatos',
+        categoria: 'Accesorio de baile',
+        nombre: 'Zapatos de baile',
+        texto:
+          'La polka se baila con pasos cortos, rápidos y saltados. Los zapatos de baile debían ser firmes y ligeros para aguantar toda la noche.',
+        audio: 'Polka rápida',
+        dato: 'Su compás de dos tiempos la hace una de las danzas más ágiles del repertorio criollo.',
+      },
+      {
+        id: 'invitacion',
+        categoria: 'Vida cotidiana',
+        nombre: 'Invitación antigua de baile',
+        texto:
+          'Las invitaciones impresas anunciaban los bailes de sociedad y su programa de piezas: valses, polkas y otros ritmos de moda.',
+        audio: 'Salón de baile',
+        dato: 'De la fiebre por la polka en el siglo XIX viene el nombre en inglés del estampado de lunares: "polka dots".',
+      },
+      {
+        id: 'reloj',
+        categoria: 'Símbolo visual',
+        nombre: 'Reloj de bolsillo antiguo',
+        texto:
+          'El reloj de bolsillo, colgado de una cadena, era el accesorio del caballero elegante y recuerda los salones de baile de inicios del siglo XX.',
+        audio: 'Polka con mandolina',
+        dato: 'En la polka criolla la guitarra marca un bajo y un acorde alternados, como un paso que invita a saltar.',
+      },
+    ],
   },
   {
     id: 'festejo',
@@ -161,14 +302,61 @@ export const generos: Genero[] = [
     pared: 'izquierda',
     posicion: 1,
     ambientacion: 'Patio o callejón afroperuano, de colores cálidos y paredes de adobe.',
-    intro: 'Ritmo afroperuano lleno de energía, con cajón, quijada y palmas. Es celebración, memoria y resistencia.',
-    interpretes: [],
-    completa: false,
-    objetos: [],
+    intro:
+      'Ritmo afroperuano lleno de energía, con cajón, quijada y palmas. Es celebración, memoria y resistencia, y se baila con alegría y movimiento de cadera.',
+    interpretes: ['Nicomedes Santa Cruz', 'Victoria Santa Cruz', 'Porfirio Vásquez', 'Perú Negro', 'Eva Ayllón', 'Susana Baca'],
+    completa: true,
+    objetos: [
+      {
+        id: 'falda',
+        categoria: 'Vestimenta',
+        nombre: 'Falda amplia',
+        texto:
+          'Las bailarinas de festejo usan faldas amplias y coloridas que giran y se levantan con cada movimiento de cadera.',
+        audio: 'Festejo con cajón y palmas',
+        dato: 'Cada 4 de junio se celebra el Día de la Cultura Afroperuana, en homenaje al nacimiento de Nicomedes Santa Cruz.',
+      },
+      {
+        id: 'quijada',
+        categoria: 'Instrumento',
+        nombre: 'Quijada de burro',
+        texto:
+          'Es la mandíbula seca de un burro, mula o caballo. Al golpearla con la palma, los dientes sueltos vibran como un cascabel; también se raspa con un palillo.',
+        audio: 'Quijada y cajón',
+        dato: 'La quijada nació de hacer música con lo que se tenía a mano, y hoy es un símbolo de la percusión afroperuana.',
+      },
+      {
+        id: 'cinta',
+        categoria: 'Accesorio de baile',
+        nombre: 'Cinta de cintura',
+        texto:
+          'Cintas y fajas de colores marcan la cintura y resaltan el movimiento de cadera, protagonista del festejo.',
+        audio: 'Palmas y cajón',
+        dato: 'En 2001 el cajón peruano fue declarado Patrimonio Cultural de la Nación.',
+      },
+      {
+        id: 'mascara',
+        categoria: 'Vida cotidiana',
+        nombre: 'Máscara festiva decorativa',
+        texto:
+          'Las máscaras recuerdan las comparsas populares, como el son de los diablos, que recorría las calles de Lima en carnavales y fiestas.',
+        audio: 'Comparsa de cajón, quijada y palmas',
+        dato: 'Esta máscara es un recurso de ambientación: evoca lo festivo, pero no es un elemento obligatorio del festejo.',
+      },
+      {
+        id: 'cajita',
+        categoria: 'Símbolo visual',
+        nombre: 'Cajita afroperuana',
+        texto:
+          'Pequeña caja de madera con tapa, que se cuelga del cuello o la cintura. Se toca abriendo y cerrando la tapa y golpeando un costado con un palillo.',
+        audio: 'Cajita y cajón',
+        dato: 'La cajita acompaña danzas como el son de los diablos y es uno de los sonidos más reconocibles de la música afroperuana.',
+      },
+    ],
   },
 ];
 
-/** Objetos de cada categoría para las salas que aún no se recorren (tabla del PDF) */
+/** Objetos de cada sala según la tabla del PDF (se muestran en el asomo) */
 export const objetosPorSala: Record<GeneroId, string[]> = {
   festejo: ['Falda amplia', 'Quijada de burro', 'Cinta de cintura', 'Máscara festiva decorativa', 'Cajita afroperuana'],
   marinera: ['Manto femenino', 'Arpa', 'Pañuelo blanco', 'Abanico tradicional', 'Cuadro de una pareja bailando'],

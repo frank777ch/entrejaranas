@@ -1,0 +1,382 @@
+---
+// Sala de la polka criolla: salón de baile social de época, con guirnaldas, arañas
+// y pista de parquet. Escena ancha (2400 × 900).
+import { generos } from '../../../data/museo-prototipo';
+import Interactivo from './Interactivo.astro';
+import Lampara from './Lampara.astro';
+
+const sala = generos.find((x) => x.id === 'polka')!;
+const o = (id: string) => sala.objetos.find((x) => x.id === id)!;
+
+const W = 2400;
+const piso = 740;
+const f = (n: number) => n.toFixed(1);
+
+// Pista de parquet en damero, en perspectiva hacia el escenario
+const fuga = { x: 1200, y: 380 };
+const proy = (X: number, z: number): [number, number] => [fuga.x + (X - fuga.x) / z, fuga.y + (piso - fuga.y) / z];
+const losetas: { p: string; c: string }[] = [];
+for (let fila = 0; fila < 7; fila++) {
+  const z0 = 1 / (1 + fila * 0.07);
+  const z1 = 1 / (1 + (fila + 1) * 0.07);
+  for (let c = -8; c < 24; c++) {
+    const x0 = c * 120;
+    const x1 = x0 + 120;
+    const pts = [proy(x0, z0), proy(x1, z0), proy(x1, z1), proy(x0, z1)].map(([x, y]) => `${f(x)},${f(y)}`).join(' ');
+    losetas.push({ p: pts, c: (fila + c) % 2 ? '#a8693a' : '#d9a35e' });
+  }
+}
+
+// Pilastras blancas que ordenan la pared
+const pilastras = [140, 640, 1760, 2260];
+
+// Guirnaldas de flores colgadas entre las pilastras
+function guirnalda(x0: number, x1: number, y: number, caida: number) {
+  const n = 22;
+  const punto = (t: number) => [x0 + (x1 - x0) * t, y + caida * 4 * t * (1 - t)];
+  const flores = Array.from({ length: n }, (_, i) => {
+    const [x, yy] = punto((i + 0.5) / n);
+    return { x, y: yy + ((i * 7) % 5) - 2, c: ['#f6c5d4', '#fbf3e0', '#e88aa8', '#f2b632'][i % 4], r: 7 + (i % 3) * 2 };
+  });
+  const hojas = Array.from({ length: n * 2 }, (_, i) => {
+    const [x, yy] = punto(i / (n * 2));
+    return { x, y: yy, a: (i % 2 ? 1 : -1) * 35 };
+  });
+  const cuerda = Array.from({ length: 31 }, (_, i) => punto(i / 30).map(f).join(',')).join(' ');
+  return { flores, hojas, cuerda };
+}
+const guirnaldas = [guirnalda(140, 640, 150, 90), guirnalda(1760, 2260, 150, 90), guirnalda(640, 1760, 130, 130)];
+
+// Serpentinas de papel
+const serpentinas = [
+  { d: 'M300 90 C340 160 280 220 330 300 C360 350 320 390 350 430', c: '#f6c5d4' },
+  { d: 'M900 90 C930 150 880 190 920 250', c: '#9ad1c2' },
+  { d: 'M1480 90 C1450 150 1510 200 1470 260', c: '#f2d27a' },
+  { d: 'M2080 90 C2050 170 2110 230 2070 310 C2050 350 2090 380 2070 420', c: '#c8b6f0' },
+];
+
+const numeros = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
+---
+
+<div class="vista-2d" data-vista="sala-polka" data-ancho="2400">
+  <svg viewBox={`0 0 ${W} 900`} width={W} height="900" class="lamina">
+    <defs>
+      <linearGradient id="pk-pared" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f3d4de" />
+        <stop offset="0.6" stop-color="#e7b6c7" />
+        <stop offset="1" stop-color="#d79bb1" />
+      </linearGradient>
+      <linearGradient id="pk-pilastra" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#e6dccb" />
+        <stop offset="0.5" stop-color="#fffaf0" />
+        <stop offset="1" stop-color="#d8ccb6" />
+      </linearGradient>
+      <linearGradient id="pk-cortina" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#6e1e46" />
+        <stop offset="0.3" stop-color="#b8527f" />
+        <stop offset="0.55" stop-color="#7d2552" />
+        <stop offset="0.8" stop-color="#b04d79" />
+        <stop offset="1" stop-color="#651b40" />
+      </linearGradient>
+      <linearGradient id="pk-ventana" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#9cc7e8" />
+        <stop offset="1" stop-color="#f5e2c6" />
+      </linearGradient>
+      <linearGradient id="pk-chaleco" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#5e1734" />
+        <stop offset="0.5" stop-color="#9a3360" />
+        <stop offset="1" stop-color="#561430" />
+      </linearGradient>
+      <linearGradient id="pk-mandolina" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#4a200c" />
+        <stop offset="0.5" stop-color="#a5582a" />
+        <stop offset="1" stop-color="#3e1a09" />
+      </linearGradient>
+      <linearGradient id="pk-tapa" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f6dca2" />
+        <stop offset="1" stop-color="#c99450" />
+      </linearGradient>
+      <linearGradient id="pk-zapato" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#c2477a" />
+        <stop offset="1" stop-color="#6e1a40" />
+      </linearGradient>
+      <linearGradient id="pk-cupula" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#ffffff" stop-opacity="0.12" />
+        <stop offset="0.25" stop-color="#ffffff" stop-opacity="0.5" />
+        <stop offset="0.4" stop-color="#ffffff" stop-opacity="0.1" />
+        <stop offset="1" stop-color="#ffffff" stop-opacity="0.2" />
+      </linearGradient>
+      <radialGradient id="pk-brillo-piso" cx="0.5" cy="0.2" r="0.6">
+        <stop offset="0" stop-color="#fff4dc" stop-opacity="0.45" />
+        <stop offset="1" stop-color="#fff4dc" stop-opacity="0" />
+      </radialGradient>
+      <pattern id="pk-brocado" width="24" height="24" patternUnits="userSpaceOnUse">
+        <rect width="24" height="24" fill="#8a2b56" />
+        <path d="M12 3 c4 5 4 9 0 12 c-4 -3 -4 -7 0 -12z" fill="#d9a640" opacity="0.6" />
+        <circle cx="0" cy="20" r="2" fill="#d9a640" opacity="0.5" />
+        <circle cx="24" cy="20" r="2" fill="#d9a640" opacity="0.5" />
+      </pattern>
+      <pattern id="pk-terciopelo" width="20" height="20" patternUnits="userSpaceOnUse">
+        <rect width="20" height="20" fill="#7d2552" />
+        <path d="M0 0 L20 20 M20 0 L0 20" stroke="#9a3360" stroke-width="1" opacity="0.6" />
+      </pattern>
+    </defs>
+
+    <!-- Pared rosa con molduras -->
+    <rect width={W} height={piso} fill="url(#pk-pared)" />
+    {
+      [390, 1200, 2010].map((x) => (
+        <rect x={x - 190} y="230" width="380" height="330" rx="10" fill="none" stroke="#fbf3e0" stroke-width="4" opacity="0.7" />
+      ))
+    }
+
+    <!-- Techo con cornisa dorada -->
+    <rect width={W} height="70" fill="#f6ecdc" />
+    <rect y="66" width={W} height="20" fill="url(#g-oro)" />
+    <path d={`M0 92 ${Array.from({ length: 120 }, () => 'q10 10 20 0').join(' ')}`} fill="none" stroke="#d9a640" stroke-width="3" />
+
+    <!-- Ventanas en arco con cortinas -->
+    {
+      [390, 2010].map((x) => (
+        <g>
+          <path d={`M${x - 110} 560 V250 A110 110 0 0 1 ${x + 110} 250 V560Z`} fill="url(#pk-ventana)" />
+          <path d={`M${x} 140 V560 M${x - 110} 360 H${x + 110}`} stroke="#fbf3e0" stroke-width="8" />
+          <path d={`M${x - 110} 560 V250 A110 110 0 0 1 ${x + 110} 250 V560Z`} fill="none" stroke="#fbf3e0" stroke-width="14" />
+          <path d={`M${x - 150} 110 C${x - 120} 260 ${x - 150} 420 ${x - 104} 600 L${x - 60} 600 C${x - 80} 420 ${x - 76} 250 ${x - 40} 110Z`} fill="url(#pk-cortina)" />
+          <path d={`M${x + 150} 110 C${x + 120} 260 ${x + 150} 420 ${x + 104} 600 L${x + 60} 600 C${x + 80} 420 ${x + 76} 250 ${x + 40} 110Z`} fill="url(#pk-cortina)" />
+          <path d={`M${x - 160} 110 C${x - 80} 150 ${x + 80} 150 ${x + 160} 110 L${x + 160} 96 H${x - 160}Z`} fill="url(#pk-cortina)" />
+          <path d={`M${x - 160} 112 C${x - 80} 152 ${x + 80} 152 ${x + 160} 112`} fill="none" stroke="url(#g-oro)" stroke-width="5" />
+          <circle cx={x - 126} cy="380" r="10" fill="url(#g-oro)" />
+          <circle cx={x + 126} cy="380" r="10" fill="url(#g-oro)" />
+        </g>
+      ))
+    }
+
+    <!-- Pilastras -->
+    {
+      pilastras.map((x) => (
+        <g>
+          <rect x={x - 34} y="86" width="68" height="560" fill="url(#pk-pilastra)" />
+          <path d={`M${x - 16} 120 V620 M${x} 120 V620 M${x + 16} 120 V620`} stroke="#d8ccb6" stroke-width="3" />
+          <rect x={x - 46} y="86" width="92" height="30" rx="4" fill="url(#g-oro)" />
+          <path d={`M${x - 40} 116 q-10 14 4 22 M${x + 40} 116 q10 14 -4 22`} stroke="#c9922c" stroke-width="5" fill="none" />
+        </g>
+      ))
+    }
+
+    <!-- Arrimadero crema -->
+    <rect y="610" width={W} height={piso - 610} fill="#f3e8d6" />
+    <rect y="604" width={W} height="10" fill="url(#g-oro)" />
+    {Array.from({ length: 16 }, (_, i) => i * 150).map((x) => <rect x={x + 14} y="626" width="122" height="98" rx="4" fill="none" stroke="#d6c3a6" stroke-width="3" />)}
+
+    <!-- Escenario de la orquesta, al fondo -->
+    <g>
+      <rect x="960" y="560" width="480" height="40" fill="url(#g-madera)" />
+      <rect x="960" y="600" width="480" height="140" fill="url(#pk-cortina)" />
+      <path d={`M960 600 ${Array.from({ length: 8 }, () => 'q30 34 60 0').join(' ')} V600Z`} fill="#5e1734" />
+      <path d={`M960 600 ${Array.from({ length: 8 }, () => 'q30 34 60 0').join(' ')}`} fill="none" stroke="url(#g-oro)" stroke-width="4" />
+      {Array.from({ length: 9 }, (_, i) => 960 + i * 60).map((x) => <circle cx={x} cy="604" r="6" fill="url(#g-oro)" />)}
+      <path d="M960 560 h480" stroke="url(#g-oro)" stroke-width="6" />
+      {[1040, 1360].map((x) => (
+        <g>
+          <path d={`M${x - 22} 560 v-70 h44 v70 M${x - 22} 520 h44`} stroke="#3a1d08" stroke-width="5" fill="none" />
+          <path d={`M${x - 26} 490 c0 -40 52 -40 52 0`} stroke="#3a1d08" stroke-width="5" fill="none" />
+        </g>
+      ))}
+      <path d="M1200 560 v-120 M1176 440 h48 l-6 -40 h-36z" stroke="#2a2a30" stroke-width="5" fill="#f6ecdc" />
+      <!-- Banderín del baile -->
+ <path d="M980 316 C1100 366 1300 366 1420 316 L1420 346 C1300 396 1100 396 980 346Z" fill={sala.color} />
+      <path d="M980 316 C1100 366 1300 366 1420 316" fill="none" stroke="url(#g-oro)" stroke-width="5" />
+      <path d="M980 316 v40 M1420 316 v40" stroke="url(#g-oro)" stroke-width="5" />
+      <text x="1200" y="372" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="20" font-weight="700" letter-spacing="6" fill="#fbf3e0">GRAN BAILE</text>
+    </g>
+
+    <!-- Guirnaldas y serpentinas -->
+    {
+      guirnaldas.map((g) => (
+        <g>
+          <polyline points={g.cuerda} fill="none" stroke="#3f6a2a" stroke-width="4" />
+          {g.hojas.map((h) => (
+            <ellipse cx={h.x} cy={h.y} rx="12" ry="5" fill="#5f8f3a" transform={`rotate(${h.a} ${f(h.x)} ${f(h.y)})`} />
+          ))}
+          {g.flores.map((fl) => (
+            <g>
+              <circle cx={fl.x} cy={fl.y} r={fl.r} fill={fl.c} />
+              <circle cx={fl.x} cy={fl.y} r={fl.r * 0.35} fill="#d9a640" />
+            </g>
+          ))}
+        </g>
+      ))
+    }
+    {serpentinas.map((s) => <path d={s.d} fill="none" stroke={s.c} stroke-width="7" stroke-linecap="round" />)}
+
+    <Lampara x={900} y={230} escala={0.75} cadena={160} />
+    <Lampara x={1500} y={230} escala={0.75} cadena={160} />
+
+    <!-- Pista de baile de parquet -->
+    <rect y={piso} width={W} height={900 - piso} fill="#b8783f" />
+    {losetas.map((l) => <polygon points={l.p} fill={l.c} />)}
+    <rect y={piso} width={W} height={900 - piso} fill="url(#pk-brillo-piso)" />
+    <rect y={piso} width={W} height="26" fill="#3a1606" opacity="0.25" />
+
+    <!-- 1. Chaleco de época en un maniquí -->
+    <Interactivo id="chaleco" nombre={o('chaleco').nombre} cx={400} cy={500} alto={500} iy={480}>
+      <g transform="translate(400 772)">
+        <ellipse cx="0" cy="0" rx="130" ry="14" fill="#3a1606" opacity="0.35" />
+        <path d="M-70 -6 L0 -44 L70 -6" fill="none" stroke="url(#g-madera-osc)" stroke-width="10" stroke-linecap="round" />
+        <rect x="-7" y="-220" width="14" height="190" fill="url(#g-madera-osc)" />
+        <!-- Torso de maniquí -->
+        <path d="M-96 -420 C-110 -380 -100 -320 -78 -250 C-70 -226 70 -226 78 -250 C100 -320 110 -380 96 -420 C70 -440 30 -446 0 -446 C-30 -446 -70 -440 -96 -420Z" fill="#efe4cf" />
+        <path d="M-96 -420 C-110 -380 -100 -320 -78 -250 C-70 -232 -40 -228 -20 -228 C-50 -300 -60 -380 -50 -438 C-70 -436 -84 -428 -96 -420Z" fill="#dccdb0" />
+        <rect x="-12" y="-486" width="24" height="44" rx="5" fill="url(#g-madera)" />
+        <circle cx="0" cy="-494" r="15" fill="url(#g-madera)" />
+        <!-- Camisa, cuello y corbata -->
+        <path d="M-40 -446 L0 -404 L40 -446 L30 -456 L0 -436 L-30 -456Z" fill="#fff" stroke="#d6cbb4" stroke-width="2" />
+        <path d="M-10 -428 h20 l-4 14 h-12z" fill="#2a1a2a" />
+        <path d="M-6 -414 L-20 -360 L0 -340 L20 -360 L6 -414Z" fill="#2a1a2a" />
+        <!-- Chaleco de brocado -->
+        <path d="M-84 -414 C-60 -420 -34 -414 -18 -404 L0 -330 L18 -404 C34 -414 60 -420 84 -414 C90 -360 88 -300 80 -236 L44 -214 L0 -232 L-44 -214 L-80 -236 C-88 -300 -90 -360 -84 -414Z" fill="url(#pk-brocado)" />
+        <path d="M-84 -414 C-60 -420 -34 -414 -18 -404 L0 -330 L18 -404 C34 -414 60 -420 84 -414 C90 -360 88 -300 80 -236 L44 -214 L0 -232 L-44 -214 L-80 -236 C-88 -300 -90 -360 -84 -414Z" fill="url(#pk-chaleco)" opacity="0.55" />
+        <path d="M-18 -404 L0 -330 L18 -404 M0 -330 V-232" stroke="#d9a640" stroke-width="3" fill="none" />
+        {[-310, -286, -262].map((y) => <circle cx="-8" cy={y} r="5" fill="url(#g-oro)" />)}
+        <path d="M-70 -300 h36 M34 -300 h36" stroke="#3a0e20" stroke-width="4" />
+        <!-- Cadena del reloj -->
+        <path d="M-8 -286 C-24 -270 -44 -268 -56 -298" fill="none" stroke="url(#g-oro)" stroke-width="3" stroke-dasharray="3 2" />
+      </g>
+    </Interactivo>
+
+    <!-- 2. Mandolina sobre una silla vienesa -->
+    <Interactivo id="mandolina" nombre={o('mandolina').nombre} cx={800} cy={560} alto={420} iy={540}>
+      <g transform="translate(800 776)">
+        <ellipse cx="0" cy="0" rx="130" ry="12" fill="#3a1606" opacity="0.35" />
+        <!-- Silla de madera curvada -->
+        <path d="M-70 -200 C-80 -280 -76 -380 -40 -400 C-10 -416 10 -416 40 -400 C76 -380 80 -280 70 -200" fill="none" stroke="#3a1d08" stroke-width="12" />
+        <path d="M-46 -210 C-52 -280 -50 -350 -24 -370 C-8 -380 8 -380 24 -370 C50 -350 52 -280 46 -210" fill="none" stroke="#3a1d08" stroke-width="7" />
+        <ellipse cx="0" cy="-196" rx="96" ry="22" fill="#5a2c10" stroke="#3a1d08" stroke-width="5" />
+        <ellipse cx="0" cy="-198" rx="78" ry="14" fill="url(#pk-terciopelo)" />
+        <path d="M-80 -186 L-96 -4 M80 -186 L96 -4 M-40 -180 L-48 -10 M40 -180 L48 -10" stroke="#3a1d08" stroke-width="10" stroke-linecap="round" />
+        <ellipse cx="0" cy="-90" rx="70" ry="12" fill="none" stroke="#3a1d08" stroke-width="6" />
+        <!-- Mandolina apoyada -->
+        <g transform="translate(0 -230) rotate(-28)">
+          <path d="M-14 -90 L-10 -270 L10 -270 L14 -90Z" fill="#2a140a" />
+          <path d="M-18 -270 L18 -270 L22 -330 L-22 -330Z" fill="#2a140a" />
+          {[-316, -300, -286].map((y) => (
+            <g>
+              <circle cx="-28" cy={y} r="5" fill="#e8dcc0" />
+              <circle cx="28" cy={y} r="5" fill="#e8dcc0" />
+            </g>
+          ))}
+          {Array.from({ length: 8 }, (_, i) => -250 + i * 20).map((y) => <path d={`M-11 ${y} h22`} stroke="#c9b48a" stroke-width="2" />)}
+          <path d="M0 -110 C-70 -110 -92 -40 -86 10 C-80 60 -40 92 0 92 C40 92 80 60 86 10 C92 -40 70 -110 0 -110Z" fill="url(#pk-mandolina)" />
+          <path d="M-40 -100 C-70 -40 -70 40 -36 86 M40 -100 C70 -40 70 40 36 86 M0 -110 V92" stroke="#e2b07a" stroke-width="2" opacity="0.5" fill="none" />
+          <path d="M0 -98 C-56 -98 -74 -40 -70 4 C-66 44 -36 70 0 70 C36 70 66 44 70 4 C74 -40 56 -98 0 -98Z" fill="url(#pk-tapa)" />
+          <ellipse cx="0" cy="-40" rx="24" ry="20" fill="#2a140a" />
+          <ellipse cx="0" cy="-40" rx="30" ry="26" fill="none" stroke={sala.color} stroke-width="3" />
+          <path d="M-40 10 L40 10 L36 30 L-36 30Z" fill="#7a3a1a" />
+          <rect x="-16" y="40" width="32" height="8" rx="2" fill="#2a140a" />
+          <path d="M-6 -270 V44 M-2 -270 V44 M2 -270 V44 M6 -270 V44" stroke="#f3ead6" stroke-width="1" opacity="0.9" />
+        </g>
+      </g>
+    </Interactivo>
+
+    <!-- 4. Invitación antigua en un caballete -->
+    <Interactivo id="invitacion" nombre={o('invitacion').nombre} cx={1200} cy={600} alto={340} iy={600}>
+      <g transform="translate(1200 800)">
+        <ellipse cx="0" cy="0" rx="130" ry="12" fill="#3a1606" opacity="0.35" />
+        <path d="M-80 -4 L-30 -360 M80 -4 L30 -360 M0 -20 L0 -330" stroke="url(#g-madera)" stroke-width="12" stroke-linecap="round" />
+        <rect x="-110" y="-124" width="220" height="14" rx="3" fill="url(#g-madera)" />
+        <!-- Tarjeta -->
+        <g filter="url(#f-sombra)">
+          <rect x="-96" y="-374" width="192" height="254" rx="6" fill="#fbf6ea" />
+        </g>
+        <rect x="-86" y="-364" width="172" height="234" rx="4" fill="none" stroke="url(#g-oro)" stroke-width="4" />
+        <rect x="-78" y="-356" width="156" height="218" rx="3" fill="none" stroke={sala.color} stroke-width="1.5" />
+        <path d="M-78 -356 q14 0 14 14 M78 -356 q-14 0 -14 14 M-78 -138 q14 0 14 -14 M78 -138 q-14 0 -14 -14" fill="none" stroke={sala.color} stroke-width="2" />
+        <text y="-322" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="11" letter-spacing="3" fill="#7d2552">INVITACIÓN</text>
+        <text y="-290" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="22" font-style="italic" font-weight="700" fill="#3a1d08">Gran Baile</text>
+        <text y="-270" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="11" fill="#3a1d08">de sociedad</text>
+        <path d="M-40 -256 h80" stroke="url(#g-oro)" stroke-width="2" />
+        <text y="-234" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="10" fill="#4a3a2a">Se bailarán valses,</text>
+        <text y="-220" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="10" fill="#4a3a2a">polkas y mazurcas</text>
+        <text y="-190" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="10" font-style="italic" fill="#4a3a2a">Sábado, a las 9 de la noche</text>
+        <text y="-158" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="11" font-weight="700" fill="#7d2552">Lima, 1910</text>
+      </g>
+    </Interactivo>
+
+    <!-- 3. Zapatos de baile sobre un taburete -->
+    <Interactivo id="zapatos" nombre={o('zapatos').nombre} cx={1600} cy={640} alto={280} iy={630}>
+      <g transform="translate(1600 790)">
+        <ellipse cx="0" cy="0" rx="150" ry="14" fill="#3a1606" opacity="0.35" />
+        <!-- Taburete de terciopelo -->
+        <path d="M-110 -110 L-120 -6 M110 -110 L120 -6" stroke="url(#g-oro)" stroke-width="10" stroke-linecap="round" />
+        <path d="M-130 -150 C-130 -186 130 -186 130 -150 L124 -104 C80 -90 -80 -90 -124 -104Z" fill="url(#pk-terciopelo)" stroke="#4a0f2a" stroke-width="3" />
+        <path d="M-124 -104 C-80 -90 80 -90 124 -104" fill="none" stroke="url(#g-oro)" stroke-width="6" />
+        {[-90, -45, 0, 45, 90].map((x) => <circle cx={x} cy={-96 + Math.abs(x) * 0.06} r="5" fill="url(#g-oro)" />)}
+        <!-- Par de zapatos de dama, de raso marfil con tira en T -->
+        {[[-96, -172, 0.92, 0.82], [-56, -164, 1, 1]].map(([x, y, e, luz]) => (
+          <g transform={`translate(${x} ${y}) scale(${e})`} opacity={luz}>
+            <path d="M-56 -2 L-44 -2 L-47 32 L-55 32Z" fill="#c9a24c" />
+            <path d="M-58 -30 C-60 -46 -48 -54 -36 -50 C-22 -44 -4 -30 22 -24 C46 -18 64 -14 66 -4 C68 4 60 8 50 8 C10 8 -30 6 -44 -2 C-52 -6 -58 -14 -58 -30Z" fill="#f3e6cf" stroke="#8a6a4a" stroke-width="2" />
+            <path d="M-46 -40 C-30 -40 -10 -28 6 -22" fill="none" stroke="#8a6a4a" stroke-width="1.5" />
+            <path d="M-36 -50 L-8 -28" stroke={sala.color} stroke-width="4" stroke-linecap="round" />
+            <ellipse cx="-38" cy="-52" rx="14" ry="5" fill="none" stroke={sala.color} stroke-width="4" />
+            <circle cx="-8" cy="-28" r="3.5" fill="url(#g-oro)" />
+            <path d="M-44 -2 C-20 6 20 9 50 8 C60 8 66 4 66 -4" fill="none" stroke="#5a3a1a" stroke-width="3" />
+          </g>
+        ))}
+        <!-- Par de zapatos de caballero, de dos tonos -->
+        {[[66, -170, 0.92, 0.82], [104, -160, 1, 1]].map(([x, y, e, luz]) => (
+          <g transform={`translate(${x} ${y}) scale(${e})`} opacity={luz}>
+            <path d="M-62 4 L-62 -26 C-62 -40 -50 -46 -36 -44 L4 -40 C32 -34 56 -24 64 -10 C68 0 64 6 56 6 L-60 6Z" fill="#f6efe0" stroke="#2a1a12" stroke-width="2" />
+            <path d="M-62 4 L-62 -26 C-62 -40 -50 -46 -36 -44 L-30 -44 C-34 -26 -34 -10 -30 6 L-60 6Z" fill="#1e140e" />
+            <path d="M28 -34 C46 -28 58 -20 64 -10 C68 0 64 6 56 6 L22 6 C28 -6 30 -22 28 -34Z" fill="#1e140e" />
+            <path d="M-12 -42 L-2 -28 M-2 -42 L8 -28 M-14 -36 L10 -36" stroke="#2a1a12" stroke-width="1.8" />
+            <rect x="-62" y="5" width="128" height="7" rx="3" fill="#120a06" />
+          </g>
+        ))}
+      </g>
+    </Interactivo>
+
+    <!-- 5. Reloj de bolsillo bajo una campana de vidrio -->
+    <Interactivo id="reloj" nombre={o('reloj').nombre} cx={1980} cy={520} alto={420} iy={470}>
+      <g transform="translate(1980 776)">
+        <ellipse cx="0" cy="0" rx="110" ry="12" fill="#3a1606" opacity="0.35" />
+        <!-- Pedestal -->
+        <path d="M-70 -6 h140 l-14 -26 h-112z" fill="url(#g-madera-osc)" />
+        <rect x="-44" y="-246" width="88" height="216" fill="url(#g-madera-h)" />
+        <rect x="-62" y="-262" width="124" height="20" rx="3" fill="url(#g-madera)" />
+        <ellipse cx="0" cy="-268" rx="74" ry="12" fill="#5a2c10" />
+        <ellipse cx="0" cy="-272" rx="56" ry="9" fill="url(#pk-terciopelo)" />
+        <!-- Reloj -->
+        <g transform="translate(0 -350)">
+          <path d="M0 -86 C-40 -110 -70 -96 -86 -60" fill="none" stroke="url(#g-oro)" stroke-width="4" stroke-dasharray="4 3" />
+          <path d="M-86 -60 C-96 -30 -84 40 -60 72" fill="none" stroke="url(#g-oro)" stroke-width="4" stroke-dasharray="4 3" />
+          <rect x="-10" y="-90" width="20" height="16" rx="4" fill="url(#g-oro)" />
+          <circle cx="0" cy="-94" r="9" fill="none" stroke="url(#g-oro)" stroke-width="4" />
+          <circle r="66" fill="url(#g-bronce)" />
+          <circle r="56" fill="#fbf6ea" stroke="#8f6418" stroke-width="2" />
+          {
+            numeros.map((n, i) => {
+              const a = (i * 30 * Math.PI) / 180;
+              return (
+                <text x={f(Math.sin(a) * 43)} y={f(-Math.cos(a) * 43 + 3.5)} text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="9" fill="#2a1a10">
+                  {n}
+                </text>
+              );
+            })
+          }
+          <path d="M0 0 L-24 12" stroke="#1a1a20" stroke-width="3.5" stroke-linecap="round" />
+          <path d="M0 0 L14 -36" stroke="#1a1a20" stroke-width="2.5" stroke-linecap="round" />
+          <circle r="4" fill="#1a1a20" />
+          <path d="M-40 -30 C-30 -46 -10 -52 6 -50" stroke="#fff" stroke-width="4" fill="none" opacity="0.6" stroke-linecap="round" />
+        </g>
+        <!-- Campana de vidrio -->
+        <path d="M-80 -272 V-400 C-80 -470 80 -470 80 -400 V-272" fill="url(#pk-cupula)" stroke="#ffffff" stroke-opacity="0.6" stroke-width="3" />
+        <path d="M-60 -290 V-400 C-60 -440 -40 -452 -20 -456" fill="none" stroke="#fff" stroke-width="5" opacity="0.5" stroke-linecap="round" />
+        <circle cx="0" cy="-466" r="10" fill="url(#g-oro)" />
+      </g>
+    </Interactivo>
+
+    <rect width={W} height="900" fill="url(#g-vineta)" opacity="0.7" pointer-events="none" />
+  </svg>
+</div>

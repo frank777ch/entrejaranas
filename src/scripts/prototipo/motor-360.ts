@@ -1,10 +1,10 @@
-// Prototipo B: la casona y la sala de la marinera como panoramas 360°.
+// Prototipo B: la casona y las cinco salas como panoramas 360° (cubemaps).
 // Los panoramas se renderizan con herramientas/panoramas/render.mjs.
-import { casona, generos, type Genero, type Objeto } from '../../data/museo-prototipo';
+import { casona, generos, type Genero, type GeneroId, type Objeto } from '../../data/museo-prototipo';
 import * as ui from './interfaz';
 import { Visor, type Textura, type Vista } from './visor-360';
 
-type Lugar = 'casona' | 'marinera';
+type Lugar = 'casona' | GeneroId;
 
 interface DatosPunto {
   yaw: number;
@@ -13,7 +13,7 @@ interface DatosPunto {
   asomo?: { pitch: number; fov: number; ancho: number };
 }
 
-type Puntos = Record<string, DatosPunto> & { camara?: unknown };
+type Puntos = Record<string, DatosPunto> & { camara?: unknown; entrada?: DatosPunto };
 
 const RUTA = '/prototipos/360';
 const lienzo = document.querySelector<HTMLCanvasElement>('.visor-360')!;
@@ -23,15 +23,18 @@ const params = new URLSearchParams(location.search);
 const instantaneo = params.has('vista') || params.has('sala') || params.has('asomo') || params.has('ficha');
 const T = (ms: number) => (instantaneo || ui.sinMovimiento ? 0 : ms);
 
-const conexion = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-// La versión de 4096 px se baja después, sin hacer esperar, salvo en modo ahorro de datos
-const nitida = visor.maxTextura >= 4096 && !conexion?.saveData;
+const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
+// Caras de 1024 px para empezar; las de 2048 se bajan después, sin hacer esperar,
+// salvo en modo ahorro de datos o en equipos con poca memoria
+const modesto = (nav.deviceMemory ?? 8) <= 2 && (nav.hardwareConcurrency ?? 8) <= 4;
+const nitida = visor.maxTextura >= 2048 && !nav.connection?.saveData && !modesto;
 
-const marinera = generos.find((g) => g.id === 'marinera')!;
 const datos: Partial<Record<Lugar, Puntos>> = {};
 const texturas: Partial<Record<Lugar, Textura>> = {};
 const cargas: Partial<Record<Lugar, Promise<Textura>>> = {};
 let lugar: Lugar = 'casona';
+/** Sala en la que está el visitante (o null en la casona) */
+let sala: Genero | null = null;
 let ocupado = false;
 const vistos = new Set<string>();
 
@@ -56,7 +59,7 @@ const angulo = (yaw: number) => ((yaw % 360) + 540) % 360 - 180;
 async function panorama(l: Lugar, alAvanzar?: (p: number) => void) {
   if (texturas[l]) return texturas[l]!;
   cargas[l] ??= (async () => {
-    const [t, puntos] = await Promise.all([visor.cargar(`${RUTA}/${l}-2048.webp`, alAvanzar), fetch(`${RUTA}/${l}.json`).then((r) => r.json())]);
+    const [t, puntos] = await Promise.all([visor.cargar(`${RUTA}/${l}-1024`, alAvanzar), datos[l] ?? fetch(`${RUTA}/${l}.json`).then((r) => r.json())]);
     datos[l] = puntos;
     texturas[l] = t;
     if (nitida) mejorar(l, t);
@@ -67,12 +70,24 @@ async function panorama(l: Lugar, alAvanzar?: (p: number) => void) {
 
 async function mejorar(l: Lugar, chica: Textura) {
   try {
-    const grande = await visor.cargar(`${RUTA}/${l}-4096.webp`);
+    const grande = await visor.cargar(`${RUTA}/${l}-2048`);
+    // Si el panorama se soltó mientras bajaba, no se usa
+    if (texturas[l] !== chica) return visor.liberar(grande);
     texturas[l] = grande;
     visor.reemplazar(chica, grande);
     visor.liberar(chica);
   } catch {
     // Se queda con la versión liviana
+  }
+}
+
+/** Libera de la GPU los panoramas que no se están viendo (la casona siempre queda) */
+function soltarMenos(...quedan: Lugar[]) {
+  for (const l of Object.keys(texturas) as Lugar[]) {
+    if (l === 'casona' || quedan.includes(l)) continue;
+    visor.liberar(texturas[l]!);
+    delete texturas[l];
+    delete cargas[l];
   }
 }
 
@@ -157,7 +172,7 @@ async function asomarse(g: Genero) {
   // Solo queda el punto del arco, para tocarlo de nuevo y entrar; va alto para que el panel no lo tape
   const alto = mirada + (Math.atan(0.3 * Math.tan((fov * Math.PI) / 360)) * 180) / Math.PI;
   mostrarPuntos([{ id: g.id, nombre: g.completa ? 'Entrar' : 'En preparación', color: g.color, alTocar: () => entrar(g), siempre: true, pitch: alto }]);
-  if (g.completa) panorama('marinera');
+  if (g.completa) panorama(g.id);
   await visor.ir({ yaw: p.yaw, pitch: mirada, fov }, T(900));
 }
 
@@ -170,7 +185,7 @@ async function volver() {
   await visor.ir({ yaw: datos.casona![g.id].yaw, pitch: 0, fov: fovBase() }, T(800));
 }
 
-/* ---------- Sala de la marinera ---------- */
+/* ---------- Salas de los géneros ---------- */
 
 async function entrar(g: Genero) {
   if (ocupado || !g.completa) return;
@@ -179,50 +194,59 @@ async function entrar(g: Genero) {
   ui.toque(7);
   ui.mostrarCartel(null);
   ocultarPuntos(true);
-  const t = await panorama('marinera');
+  const t = await panorama(g.id);
   const p = datos.casona![g.id];
-  // Cruza el arco: acercamiento y fundido hacia el interior
+  // Cruza el arco: acercamiento y fundido hacia el interior. Todos los panoramas comparten
+  // los mismos ejes, así que la mirada sigue en la misma dirección al cambiar.
   const acercar = visor.ir({ yaw: p.yaw, pitch: 2, fov: Math.max(18, visor.vista.fov * 0.45) }, T(900));
   await new Promise((r) => setTimeout(r, T(380)));
   await visor.mostrar(t, T(650));
   await acercar;
-  lugar = 'marinera';
-  visor.vista = { yaw: 0, pitch: 2, fov: visor.vista.fov };
+  lugar = g.id;
+  sala = g;
+  soltarMenos(g.id);
   ui.modo('sala');
   ui.lugar(g.nombre, g.color);
   ui.mostrarInfoSala(g, vistosSala());
   ui.mostrarRegreso('Volver a la casona', salir);
   ui.mostrarFlechas({ izquierda: true, derecha: true, arriba: true, abajo: true });
-  puntosMarinera();
+  puntosSala();
   ocultarPuntos(false);
-  await visor.ir({ yaw: 0, pitch: 0, fov: fovBase() }, T(1100));
+  const entrada = datos[g.id]!.entrada ?? { yaw: p.yaw, pitch: 0 };
+  await visor.ir({ yaw: entrada.yaw, pitch: 0, fov: fovBase() }, T(1100));
   ocupado = false;
   ui.mostrarPista(ui.tactil ? 'Toca los objetos para conocerlos' : 'Haz clic en los objetos para conocerlos');
 }
 
-const vistosSala = () => marinera.objetos.filter((o) => vistos.has(o.id)).length;
+const vistosSala = () => (sala ? sala.objetos.filter((o) => vistos.has(o.id)).length : 0);
 
-function puntosMarinera() {
+function puntosSala() {
+  if (!sala) return;
+  const g = sala;
   mostrarPuntos([
-    ...marinera.objetos.map((o) => ({ id: o.id, nombre: o.nombre, color: marinera.color, alTocar: () => abrirFicha(o) })),
+    ...g.objetos.map((o) => ({ id: o.id, nombre: o.nombre, color: g.color, alTocar: () => abrirFicha(o) })),
     { id: 'salida', nombre: 'Volver a la casona', color: '#fead15', alTocar: salir },
   ]);
 }
 
 async function salir() {
-  if (ocupado) return;
+  if (ocupado || !sala) return;
   ocupado = true;
+  const g = sala;
   ui.toque(0);
   ui.mostrarFicha(null);
+  antesDeFicha = null;
   ocultarPuntos(true);
   ui.mostrarRegreso(null);
   ui.mostrarInfoSala(null);
   const t = await panorama('casona');
-  const yawArco = datos.casona!.marinera.yaw;
+  const yawArco = datos.casona![g.id].yaw;
   const alejar = visor.ir({ fov: Math.min(visor.fovMax, visor.vista.fov * 1.25) }, T(700));
   await visor.mostrar(t, T(650));
   await alejar;
   lugar = 'casona';
+  sala = null;
+  soltarMenos();
   // De vuelta en la casona, frente al arco por el que se entró
   visor.vista = { yaw: yawArco, pitch: 2, fov: 30 };
   enCasona();
@@ -238,7 +262,7 @@ async function abrirFicha(o: Objeto) {
   if (ocupado) return;
   const p = datos[lugar]![o.id];
   if (!p) return;
-  ui.toque(lugar === 'casona' ? 2 : 5 + (marinera.objetos.indexOf(o) % 3));
+  ui.toque(sala ? 5 + (sala.objetos.indexOf(o) % 3) : 2);
   antesDeFicha ??= { ...visor.vista, fov: fovBase() };
   vistos.add(o.id);
   ocultarPuntos(true);
@@ -258,34 +282,51 @@ async function abrirFicha(o: Objeto) {
     yaw = p.yaw - (Math.atan(ndc * tanH) * 180) / Math.PI;
   }
   ui.mostrarFicha(o, cerrarFicha);
-  if (lugar === 'marinera') ui.mostrarInfoSala(marinera, vistosSala());
+  if (sala) ui.mostrarInfoSala(sala, vistosSala());
   await visor.ir({ yaw, pitch, fov }, T(900));
 }
 
 async function cerrarFicha() {
   ui.mostrarFicha(null);
   ocultarPuntos(false);
-  if (lugar === 'casona') puntosCasona();
-  else puntosMarinera();
+  if (sala) puntosSala();
+  else puntosCasona();
   const vuelta = antesDeFicha;
   antesDeFicha = null;
   if (vuelta) await visor.ir({ fov: vuelta.fov, pitch: Math.max(-20, Math.min(20, visor.vista.pitch)) }, T(700));
-  if (lugar === 'marinera' && vistosSala() === marinera.objetos.length && !celebrado) {
-    celebrado = true;
-    ui.mostrarPista('¡Conociste toda la sala de la marinera!');
+  if (sala && vistosSala() === sala.objetos.length && !celebradas.has(sala.id)) {
+    celebradas.add(sala.id);
+    const restantes = generos.filter((g) => !g.objetos.every((o) => vistos.has(o.id))).length;
+    ui.mostrarPista(restantes ? `¡Conociste toda la sala! Vuelve a la casona para visitar otra` : '¡Recorriste todo el museo!');
   }
 }
-let celebrado = false;
+const celebradas = new Set<string>();
 
 /* ---------- Flechas ---------- */
+
+/** Direcciones de los arcos y objetos del lugar actual */
+function paradas() {
+  const d = datos[lugar] ?? {};
+  return Object.entries(d)
+    .filter(([k, v]) => k !== 'entrada' && typeof v === 'object' && v !== null && 'yaw' in v)
+    .map(([, v]) => (v as DatosPunto).yaw);
+}
 
 ui.alUsarFlecha((d) => {
   if (ocupado || (lugar === 'casona' && asomado)) return;
   const { yaw, pitch } = visor.vista;
   ui.toque(-5);
   if (d === 'izquierda' || d === 'derecha') {
-    const paso = d === 'derecha' ? 90 : -90;
-    const destino = Math.round(angulo(yaw) / 90) * 90 + paso;
+    let destino: number;
+    if (visor.fovHorizontal(fovBase()) >= 80) {
+      // Pantalla ancha: de pared en pared
+      destino = Math.round(angulo(yaw) / 90) * 90 + (d === 'derecha' ? 90 : -90);
+    } else {
+      // Pantalla angosta (celular vertical): al siguiente arco u objeto, para que quede centrado
+      const deltas = paradas().map((y) => angulo(y - yaw));
+      const siguiente = d === 'derecha' ? Math.min(...deltas.filter((x) => x > 8)) : Math.max(...deltas.filter((x) => x < -8));
+      destino = yaw + (Number.isFinite(siguiente) ? siguiente : d === 'derecha' ? 45 : -45);
+    }
     visor.ir({ yaw: destino, pitch: 0, fov: fovBase() }, T(750));
   } else if (d === 'arriba') {
     visor.ir({ pitch: pitch < -15 ? 0 : 62, fov: fovBase() }, T(700));
@@ -307,6 +348,7 @@ async function iniciar() {
   const vistaInicial: Vista = { yaw: 0, pitch: 0, fov: fovBase() };
   try {
     const t = await panorama('casona', (p) => ui.progreso(0.05 + p * 0.9));
+    if (!datos.casona) throw new Error('Sin datos de la casona');
     visor.vista = { ...vistaInicial, fov: fovBase() + 14 };
     await visor.mostrar(t);
   } catch (e) {
@@ -319,10 +361,13 @@ async function iniciar() {
 
   // Enlaces directos a un estado (para revisar o capturar)
   const vista = params.get('vista');
-  const sala = params.get('sala');
+  const salaQ = params.get('sala');
   const asomo = params.get('asomo');
   const ficha = params.get('ficha');
-  if (sala === 'marinera') await entrar(marinera);
+  // Una ficha de sala entra primero a su sala
+  const gFicha = ficha ? generos.find((g) => g.objetos.some((o) => o.id === ficha)) : undefined;
+  const gSala = generos.find((g) => g.id === (salaQ ?? gFicha?.id));
+  if (gSala) await entrar(gSala);
   if (asomo) {
     const g = generos.find((x) => x.id === asomo);
     if (g) await asomarse(g);
@@ -333,13 +378,13 @@ async function iniciar() {
     await visor.ir({ yaw: yaw ?? 0, pitch: pitch ?? 0, fov: fovBase() }, 0);
   }
   if (ficha) {
-    const o = [...casona.objetos, ...marinera.objetos].find((x) => x.id === ficha);
+    const o = [...casona.objetos, ...generos.flatMap((g) => g.objetos)].find((x) => x.id === ficha);
     if (o) await abrirFicha(o);
   }
   if (!instantaneo) {
     await visor.ir({ fov: fovBase() }, T(1600));
     ui.mostrarPista(ui.tactil ? 'Desliza para mirar · toca un arco' : 'Arrastra o usa las flechas para mirar · haz clic en un arco para asomarte');
-    // Se adelanta la sala completa para que entrar sea inmediato
+    // Se adelanta la sala del frente para que entrar sea inmediato
     setTimeout(() => panorama('marinera'), 2500);
   }
 }

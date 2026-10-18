@@ -1,5 +1,5 @@
-// Visor de panoramas 360° (equirectangulares) con WebGL puro, sin librerías.
-// Un solo triángulo cubre la pantalla: cada píxel calcula hacia dónde mira y lee el panorama.
+// Visor de panoramas 360° (cubemaps de seis caras) con WebGL puro, sin librerías.
+// Un solo triángulo cubre la pantalla: cada píxel calcula hacia dónde mira y lee el cubo.
 
 export interface Vista {
   /** Giro horizontal en grados: 0 = frente, 90 = derecha */
@@ -12,7 +12,8 @@ export interface Vista {
 
 export interface Textura {
   tex: WebGLTexture;
-  alto: number;
+  /** Lado de cada cara en píxeles */
+  lado: number;
 }
 
 export interface Punto {
@@ -20,6 +21,11 @@ export interface Punto {
   yaw: number;
   pitch: number;
 }
+
+/** Caras en el orden de WebGL: +X, −X, +Y, −Y, +Z, −Z */
+export const CARAS = ['px', 'nx', 'py', 'ny', 'pz', 'nz'] as const;
+
+type Imagen = TexImageSource & { width: number; height: number };
 
 const RAD = Math.PI / 180;
 const suave = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -31,54 +37,36 @@ void main() { vP = p; gl_Position = vec4(p, 0.0, 1.0); }`;
 
 const FRAGMENTO_2 = `#version 300 es
 precision highp float;
-uniform sampler2D uA;
-uniform sampler2D uB;
+uniform samplerCube uA;
+uniform samplerCube uB;
 uniform float uMezcla;
-uniform float uLodA;
-uniform float uLodB;
 uniform vec3 uR;
 uniform vec3 uU;
 uniform vec3 uF;
 uniform vec2 uEsc;
 in vec2 vP;
 out vec4 color;
-vec2 equi(vec3 d) {
-  return vec2(0.5 + atan(d.x, -d.z) / 6.28318530718, 0.5 - asin(clamp(d.y, -1.0, 1.0)) / 3.14159265359);
-}
 void main() {
-  vec2 uv = equi(normalize(uR * vP.x * uEsc.x + uU * vP.y * uEsc.y + uF));
-  // LOD fijo por cuadro: evita la costura que dejarían las derivadas en el borde del panorama
-  vec4 a = textureLod(uA, uv, uLodA);
-  vec4 b = textureLod(uB, uv, uLodB);
-  color = mix(a, b, uMezcla);
+  vec3 d = uR * vP.x * uEsc.x + uU * vP.y * uEsc.y + uF;
+  color = mix(texture(uA, d), texture(uB, d), uMezcla);
 }`;
 
 const VERTICE_1 = `attribute vec2 p;
 varying vec2 vP;
 void main() { vP = p; gl_Position = vec4(p, 0.0, 1.0); }`;
 
-const FRAGMENTO_1 = (lod: boolean) => `${lod ? '#extension GL_EXT_shader_texture_lod : enable' : ''}
-precision highp float;
-uniform sampler2D uA;
-uniform sampler2D uB;
+const FRAGMENTO_1 = `precision highp float;
+uniform samplerCube uA;
+uniform samplerCube uB;
 uniform float uMezcla;
-uniform float uLodA;
-uniform float uLodB;
 uniform vec3 uR;
 uniform vec3 uU;
 uniform vec3 uF;
 uniform vec2 uEsc;
 varying vec2 vP;
-vec2 equi(vec3 d) {
-  return vec2(0.5 + atan(d.x, -d.z) / 6.28318530718, 0.5 - asin(clamp(d.y, -1.0, 1.0)) / 3.14159265359);
-}
 void main() {
-  vec2 uv = equi(normalize(uR * vP.x * uEsc.x + uU * vP.y * uEsc.y + uF));
-  ${
-    lod
-      ? 'gl_FragColor = mix(texture2DLodEXT(uA, uv, uLodA), texture2DLodEXT(uB, uv, uLodB), uMezcla);'
-      : 'gl_FragColor = mix(texture2D(uA, uv), texture2D(uB, uv), uMezcla);'
-  }
+  vec3 d = uR * vP.x * uEsc.x + uU * vP.y * uEsc.y + uF;
+  gl_FragColor = mix(textureCube(uA, d), textureCube(uB, d), uMezcla);
 }`;
 
 interface Animacion {
@@ -91,7 +79,9 @@ interface Animacion {
 
 export class Visor {
   readonly gl: WebGL2RenderingContext | WebGLRenderingContext;
+  /** Lado máximo de una cara de cubemap que admite la GPU */
   readonly maxTextura: number;
+  private anisotropia: EXT_texture_filter_anisotropic | null;
   vista: Vista = { yaw: 0, pitch: 0, fov: 72 };
   fovMin = 28;
   fovMax = 110;
@@ -121,10 +111,11 @@ export class Visor {
     const gl = gl2 ?? (lienzo.getContext('webgl', opciones) as WebGLRenderingContext | null);
     if (!gl) throw new Error('Este navegador no tiene WebGL');
     this.gl = gl;
-    const lod = gl2 ? true : !!gl.getExtension('EXT_shader_texture_lod');
-    this.prog = this.programa(gl2 ? VERTICE_2 : VERTICE_1, gl2 ? FRAGMENTO_2 : FRAGMENTO_1(lod));
-    for (const n of ['uA', 'uB', 'uMezcla', 'uLodA', 'uLodB', 'uR', 'uU', 'uF', 'uEsc']) this.u[n] = gl.getUniformLocation(this.prog, n);
-    this.maxTextura = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    this.prog = this.programa(gl2 ? VERTICE_2 : VERTICE_1, gl2 ? FRAGMENTO_2 : FRAGMENTO_1);
+    for (const n of ['uA', 'uB', 'uMezcla', 'uR', 'uU', 'uF', 'uEsc']) this.u[n] = gl.getUniformLocation(this.prog, n);
+    this.maxTextura = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+    this.anisotropia =
+      gl.getExtension('EXT_texture_filter_anisotropic') ?? gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ?? gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
 
     // Triángulo que cubre toda la pantalla
     const buf = gl.createBuffer();
@@ -186,33 +177,28 @@ export class Visor {
     return (2 * Math.atan(Math.tan((ancho * RAD) / 2) / this.aspecto)) / RAD;
   }
 
-  /** Descarga y sube un panorama; informa el avance de 0 a 1 */
-  async cargar(url: string, alAvanzar?: (p: number) => void): Promise<Textura> {
+  /** Descarga un archivo informando el avance en bytes */
+  private async bajar(url: string, alAvanzar?: (bytes: number, total: number) => void): Promise<Blob> {
     const r = await fetch(url);
     if (!r.ok) throw new Error(`No se pudo cargar ${url}`);
     const total = Number(r.headers.get('content-length')) || 0;
-    let blob: Blob;
-    if (alAvanzar && total && r.body) {
-      const lector = r.body.getReader();
-      const partes: Uint8Array[] = [];
-      let llevo = 0;
-      for (;;) {
-        const { done, value } = await lector.read();
-        if (done) break;
-        partes.push(value);
-        llevo += value.length;
-        alAvanzar(Math.min(1, llevo / total));
-      }
-      blob = new Blob(partes as BlobPart[], { type: 'image/webp' });
-    } else {
-      blob = await r.blob();
+    if (!alAvanzar || !r.body) return r.blob();
+    const lector = r.body.getReader();
+    const partes: Uint8Array[] = [];
+    let llevo = 0;
+    for (;;) {
+      const { done, value } = await lector.read();
+      if (done) break;
+      partes.push(value);
+      llevo += value.length;
+      alAvanzar(llevo, total);
     }
-    const img = 'createImageBitmap' in window ? await createImageBitmap(blob) : await this.imagen(blob);
-    return this.subir(img);
+    return new Blob(partes as BlobPart[], { type: r.headers.get('content-type') ?? 'image/webp' });
   }
 
-  private imagen(blob: Blob) {
-    return new Promise<HTMLImageElement>((ok, mal) => {
+  private imagen(blob: Blob): Promise<Imagen> {
+    if ('createImageBitmap' in window) return createImageBitmap(blob);
+    return new Promise((ok, mal) => {
       const i = new Image();
       i.onload = () => ok(i);
       i.onerror = mal;
@@ -220,19 +206,47 @@ export class Visor {
     });
   }
 
-  private subir(img: TexImageSource & { width: number; height: number }): Textura {
+  /** Descarga las seis caras (`base` + `-px.webp`, etc.); informa el avance de 0 a 1 */
+  async cargar(base: string, alAvanzar?: (p: number) => void): Promise<Textura> {
+    const llevo = new Array(6).fill(0);
+    const totales = new Array(6).fill(0);
+    const avisar = () => {
+      const t = totales.reduce((a, b) => a + b, 0);
+      if (alAvanzar && totales.every(Boolean)) alAvanzar(Math.min(1, llevo.reduce((a, b) => a + b, 0) / t));
+    };
+    const caras = await Promise.all(
+      CARAS.map(async (c, i) => {
+        const blob = await this.bajar(`${base}-${c}.webp`, (b, t) => {
+          llevo[i] = b;
+          totales[i] = t || 1;
+          avisar();
+        });
+        return this.imagen(blob);
+      }),
+    );
+    return this.subir(caras);
+  }
+
+  private subir(caras: Imagen[]): Textura {
     const gl = this.gl;
     const tex = gl.createTexture()!;
-    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-    gl.generateMipmap(gl.TEXTURE_2D);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    if ('close' in img && typeof img.close === 'function') img.close();
-    return { tex, alto: img.height };
+    caras.forEach((img, i) => {
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      if ('close' in img && typeof img.close === 'function') img.close();
+    });
+    gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    if (this.anisotropia) {
+      const max = gl.getParameter(this.anisotropia.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+      gl.texParameterf(gl.TEXTURE_CUBE_MAP, this.anisotropia.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, max));
+    }
+    this.sucio = true;
+    return { tex, lado: caras[0].width };
   }
 
   liberar(t: Textura | null) {
@@ -346,25 +360,16 @@ export class Visor {
     this.dibujar();
   };
 
-  private lod(t: Textura | null) {
-    if (!t) return 0;
-    // Texeles del panorama por píxel de pantalla, al centro de la vista
-    const porPixel = (t.alto / Math.PI) * ((2 * Math.tan((this.vista.fov * RAD) / 2)) / Math.max(1, this.lienzo.height));
-    return Math.max(0, Math.log2(porPixel) - 0.25);
-  }
-
   private dibujar() {
     const gl = this.gl;
     const { f, r, u, esc } = this.base();
     gl.viewport(0, 0, this.lienzo.width, this.lienzo.height);
     gl.useProgram(this.prog);
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.a!.tex);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.a!.tex);
     gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, (this.b ?? this.a)!.tex);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, (this.b ?? this.a)!.tex);
     gl.uniform1f(this.u.uMezcla, this.b ? this.mezcla : 0);
-    gl.uniform1f(this.u.uLodA, this.lod(this.a));
-    gl.uniform1f(this.u.uLodB, this.lod(this.b ?? this.a));
     gl.uniform3fv(this.u.uR, r);
     gl.uniform3fv(this.u.uU, u);
     gl.uniform3fv(this.u.uF, f);

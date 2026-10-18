@@ -1,0 +1,41 @@
+{
+  "cara": 2048,
+  "camara": [
+    -10.9,
+    1.6,
+    -4
+  ],
+  "salida": {
+    "yaw": 106.82,
+    "pitch": 5.09
+  },
+  "falda": {
+    "yaw": -48.37,
+    "pitch": -11.65,
+    "fov": 58
+  },
+  "quijada": {
+    "yaw": -137.12,
+    "pitch": -6.85,
+    "fov": 24
+  },
+  "cinta": {
+    "yaw": 7.13,
+    "pitch": -12.84,
+    "fov": 53.84
+  },
+  "mascara": {
+    "yaw": -105.86,
+    "pitch": 11.58,
+    "fov": 24
+  },
+  "cajita": {
+    "yaw": 145.64,
+    "pitch": -9.04,
+    "fov": 24
+  },
+  "entrada": {
+    "yaw": -90,
+    "pitch": 0
+  }
+}

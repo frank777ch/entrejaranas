@@ -1,0 +1,41 @@
+{
+  "cara": 2048,
+  "camara": [
+    -10.9,
+    1.6,
+    4
+  ],
+  "salida": {
+    "yaw": 73.18,
+    "pitch": 5.09
+  },
+  "chaleco": {
+    "yaw": -130,
+    "pitch": -10.96,
+    "fov": 43.15
+  },
+  "mandolina": {
+    "yaw": -50.18,
+    "pitch": -6.53,
+    "fov": 24
+  },
+  "zapatos": {
+    "yaw": 169.05,
+    "pitch": -15.74,
+    "fov": 24
+  },
+  "invitacion": {
+    "yaw": 24.26,
+    "pitch": -12.3,
+    "fov": 52.52
+  },
+  "reloj": {
+    "yaw": 131.88,
+    "pitch": -8.37,
+    "fov": 24
+  },
+  "entrada": {
+    "yaw": -90,
+    "pitch": 0
+  }
+}

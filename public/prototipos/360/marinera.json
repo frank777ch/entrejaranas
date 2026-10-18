@@ -1,9 +1,14 @@
 {
+  "cara": 2048,
   "camara": [
     0,
     1.6,
     -11.1
   ],
+  "salida": {
+    "yaw": 180,
+    "pitch": 5.08
+  },
   "manto": {
     "yaw": -42.84,
     "pitch": -9.83,
@@ -29,8 +34,8 @@
     "pitch": -16.99,
     "fov": 25.74
   },
-  "salida": {
-    "yaw": 180,
-    "pitch": 5.08
+  "entrada": {
+    "yaw": 0,
+    "pitch": 0
   }
 }

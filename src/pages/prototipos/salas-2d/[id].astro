@@ -1,0 +1,19 @@
+---
+// Lámina SVG de cada sala del prototipo 2D, como fragmento suelto.
+// El motor la descarga al asomarse a un arco, para que la página inicial pese poco.
+import { generos } from '../../../data/museo-prototipo';
+import SalaMarinera from '../../../components/prototipo/escenas-2d/SalaMarinera.astro';
+import SalaFestejo from '../../../components/prototipo/escenas-2d/SalaFestejo.astro';
+import SalaTondero from '../../../components/prototipo/escenas-2d/SalaTondero.astro';
+import SalaVals from '../../../components/prototipo/escenas-2d/SalaVals.astro';
+import SalaPolka from '../../../components/prototipo/escenas-2d/SalaPolka.astro';
+
+export function getStaticPaths() {
+  return generos.map((g) => ({ params: { id: g.id } }));
+}
+
+const salas = { marinera: SalaMarinera, festejo: SalaFestejo, tondero: SalaTondero, vals: SalaVals, polka: SalaPolka };
+const Sala = salas[Astro.params.id as keyof typeof salas];
+---
+
+<Sala />

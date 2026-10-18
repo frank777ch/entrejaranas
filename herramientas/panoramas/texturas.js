@@ -303,23 +303,26 @@ export function rayas(a = '#e8c9d6', b = '#d6aec0', filete = 'rgba(255,255,255,0
   return aTextura(c, { repetir: true });
 }
 
-/** Muro de adobe (festejo) */
+/** Muro de adobe revocado (festejo): bloques grandes que asoman bajo el enlucido */
 export function adobe() {
-  const [c, g] = lienzo(512, 512);
+  const [c, g] = lienzo(1024, 1024);
   const r = azar(31);
-  g.fillStyle = '#b8743f';
-  g.fillRect(0, 0, 512, 512);
-  const alto = 64;
-  for (let f = 0; f < 8; f++) {
-    const off = f % 2 ? 0 : -64;
-    for (let x = off; x < 512; x += 128) {
-      const tono = 150 + Math.floor(r() * 40);
-      g.fillStyle = `rgb(${tono + 40},${tono - 20},${tono - 70})`;
-      g.fillRect(x + 4, f * alto + 4, 120, alto - 8);
+  g.fillStyle = '#d9a46c';
+  g.fillRect(0, 0, 1024, 1024);
+  // Juntas de los bloques, apenas marcadas
+  const alto = 256;
+  for (let f = 0; f < 4; f++) {
+    const off = f % 2 ? 0 : -256;
+    for (let x = off; x < 1024; x += 512) {
+      const tono = r() * 22 - 11;
+      g.fillStyle = `rgb(${214 + tono},${158 + tono},${100 + tono})`;
+      g.fillRect(x + 10, f * alto + 10, 492, alto - 20);
     }
   }
-  manchas(g, 512, 512, r, 50, 'rgba(255,220,170,0.12)', 'rgba(80,30,10,0.14)', [20, 90]);
-  grano(g, 512, 512, r, 16000, 0.06);
+  // Revoque de cal encima, con desconchados que dejan ver el barro
+  manchas(g, 1024, 1024, r, 50, 'rgba(240,205,150,0.35)', 'rgba(170,100,50,0.1)', [90, 260]);
+  manchas(g, 1024, 1024, r, 12, 'rgba(150,80,35,0.16)', 'rgba(150,80,35,0.12)', [25, 60]);
+  grano(g, 1024, 1024, r, 30000, 0.035);
   return aTextura(c, { repetir: true });
 }
 
@@ -677,5 +680,561 @@ export function halo() {
   gr.addColorStop(1, 'rgba(255,160,60,0)');
   g.fillStyle = gr;
   g.fillRect(0, 0, 128, 128);
+  return aTextura(c);
+}
+
+/* ---------- Salas de los géneros ---------- */
+
+/** Baldosa pastelera de barro (tondero, festejo): 4 × 4 piezas de 30 cm */
+export function ladrillo(tonos = ['#b5603a', '#a85634', '#bf6a42', '#9e4f2f'], semilla = 61) {
+  const [c, g] = lienzo(512, 512);
+  const r = azar(semilla);
+  g.fillStyle = '#7a5a44';
+  g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 4; i++)
+    for (let j = 0; j < 4; j++) {
+      g.fillStyle = tonos[Math.floor(r() * tonos.length)];
+      g.fillRect(i * 128 + 3, j * 128 + 3, 122, 122);
+    }
+  manchas(g, 512, 512, r, 60, 'rgba(255,210,160,0.12)', 'rgba(60,20,5,0.14)', [15, 60]);
+  grano(g, 512, 512, r, 14000, 0.05);
+  return aTextura(c, { repetir: true });
+}
+
+/** Techo de caña con barro (casa norteña) */
+export function cana() {
+  const [c, g] = lienzo(512, 512);
+  const r = azar(71);
+  g.fillStyle = '#b89565';
+  g.fillRect(0, 0, 512, 512);
+  for (let x = 0; x < 512; x += 16) {
+    const tono = 170 + Math.floor(r() * 40);
+    g.fillStyle = `rgb(${tono + 20},${tono - 5},${tono - 60})`;
+    g.fillRect(x + 1, 0, 13, 512);
+    g.fillStyle = 'rgba(60,35,10,0.35)';
+    g.fillRect(x + 13, 0, 3, 512);
+    for (let y = r() * 90; y < 512; y += 70 + r() * 50) g.fillRect(x + 1, y, 13, 3);
+  }
+  grano(g, 512, 512, r, 9000, 0.04);
+  return aTextura(c, { repetir: true });
+}
+
+/** Parquet en espiga (salón de la polka) */
+export function parquet() {
+  const [c, g] = lienzo(512, 512);
+  const r = azar(91);
+  g.fillStyle = '#4a2a14';
+  g.fillRect(0, 0, 512, 512);
+  const tonos = ['#a8693a', '#b5773f', '#9a5d31', '#c08048', '#8f552d'];
+  const L = 128;
+  const A = 32;
+  for (let k = -8; k < 24; k++)
+    for (let f = -4; f < 12; f++) {
+      const x0 = k * A;
+      const y0 = f * L + k * A;
+      for (const lado of [0, 1]) {
+        g.save();
+        g.translate(x0 + (lado ? A : 0), y0 + (lado ? A : 0));
+        g.rotate(lado ? -Math.PI / 2 : 0);
+        g.fillStyle = tonos[Math.floor(r() * tonos.length)];
+        g.fillRect(1, 1, A - 2, L - 2);
+        g.fillStyle = 'rgba(40,15,0,0.18)';
+        for (let v = 0; v < 4; v++) g.fillRect(4 + r() * (A - 8), 2, 1, L - 4);
+        g.restore();
+      }
+    }
+  grano(g, 512, 512, r, 9000, 0.03);
+  return aTextura(c, { repetir: true });
+}
+
+/** Cielo de atardecer para el patio del festejo */
+export function cieloTarde() {
+  const [c, g] = lienzo(512, 1024);
+  const gr = g.createLinearGradient(0, 0, 0, 1024);
+  gr.addColorStop(0, '#16224a');
+  gr.addColorStop(0.45, '#3d3f78');
+  gr.addColorStop(0.75, '#b8607a');
+  gr.addColorStop(1, '#f2a35e');
+  g.fillStyle = gr;
+  g.fillRect(0, 0, 512, 1024);
+  const r = azar(5);
+  for (let i = 0; i < 90; i++) {
+    g.fillStyle = `rgba(255,250,235,${0.25 + r() * 0.6})`;
+    g.fillRect(r() * 512, r() * 420, 2, 2);
+  }
+  manchas(g, 512, 1024, r, 14, 'rgba(255,190,150,0.18)', 'rgba(255,170,140,0.12)', [60, 160]);
+  return aTextura(c);
+}
+
+/** Franjas horizontales de colores (falda del festejo) */
+export function bandas(colores = ['#f2b233', '#d9472b', '#f7ecd6', '#2f7a4a', '#d9472b', '#f2b233'], n = 9) {
+  const [c, g] = lienzo(64, 1024);
+  for (let i = 0; i < n; i++) {
+    g.fillStyle = colores[i % colores.length];
+    g.fillRect(0, (i * 1024) / n, 64, 1024 / n + 1);
+    g.fillStyle = 'rgba(255,255,255,0.5)';
+    g.fillRect(0, (i * 1024) / n, 64, 4);
+  }
+  return aTextura(c);
+}
+
+/** Tejido de paja (sombrero) */
+export function paja() {
+  const [c, g] = lienzo(256, 256);
+  const r = azar(23);
+  g.fillStyle = '#e3c98d';
+  g.fillRect(0, 0, 256, 256);
+  for (let y = 0; y < 256; y += 6) {
+    g.fillStyle = y % 12 ? 'rgba(150,110,50,0.35)' : 'rgba(255,245,210,0.35)';
+    g.fillRect(0, y, 256, 2);
+  }
+  for (let x = 0; x < 256; x += 8) {
+    g.fillStyle = 'rgba(120,85,35,0.18)';
+    g.fillRect(x, 0, 1, 256);
+  }
+  grano(g, 256, 256, r, 4000, 0.05);
+  return aTextura(c, { repetir: true });
+}
+
+/** Tejido de canasta (mimbre) */
+export function mimbre() {
+  const [c, g] = lienzo(256, 256);
+  g.fillStyle = '#6e4a22';
+  g.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 8; i++)
+    for (let j = 0; j < 8; j++) {
+      const h = (i + j) % 2;
+      g.fillStyle = h ? '#c49a5a' : '#b0864a';
+      g.fillRect(i * 32 + 2, j * 32 + (h ? 2 : 8), 28, h ? 28 : 16);
+      g.fillStyle = 'rgba(255,240,200,0.25)';
+      g.fillRect(i * 32 + 4, j * 32 + (h ? 4 : 10), 24, 3);
+    }
+  return aTextura(c, { repetir: true });
+}
+
+/** Mate burilado (checo): calabaza clara con dibujos quemados */
+export function pirograbado() {
+  const [c, g] = lienzo(1024, 512);
+  const r = azar(37);
+  g.fillStyle = '#c9a265';
+  g.fillRect(0, 0, 1024, 512);
+  manchas(g, 1024, 512, r, 40, 'rgba(255,230,180,0.2)', 'rgba(110,70,30,0.2)', [40, 120]);
+  g.strokeStyle = '#4a2a12';
+  g.lineWidth = 4;
+  for (const y of [150, 360]) {
+    g.beginPath();
+    for (let x = 0; x <= 1024; x += 8) g.lineTo(x, y + Math.sin(x / 32) * 10);
+    g.stroke();
+  }
+  // Aves y hojas de algarrobo entre las franjas
+  g.fillStyle = '#4a2a12';
+  for (let k = 0; k < 8; k++) {
+    const x = 60 + k * 128;
+    g.beginPath();
+    g.ellipse(x, 255, 26, 12, -0.3, 0, Math.PI * 2);
+    g.fill();
+    g.beginPath();
+    g.moveTo(x - 10, 250);
+    g.lineTo(x - 40, 225);
+    g.lineTo(x - 18, 262);
+    g.fill();
+    for (let h = 0; h < 5; h++) {
+      g.beginPath();
+      g.ellipse(x + 50, 220 + h * 18, 9, 4, 0.6, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  grano(g, 1024, 512, r, 12000, 0.04);
+  return aTextura(c, { repetir: true });
+}
+
+/** Pañuelo de color con borde (tondero) */
+export function panueloColor() {
+  const [c, g] = lienzo(512, 512);
+  g.fillStyle = '#d6246e';
+  g.fillRect(0, 0, 512, 512);
+  g.fillStyle = '#f2b233';
+  g.fillRect(28, 28, 456, 456);
+  g.fillStyle = '#d6246e';
+  g.fillRect(52, 52, 408, 408);
+  g.fillStyle = '#2f8a5a';
+  for (let i = 0; i < 6; i++)
+    for (let j = 0; j < 6; j++) {
+      g.beginPath();
+      g.arc(90 + i * 66, 90 + j * 66, 13, 0, Math.PI * 2);
+      g.fill();
+    }
+  g.fillStyle = '#f7ecd6';
+  for (let i = 0; i < 5; i++)
+    for (let j = 0; j < 5; j++) {
+      g.beginPath();
+      g.arc(123 + i * 66, 123 + j * 66, 6, 0, Math.PI * 2);
+      g.fill();
+    }
+  return aTextura(c);
+}
+
+/** Mapa antiguo del departamento de Piura */
+export function mapaPiura() {
+  const [c, g] = lienzo(1024, 1280);
+  const r = azar(97);
+  g.fillStyle = '#ead7aa';
+  g.fillRect(0, 0, 1024, 1280);
+  manchas(g, 1024, 1280, r, 70, 'rgba(255,245,215,0.25)', 'rgba(140,95,40,0.16)', [40, 180]);
+  // Proyección simple: longitud −81.5…−79.0, latitud −3.9…−6.6
+  const P = (lon, lat) => [80 + ((lon + 81.5) / 2.5) * 860, 200 + ((-3.9 - lat) / 2.7) * 1000];
+  // Mar
+  g.fillStyle = 'rgba(120,160,170,0.35)';
+  g.fillRect(0, 0, P(-81.0, 0)[0], 1280);
+  const borde = [
+    [-81.33, -4.25], [-81.05, -4.06], [-80.6, -4.05], [-80.2, -4.3], [-79.65, -4.4], [-79.4, -4.7], [-79.2, -5.1], [-79.3, -5.5],
+    [-79.6, -5.8], [-79.9, -6.2], [-80.4, -6.36], [-80.9, -6.25], [-81.15, -5.95], [-80.95, -5.75], [-81.2, -5.4], [-81.15, -5.1], [-81.3, -4.75],
+  ];
+  g.beginPath();
+  borde.forEach(([lon, lat], i) => g[i ? 'lineTo' : 'moveTo'](...P(lon, lat)));
+  g.closePath();
+  g.fillStyle = 'rgba(206,170,110,0.55)';
+  g.fill();
+  g.lineWidth = 5;
+  g.strokeStyle = '#6b3f1a';
+  g.setLineDash([18, 8]);
+  g.stroke();
+  g.setLineDash([]);
+  // Ríos Chira y Piura
+  g.strokeStyle = '#3f6f8a';
+  g.lineWidth = 6;
+  for (const rio of [
+    [[-79.6, -4.55], [-80.2, -4.7], [-80.69, -4.88], [-81.15, -4.9]],
+    [[-79.7, -5.35], [-80.2, -5.2], [-80.63, -5.19], [-80.75, -5.45], [-80.85, -5.65]],
+  ]) {
+    g.beginPath();
+    rio.forEach(([lon, lat], i) => g[i ? 'lineTo' : 'moveTo'](...P(lon, lat)));
+    g.stroke();
+  }
+  // Pueblos
+  const pueblos = [
+    ['Talara', -81.27, -4.58, 1], ['Paita', -81.11, -5.09, 1], ['Sullana', -80.69, -4.9, 1], ['PIURA', -80.63, -5.19, 2],
+    ['Catacaos', -80.67, -5.27, 1], ['Sechura', -80.82, -5.56, 1], ['Chulucanas', -80.16, -5.09, 1], ['Ayabaca', -79.72, -4.64, 1],
+    ['Huancabamba', -79.45, -5.24, 1], ['Morropón', -79.97, -5.18, 1],
+  ];
+  for (const [n, lon, lat, peso] of pueblos) {
+    const [x, y] = P(lon, lat);
+    g.fillStyle = peso > 1 ? '#93171e' : '#3a1a08';
+    g.beginPath();
+    g.arc(x, y, peso > 1 ? 14 : 9, 0, Math.PI * 2);
+    g.fill();
+    g.font = `${peso > 1 ? 'bold 46px' : 'italic 32px'} ${FUENTE}`;
+    g.fillStyle = '#3a1a08';
+    g.textAlign = x > 800 ? 'right' : 'left';
+    g.fillText(n, x + (x > 800 ? -18 : 18), y - 12);
+  }
+  // Cerros y algarrobos
+  g.fillStyle = 'rgba(90,60,30,0.6)';
+  for (let k = 0; k < 14; k++) {
+    const [x, y] = P(-79.5 + r() * 0.35, -4.7 - r() * 1.1);
+    g.beginPath();
+    g.moveTo(x - 22, y);
+    g.lineTo(x, y - 30);
+    g.lineTo(x + 22, y);
+    g.fill();
+  }
+  // Rosa de los vientos
+  const [rx, ry] = [170, 1080];
+  g.fillStyle = '#6b3f1a';
+  for (let k = 0; k < 4; k++) {
+    g.save();
+    g.translate(rx, ry);
+    g.rotate((k * Math.PI) / 2);
+    g.beginPath();
+    g.moveTo(0, -90);
+    g.lineTo(16, 0);
+    g.lineTo(-16, 0);
+    g.fill();
+    g.restore();
+  }
+  g.font = `bold 40px ${FUENTE}`;
+  g.textAlign = 'center';
+  g.fillText('N', rx, ry - 100);
+  // Título
+  g.fillStyle = 'rgba(255,248,230,0.85)';
+  g.fillRect(260, 46, 504, 120);
+  g.strokeStyle = '#6b3f1a';
+  g.lineWidth = 4;
+  g.strokeRect(272, 58, 480, 96);
+  g.fillStyle = '#3a1a08';
+  g.font = `bold 58px ${FUENTE}`;
+  g.fillText('PIURA', 512, 126);
+  g.font = `italic 30px ${FUENTE}`;
+  g.fillText('Cuna del tondero', 512, 1235);
+  g.strokeStyle = '#6b3f1a';
+  g.lineWidth = 10;
+  g.strokeRect(14, 14, 996, 1252);
+  grano(g, 1024, 1280, r, 30000, 0.04);
+  return aTextura(c);
+}
+
+/** Partitura manuscrita */
+export function partitura() {
+  const [c, g] = lienzo(768, 1024);
+  const r = azar(19);
+  g.fillStyle = '#f2e7cc';
+  g.fillRect(0, 0, 768, 1024);
+  manchas(g, 768, 1024, r, 30, 'rgba(255,250,235,0.3)', 'rgba(150,110,50,0.12)', [40, 140]);
+  g.fillStyle = '#2a1a10';
+  g.textAlign = 'center';
+  g.font = `bold 50px ${FUENTE}`;
+  g.fillText('Vals criollo', 384, 92);
+  g.font = `italic 26px ${FUENTE}`;
+  g.fillText('para guitarra y canto', 384, 132);
+  g.strokeStyle = '#2a1a10';
+  for (let s = 0; s < 9; s++) {
+    const y0 = 190 + s * 92;
+    g.lineWidth = 2;
+    for (let l = 0; l < 5; l++) {
+      g.beginPath();
+      g.moveTo(50, y0 + l * 11);
+      g.lineTo(718, y0 + l * 11);
+      g.stroke();
+    }
+    g.lineWidth = 3;
+    for (const x of [50, 270, 494, 718]) {
+      g.beginPath();
+      g.moveTo(x, y0);
+      g.lineTo(x, y0 + 44);
+      g.stroke();
+    }
+    if (!s) {
+      g.font = `bold 40px ${FUENTE}`;
+      g.fillText('3', 82, y0 + 20);
+      g.fillText('4', 82, y0 + 44);
+    }
+    for (let n = 0; n < 9; n++) {
+      const x = (s ? 75 : 115) + n * 70 + r() * 8;
+      const y = y0 + Math.floor(r() * 8) * 5.5;
+      g.beginPath();
+      g.ellipse(x, y, 8, 6, -0.4, 0, Math.PI * 2);
+      g.fill();
+      g.lineWidth = 2;
+      g.beginPath();
+      g.moveTo(x + 7, y);
+      g.lineTo(x + 7, y - 34);
+      g.stroke();
+    }
+  }
+  return aTextura(c);
+}
+
+/** Invitación a un baile de sociedad */
+export function invitacion() {
+  const [c, g] = lienzo(768, 1024);
+  const r = azar(29);
+  g.fillStyle = '#f6ecd6';
+  g.fillRect(0, 0, 768, 1024);
+  manchas(g, 768, 1024, r, 24, 'rgba(255,252,240,0.3)', 'rgba(170,120,60,0.1)', [40, 140]);
+  g.strokeStyle = '#a24b78';
+  g.lineWidth = 10;
+  g.strokeRect(30, 30, 708, 964);
+  g.strokeStyle = '#c9a050';
+  g.lineWidth = 3;
+  g.strokeRect(52, 52, 664, 920);
+  g.fillStyle = '#3a160c';
+  g.textAlign = 'center';
+  g.font = `italic 34px ${FUENTE}`;
+  g.fillText('Se invita a usted y familia al', 384, 190);
+  g.font = `bold 78px ${FUENTE}`;
+  g.fillText('Gran Baile', 384, 300);
+  g.font = `italic 36px ${FUENTE}`;
+  g.fillText('de Sociedad', 384, 352);
+  g.fillStyle = '#a24b78';
+  g.fillRect(234, 400, 300, 4);
+  g.fillStyle = '#3a160c';
+  g.font = `bold 34px ${FUENTE}`;
+  g.fillText('PROGRAMA', 384, 480);
+  g.font = `32px ${FUENTE}`;
+  ['1. Vals', '2. Polka', '3. Mazurca', '4. Vals', '5. Polka'].forEach((t, i) => g.fillText(t, 384, 545 + i * 56));
+  g.font = `italic 28px ${FUENTE}`;
+  g.fillText('Lima, sábado a las nueve de la noche', 384, 880);
+  return aTextura(c);
+}
+
+/** Esfera de reloj con números romanos */
+export function esfera() {
+  const [c, g] = lienzo(512, 512);
+  g.fillStyle = '#f7f1e2';
+  g.beginPath();
+  g.arc(256, 256, 250, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#2a1a10';
+  g.lineWidth = 6;
+  g.beginPath();
+  g.arc(256, 256, 236, 0, Math.PI * 2);
+  g.stroke();
+  g.fillStyle = '#2a1a10';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.font = `bold 46px ${FUENTE}`;
+  const romanos = ['XII', 'I', 'II', 'III', 'IIII', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
+  romanos.forEach((t, i) => {
+    const a = (i / 12) * Math.PI * 2;
+    g.fillText(t, 256 + Math.sin(a) * 186, 256 - Math.cos(a) * 186);
+  });
+  for (let i = 0; i < 60; i++) {
+    const a = (i / 60) * Math.PI * 2;
+    g.fillRect(256 + Math.sin(a) * 226 - 2, 256 - Math.cos(a) * 226 - 2, 4, 4);
+  }
+  g.lineCap = 'round';
+  g.lineWidth = 12;
+  g.beginPath();
+  g.moveTo(256, 256);
+  g.lineTo(256 + 90, 256 - 60);
+  g.stroke();
+  g.lineWidth = 7;
+  g.beginPath();
+  g.moveTo(256, 256);
+  g.lineTo(256 - 40, 256 - 150);
+  g.stroke();
+  g.beginPath();
+  g.arc(256, 256, 14, 0, Math.PI * 2);
+  g.fill();
+  return aTextura(c);
+}
+
+/** Disco de vinilo con surcos y etiqueta */
+export function vinilo() {
+  const [c, g] = lienzo(512, 512);
+  g.fillStyle = '#0c0c0c';
+  g.beginPath();
+  g.arc(256, 256, 255, 0, Math.PI * 2);
+  g.fill();
+  for (let rad = 110; rad < 250; rad += 3) {
+    g.strokeStyle = rad % 2 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.3)';
+    g.lineWidth = 1.5;
+    g.beginPath();
+    g.arc(256, 256, rad, 0, Math.PI * 2);
+    g.stroke();
+  }
+  g.fillStyle = '#93171e';
+  g.beginPath();
+  g.arc(256, 256, 92, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#fead15';
+  g.textAlign = 'center';
+  g.font = `bold 24px ${FUENTE}`;
+  g.fillText('VALS CRIOLLO', 256, 226);
+  g.font = `italic 18px ${FUENTE}`;
+  g.fillText('Lado A · 78 rpm', 256, 300);
+  g.fillStyle = '#0c0c0c';
+  g.beginPath();
+  g.arc(256, 256, 8, 0, Math.PI * 2);
+  g.fill();
+  return aTextura(c);
+}
+
+/** Pintura de máscara de diablo (rojo, negro y oro) */
+export function mascaraDiablo() {
+  const [c, g] = lienzo(512, 512);
+  g.fillStyle = '#c3261d';
+  g.fillRect(0, 0, 512, 512);
+  g.fillStyle = '#f2b233';
+  for (let x = 0; x < 512; x += 64) {
+    g.beginPath();
+    g.moveTo(x, 0);
+    g.lineTo(x + 32, 70);
+    g.lineTo(x + 64, 0);
+    g.fill();
+  }
+  g.fillStyle = '#111';
+  for (const y of [200, 330]) {
+    for (let x = 0; x < 512; x += 48) {
+      g.beginPath();
+      g.arc(x + 24, y, 12, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  g.fillStyle = '#f7ecd6';
+  for (let x = 12; x < 512; x += 48) g.fillRect(x, 260, 24, 14);
+  return aTextura(c, { repetir: true });
+}
+
+/** Brocado del chaleco */
+export function brocado(fondo = '#5a1a2e', dibujo = 'rgba(230,180,90,0.5)') {
+  const [c, g] = lienzo(256, 256);
+  g.fillStyle = fondo;
+  g.fillRect(0, 0, 256, 256);
+  g.fillStyle = dibujo;
+  for (let i = 0; i < 4; i++)
+    for (let j = 0; j < 4; j++) {
+      const x = i * 64 + (j % 2) * 32 + 16;
+      const y = j * 64 + 32;
+      g.beginPath();
+      g.moveTo(x, y - 14);
+      g.lineTo(x + 9, y);
+      g.lineTo(x, y + 14);
+      g.lineTo(x - 9, y);
+      g.fill();
+    }
+  return aTextura(c, { repetir: true });
+}
+
+/** Mural de figuras danzantes para el patio del festejo */
+export function muralFestejo() {
+  const [c, g] = lienzo(1536, 640);
+  const r = azar(77);
+  g.fillStyle = '#e9b465';
+  g.fillRect(0, 0, 1536, 640);
+  manchas(g, 1536, 640, r, 40, 'rgba(255,230,180,0.25)', 'rgba(150,70,20,0.18)', [40, 160]);
+  const piel = '#4a2412';
+  const colores = ['#d9472b', '#2f7a4a', '#f2b233', '#2b3f6b', '#a24b78'];
+  for (let k = 0; k < 7; k++) {
+    const x = 130 + k * 210;
+    const y = 520;
+    const giro = (k % 2 ? 1 : -1) * 0.25;
+    g.save();
+    g.translate(x, y);
+    g.rotate(giro * 0.4);
+    g.fillStyle = colores[k % colores.length];
+    g.beginPath();
+    g.moveTo(-90, 0);
+    g.quadraticCurveTo(-40, -170, 0, -200);
+    g.quadraticCurveTo(40, -170, 90, 0);
+    g.fill();
+    g.fillStyle = '#f7ecd6';
+    g.fillRect(-24, -300, 48, 110);
+    g.fillStyle = piel;
+    g.beginPath();
+    g.arc(0, -340, 36, 0, Math.PI * 2);
+    g.fill();
+    g.strokeStyle = piel;
+    g.lineWidth = 16;
+    g.lineCap = 'round';
+    g.beginPath();
+    g.moveTo(-20, -280);
+    g.lineTo(-80, -360 + giro * 80);
+    g.moveTo(20, -280);
+    g.lineTo(80, -230 - giro * 80);
+    g.stroke();
+    g.restore();
+  }
+  g.fillStyle = '#3a1a08';
+  g.font = `bold 64px ${FUENTE}`;
+  g.textAlign = 'center';
+  g.fillText('¡Festejo!', 768, 90);
+  grano(g, 1536, 640, r, 30000, 0.05);
+  return aTextura(c);
+}
+
+/** Puerta de madera pintada de azul (callejón) */
+export function puertaAzul() {
+  const [c, g] = lienzo(256, 512);
+  const r = azar(15);
+  g.fillStyle = '#2f5d7a';
+  g.fillRect(0, 0, 256, 512);
+  g.fillStyle = 'rgba(0,0,0,0.25)';
+  for (let x = 0; x < 256; x += 32) g.fillRect(x, 0, 3, 512);
+  g.strokeStyle = '#d9c38c';
+  g.lineWidth = 8;
+  g.strokeRect(24, 24, 208, 200);
+  g.strokeRect(24, 268, 208, 220);
+  manchas(g, 256, 512, r, 30, 'rgba(255,255,255,0.12)', 'rgba(60,30,10,0.25)', [10, 50]);
   return aTextura(c);
 }

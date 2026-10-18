@@ -1,9 +1,10 @@
 // Motor del prototipo 2D (novela visual): la cámara no se mueve por la casona,
 // cambia de plano. Cada vista es una lámina SVG que se encuadra, se acerca o se funde.
 import * as ui from './interfaz';
-import { casona, generos, type Genero, type Objeto } from '../../data/museo-prototipo';
+import { casona, generos, type Genero, type GeneroId, type Objeto } from '../../data/museo-prototipo';
 
-type Vista = 'frente' | 'derecha' | 'fondo' | 'izquierda' | 'arriba' | 'abajo' | 'sala-marinera';
+type VistaCasona = 'frente' | 'derecha' | 'fondo' | 'izquierda' | 'arriba' | 'abajo';
+type Vista = VistaCasona | `sala-${GeneroId}`;
 
 interface Camara {
   /** Punto de la lámina que queda en el foco de la pantalla */
@@ -19,7 +20,7 @@ interface Camara {
 
 const ALTO = 900;
 const PAREDES: Vista[] = ['frente', 'derecha', 'fondo', 'izquierda'];
-const SALAS: Partial<Record<string, Vista>> = { marinera: 'sala-marinera' };
+const salaDe = (g: Genero): Vista => `sala-${g.id}`;
 
 const raiz = document.querySelector<HTMLElement>('.proto')!;
 const mundo = document.querySelector<HTMLElement>('.mundo-2d')!;
@@ -104,18 +105,17 @@ function actualizarFlechas() {
   ui.mostrarFlechas({ izquierda: true, derecha: true, arriba: true, abajo: true });
 }
 
-const NOMBRES: Record<Vista, string> = {
+const NOMBRES: Record<VistaCasona, string> = {
   frente: 'Casona limeña',
   derecha: 'Casona limeña',
   fondo: 'Casona limeña · balcón',
   izquierda: 'Casona limeña',
   arriba: 'Casona limeña · artesonado',
   abajo: 'Casona limeña · piso',
-  'sala-marinera': 'Marinera limeña',
 };
 
 function lugarCasona() {
-  ui.lugar(NOMBRES[actual]);
+  ui.lugar(NOMBRES[actual as VistaCasona] ?? 'Casona limeña');
 }
 
 /** Cambia de lámina con un fundido y un leve desplazamiento en la dirección del giro */
@@ -184,7 +184,7 @@ function asomarse(g: Genero) {
   ui.lugar(`Te asomas · ${g.nombre}`, g.color);
   ui.mostrarRegreso(null);
   ui.mostrarCartel(g, { entrar: () => entrar(g), volver: salirAsomo });
-  if (g.completa) precargar();
+  if (g.completa) cargarSala(g).catch(() => {});
   actualizarFlechas();
 }
 
@@ -200,11 +200,23 @@ function salirAsomo() {
   actualizarFlechas();
 }
 
-/* Segundo toque: la sala completa */
-function entrar(g: Genero) {
-  const sala = SALAS[g.id];
-  if (!g.completa || !sala) return;
+/* Segundo toque: la sala completa (su lámina se descarga al asomarse) */
+let entrando = false;
+async function entrar(g: Genero) {
+  if (!g.completa || entrando) return;
+  entrando = true;
   ui.toque(7);
+  try {
+    await cargarSala(g);
+  } catch {
+    entrando = false;
+    ui.mostrarPista('No se pudo abrir la sala. Revisa tu conexión e inténtalo de nuevo');
+    return;
+  }
+  entrando = false;
+  // El visitante pudo volver a la casona mientras se descargaba
+  if (asomo !== g) return;
+  const sala = salaDe(g);
   ui.mostrarCartel(null);
   const vieja = actual;
   vistas.get(vieja)!.style.transform = transformar(vieja, { ...cam, zoom: cam.zoom * 2.4 });
@@ -346,22 +358,42 @@ addEventListener('resize', () => {
   actualizarFlechas();
 });
 
-/* Precarga de las imágenes de la sala (al asomarse) */
-const IMAGENES = ['/prototipos/2d/vestido.webp', '/prototipos/2d/abanico.webp', '/prototipos/2d/pareja.webp', '/museo/texturas/cuadro-plaza.webp'];
-let precargadas: Promise<unknown> | null = null;
-function precargar() {
-  precargadas ??= Promise.all(
-    IMAGENES.map(
-      (src) =>
-        new Promise((listo) => {
-          const img = new Image();
-          img.onload = img.onerror = listo;
-          img.src = src;
-        }),
-    ),
-  );
-  return precargadas;
+function cargarImagen(src: string) {
+  return new Promise((listo) => {
+    const img = new Image();
+    img.onload = img.onerror = listo;
+    img.src = src;
+  });
 }
+
+/* Láminas de las salas: se descargan al asomarse a su arco y se agregan al mundo */
+const cargas = new Map<GeneroId, Promise<void>>();
+function cargarSala(g: Genero) {
+  let carga = cargas.get(g.id);
+  if (!carga) {
+    const url = `/prototipos/salas-2d/${g.id}${import.meta.env.DEV ? '' : '.html'}`;
+    carga = fetch(url)
+      .then((r) => {
+        if (!r.ok) throw new Error(`${r.status} ${url}`);
+        return r.text();
+      })
+      .then(async (html) => {
+        const lamina = new DOMParser().parseFromString(html, 'text/html').querySelector<HTMLElement>('.vista-2d');
+        if (!lamina) throw new Error(`Sin lámina en ${url}`);
+        const el = document.importNode(lamina, true);
+        mundo.append(el);
+        vistas.set(el.dataset.vista as Vista, el);
+        activar(el.dataset.vista as Vista, false);
+        await Promise.all([...el.querySelectorAll('image')].map((i) => cargarImagen(i.getAttribute('href')!)));
+      });
+    carga.catch(() => cargas.delete(g.id));
+    cargas.set(g.id, carga);
+  }
+  return carga;
+}
+
+/* Imágenes de la casona (los vistazos del arco de la marinera) */
+const IMAGENES = ['/prototipos/2d/vestido.webp', '/prototipos/2d/pareja.webp', '/museo/texturas/cuadro-plaza.webp'];
 
 /* Arranque */
 async function iniciar() {
@@ -372,40 +404,25 @@ async function iniciar() {
   ui.progreso(0.15, 'Abriendo la casona…');
   await Promise.all([
     document.fonts.ready,
-    ...IMAGENES.map(
-      (src) =>
-        new Promise((listo) => {
-          const img = new Image();
-          img.onload = img.onerror = () => {
-            ui.progreso(0.15 + (++hechos / IMAGENES.length) * 0.85);
-            listo(null);
-          };
-          img.src = src;
-        }),
-    ),
+    ...IMAGENES.map((src) => cargarImagen(src).then(() => ui.progreso(0.15 + (++hechos / IMAGENES.length) * 0.85))),
   ]);
-  precargadas = Promise.resolve();
 
   // Atajos para revisar estados: ?vista=derecha, ?asomo=tondero, ?sala=marinera, ?objeto=arpa
   const q = new URLSearchParams(location.search);
   const vistaQ = q.get('vista') as Vista | null;
-  if (vistaQ && vistas.has(vistaQ) && !SALAS[vistaQ]) {
+  if (vistaQ && vistas.has(vistaQ) && !vistaQ.startsWith('sala-')) {
     cambiar(vistaQ, { cx: limitar(vistaQ, 800), cy: ALTO / 2, zoom: 1 });
     if (PAREDES.includes(vistaQ)) paredBase = vistaQ;
   }
   ui.modo('casona');
-  const gq = generos.find((g) => g.id === (q.get('asomo') ?? q.get('sala')));
+  const oq = q.get('objeto');
+  const gObj = oq ? generos.find((g) => g.objetos.some((o) => o.id === oq)) : undefined;
+  const gq = gObj ?? generos.find((g) => g.id === (q.get('asomo') ?? q.get('sala')));
   if (gq) {
     asomarse(gq);
-    if (q.has('sala')) entrar(gq);
+    if (q.has('sala') || gObj) await entrar(gq);
   }
-  const oq = q.get('objeto');
   const elQ = oq && mundo.querySelector<SVGGElement>(`.objeto-2d[data-objeto="${oq}"]`);
-  const gObj = oq ? generos.find((g) => g.objetos.some((o) => o.id === oq)) : undefined;
-  if (elQ && gObj && enSala !== gObj) {
-    asomarse(gObj);
-    entrar(gObj);
-  }
   if (elQ) {
     const vistaObj = elQ.closest<HTMLElement>('.vista-2d')!.dataset.vista as Vista;
     if (vistaObj !== actual) cambiar(vistaObj, { cx: limitar(vistaObj, 800), cy: ALTO / 2, zoom: 1 });
