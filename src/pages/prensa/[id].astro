@@ -13,6 +13,8 @@ export const getStaticPaths = (async () => {
 const { noticia } = Astro.props;
 const { Content } = await render(noticia);
 const { titulo, resumen, fecha, imagen, imagenAlt } = noticia.data;
+// Las fotos horizontales van grandes, antes del texto; los afiches verticales, al costado
+const horizontal = imagen ? imagen.width > imagen.height : false;
 const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 
@@ -27,15 +29,31 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
         <time datetime={fecha.toISOString()}>{formatoFecha.format(fecha)}</time>
       </header>
 
-      <div class="nota__cuerpo">
+      {
+        imagen && horizontal && (
+          <figure class="nota__portada">
+            <a href={imagen.src} target="_blank" rel="noopener">
+              <Image
+                src={imagen}
+                alt={imagenAlt ?? ''}
+                widths={[640, 960, 1280, 1800, 2400]}
+                quality={90}
+                sizes="(max-width: 1240px) calc(100vw - 4rem), 1160px"
+              />
+            </a>
+          </figure>
+        )
+      }
+
+      <div class:list={['nota__cuerpo', { 'nota__cuerpo--lateral': imagen && !horizontal }]}>
         <div class="nota__texto">
           <Content />
         </div>
         {
-          imagen && (
+          imagen && !horizontal && (
             <figure class="nota__imagen">
               <a href={imagen.src} target="_blank" rel="noopener">
-                <Image src={imagen} alt={imagenAlt ?? ''} widths={[400, 640, 900]} sizes="(max-width: 900px) 100vw, 380px" />
+                <Image src={imagen} alt={imagenAlt ?? ''} widths={[480, 720, 960, 1320]} quality={90} sizes="(max-width: 900px) 100vw, 440px" />
               </a>
             </figure>
           )
@@ -81,10 +99,12 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
 
   .nota__cuerpo {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 380px;
     gap: clamp(2rem, 5vw, 4rem);
     align-items: start;
     margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  }
+  .nota__cuerpo--lateral {
+    grid-template-columns: minmax(0, 1fr) 440px;
   }
   .nota__texto {
     max-width: 68ch;
@@ -116,6 +136,14 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     box-shadow: var(--sombra);
     transform: rotate(2deg);
   }
+  .nota__portada {
+    margin: clamp(2rem, 4vw, 3rem) 0 0;
+    background: var(--blanco);
+    padding: 0.8rem;
+    border-radius: 6px;
+    box-shadow: var(--sombra);
+  }
+  .nota__portada img,
   .nota__imagen img {
     display: block;
     width: 100%;
@@ -124,7 +152,7 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
   }
 
   @media (max-width: 900px) {
-    .nota__cuerpo {
+    .nota__cuerpo--lateral {
       grid-template-columns: 1fr;
     }
     .nota__imagen {

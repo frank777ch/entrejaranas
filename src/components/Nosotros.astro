@@ -34,8 +34,9 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
               <Image
                 src={fotoEquipo}
                 alt="El equipo de Entre Jaranas"
-                widths={[480, 720, 960, 1280]}
-                sizes="(max-width: 720px) calc(100vw - 4rem), (max-width: 1080px) 55vw, 460px"
+                widths={[480, 720, 960, 1280, 1800, 2400]}
+                quality={90}
+                sizes="(max-width: 1080px) calc(100vw - 4rem), 900px"
                 class="foto__img"
               />
             ) : (
@@ -111,10 +112,8 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
   }
   .nosotros__cuerpo {
     display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-    gap: clamp(1.5rem, 4vw, 3rem);
+    gap: clamp(2rem, 4vw, 3rem);
     margin-top: 2.5rem;
-    align-items: start;
   }
 
   .foto {
@@ -123,11 +122,11 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     padding: 0.9rem 0.9rem 0;
     border-radius: 6px;
     box-shadow: var(--sombra);
-    transform: rotate(-3deg);
+    transform: rotate(-1.5deg);
     transition: transform 0.4s ease;
   }
   .foto:hover {
-    transform: rotate(0) scale(1.02);
+    transform: rotate(0) scale(1.01);
   }
   .foto__img,
   .foto__vacia {
@@ -165,7 +164,16 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
 
   .nosotros__texto {
     display: grid;
-    gap: 1.1rem;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 1.1rem clamp(1.5rem, 4vw, 3rem);
+    align-content: start;
+  }
+  .nosotros__texto > * {
+    grid-column: 2;
+  }
+  .nosotros__texto > .destacado {
+    grid-column: 1;
+    grid-row: 1 / span 3;
   }
   .sumate {
     font-weight: 700;
@@ -257,11 +265,13 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     }
   }
   @media (max-width: 720px) {
-    .nosotros__cuerpo {
+    .nosotros__texto {
       grid-template-columns: 1fr;
     }
-    .foto {
-      max-width: 420px;
+    .nosotros__texto > *,
+    .nosotros__texto > .destacado {
+      grid-column: auto;
+      grid-row: auto;
     }
   }
 </style>
