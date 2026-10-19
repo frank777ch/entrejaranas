@@ -2,12 +2,14 @@
 // Controles comunes a los dos prototipos: la escena va en el slot
 interface Props {
   etiqueta: string;
+  /** Clase extra para variar el estilo de un prototipo */
+  clase?: string;
 }
 
-const { etiqueta } = Astro.props;
+const { etiqueta, clase } = Astro.props;
 ---
 
-<div class="proto" data-modo="carga">
+<div class:list={['proto', clase]} data-modo="carga">
   <div class="proto__escena">
     <slot />
   </div>
@@ -71,6 +73,7 @@ const { etiqueta } = Astro.props;
     <button type="button" class="ficha__cerrar" aria-label="Cerrar ficha">×</button>
     <p class="ficha__categoria"></p>
     <h2 class="ficha__titulo" id="ficha-titulo" tabindex="-1"></h2>
+    <p class="ficha__lugar" hidden></p>
     <p class="ficha__texto"></p>
     <button type="button" class="ficha__audio" aria-pressed="false">
       <span class="ficha__play" aria-hidden="true">
@@ -86,6 +89,15 @@ const { etiqueta } = Astro.props;
       <strong>¿Sabías que…?</strong>
       <p></p>
     </div>
+    <nav class="ficha__nav" aria-label="Piezas de la sala" hidden>
+      <button type="button" class="ficha__paso" data-paso="-1" aria-label="Pieza anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+      </button>
+      <span class="ficha__contador" aria-live="polite"></span>
+      <button type="button" class="ficha__paso" data-paso="1" aria-label="Pieza siguiente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+      </button>
+    </nav>
   </aside>
 
   <p class="pista" aria-hidden="true"></p>

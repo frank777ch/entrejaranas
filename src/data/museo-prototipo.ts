@@ -18,6 +18,8 @@ export interface Objeto {
 
 export interface Genero {
   id: GeneroId;
+  /** Número de la sala en el recorrido (boceto del equipo, prototipo C) */
+  sala: number;
   nombre: string;
   /** Color distintivo de la sala */
   color: string;
@@ -55,12 +57,41 @@ export const casona = {
       audio: 'Guitarra criolla',
       dato: 'Cinco arcos, cinco géneros: festejo, marinera limeña, tondero, vals criollo y polka. Elige uno y asómate.',
     },
+    // Las tres piezas siguientes completan las cinco de la sala principal en el prototipo C
+    {
+      id: 'pinglo',
+      categoria: 'Símbolo visual',
+      nombre: 'Retrato de Felipe Pinglo',
+      texto:
+        'Felipe Pinglo Alva (1899-1936) es llamado el padre de la música criolla. Compuso cerca de 300 canciones que retratan la vida de los barrios de Lima.',
+      audio: 'El plebeyo, vals de Felipe Pinglo',
+      dato: 'Su vals "El plebeyo" cuenta un amor imposible entre clases sociales y es una de las canciones criollas más conocidas.',
+    },
+    {
+      id: 'plaza',
+      categoria: 'Símbolo visual',
+      nombre: 'Cuadro de la Plaza de Armas',
+      texto:
+        'Lima fue el gran escenario de la música criolla: sus plazas, balcones y callejones vieron nacer serenatas, jaranas y valses.',
+      audio: 'Vals de serenata',
+      dato: 'Los callejones y quintas de los Barrios Altos y el Rímac fueron cuna de muchos compositores criollos.',
+    },
+    {
+      id: 'arana',
+      categoria: 'Vida cotidiana',
+      nombre: 'Araña de velas',
+      texto:
+        'Las jaranas se celebraban en los salones de las casonas, bajo la luz de arañas de velas. Una buena jarana podía durar toda la noche y hasta días.',
+      audio: 'Guitarras y cajón de jarana',
+      dato: 'Antes de la luz eléctrica, las velas de las arañas se encendían una a una con una vara larga.',
+    },
   ] satisfies Objeto[],
 };
 
 export const generos: Genero[] = [
   {
     id: 'marinera',
+    sala: 2,
     nombre: 'Marinera limeña',
     color: '#93171e',
     pared: 'frente',
@@ -120,6 +151,7 @@ export const generos: Genero[] = [
   },
   {
     id: 'tondero',
+    sala: 3,
     nombre: 'Tondero',
     color: '#5f7d2e',
     pared: 'derecha',
@@ -179,6 +211,7 @@ export const generos: Genero[] = [
   },
   {
     id: 'vals',
+    sala: 1,
     nombre: 'Vals criollo',
     color: '#2b3f6b',
     pared: 'derecha',
@@ -238,6 +271,7 @@ export const generos: Genero[] = [
   },
   {
     id: 'polka',
+    sala: 4,
     nombre: 'Polka criolla',
     color: '#a24b78',
     pared: 'izquierda',
@@ -297,6 +331,7 @@ export const generos: Genero[] = [
   },
   {
     id: 'festejo',
+    sala: 5,
     nombre: 'Festejo',
     color: '#c4561f',
     pared: 'izquierda',

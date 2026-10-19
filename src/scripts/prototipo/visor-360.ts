@@ -1,5 +1,7 @@
 // Visor de panoramas 360° (cubemaps de seis caras) con WebGL puro, sin librerías.
 // Un solo triángulo cubre la pantalla: cada píxel calcula hacia dónde mira y lee el cubo.
+// También muestra imágenes planas (una ilustración o un render de cámara fija) como si
+// fueran una ventana frente al visitante: la cámara gira poco y nunca se sale del cuadro.
 
 export interface Vista {
   /** Giro horizontal en grados: 0 = frente, 90 = derecha */
@@ -12,8 +14,16 @@ export interface Vista {
 
 export interface Textura {
   tex: WebGLTexture;
-  /** Lado de cada cara en píxeles */
+  /** Lado de cada cara en píxeles (en una imagen plana, su ancho) */
   lado: number;
+  /** Imagen plana: tangentes de la mitad de su campo horizontal y vertical */
+  plano?: { tanH: number; tanV: number };
+}
+
+/** Rango permitido de giro e inclinación, en grados */
+export interface Encierro {
+  yaw: [number, number];
+  pitch: [number, number];
 }
 
 export interface Punto {
@@ -35,10 +45,15 @@ in vec2 p;
 out vec2 vP;
 void main() { vP = p; gl_Position = vec4(p, 0.0, 1.0); }`;
 
+// Imagen plana: la dirección se proyecta sobre un plano frente a la cámara inicial (−z)
 const FRAGMENTO_2 = `#version 300 es
 precision highp float;
 uniform samplerCube uA;
 uniform samplerCube uB;
+uniform sampler2D uA2;
+uniform sampler2D uB2;
+uniform vec4 uPlanoA;
+uniform vec4 uPlanoB;
 uniform float uMezcla;
 uniform vec3 uR;
 uniform vec3 uU;
@@ -46,9 +61,15 @@ uniform vec3 uF;
 uniform vec2 uEsc;
 in vec2 vP;
 out vec4 color;
+vec2 uvPlano(vec3 d, vec4 pl) {
+  float z = max(-d.z, 1e-4);
+  return vec2(0.5 + d.x / z / pl.y * 0.5, 0.5 - d.y / z / pl.z * 0.5);
+}
 void main() {
   vec3 d = uR * vP.x * uEsc.x + uU * vP.y * uEsc.y + uF;
-  color = mix(texture(uA, d), texture(uB, d), uMezcla);
+  vec4 a = uPlanoA.x > 0.5 ? texture(uA2, uvPlano(d, uPlanoA)) : texture(uA, d);
+  vec4 b = uPlanoB.x > 0.5 ? texture(uB2, uvPlano(d, uPlanoB)) : texture(uB, d);
+  color = mix(a, b, uMezcla);
 }`;
 
 const VERTICE_1 = `attribute vec2 p;
@@ -58,15 +79,25 @@ void main() { vP = p; gl_Position = vec4(p, 0.0, 1.0); }`;
 const FRAGMENTO_1 = `precision highp float;
 uniform samplerCube uA;
 uniform samplerCube uB;
+uniform sampler2D uA2;
+uniform sampler2D uB2;
+uniform vec4 uPlanoA;
+uniform vec4 uPlanoB;
 uniform float uMezcla;
 uniform vec3 uR;
 uniform vec3 uU;
 uniform vec3 uF;
 uniform vec2 uEsc;
 varying vec2 vP;
+vec2 uvPlano(vec3 d, vec4 pl) {
+  float z = max(-d.z, 1e-4);
+  return vec2(0.5 + d.x / z / pl.y * 0.5, 0.5 - d.y / z / pl.z * 0.5);
+}
 void main() {
   vec3 d = uR * vP.x * uEsc.x + uU * vP.y * uEsc.y + uF;
-  gl_FragColor = mix(textureCube(uA, d), textureCube(uB, d), uMezcla);
+  vec4 a = uPlanoA.x > 0.5 ? texture2D(uA2, uvPlano(d, uPlanoA)) : textureCube(uA, d);
+  vec4 b = uPlanoB.x > 0.5 ? texture2D(uB2, uvPlano(d, uPlanoB)) : textureCube(uB, d);
+  gl_FragColor = mix(a, b, uMezcla);
 }`;
 
 interface Animacion {
@@ -85,6 +116,12 @@ export class Visor {
   vista: Vista = { yaw: 0, pitch: 0, fov: 72 };
   fovMin = 28;
   fovMax = 110;
+  /** Límite de giro opcional (en una imagen plana, además, nunca se sale del cuadro) */
+  encierro: Encierro | null = null;
+  /** Cuánto sigue la cámara al mouse sin hacer clic, de 0 (nada) a 1 (todo el margen) */
+  deriva = 0;
+  /** Deja que la vista pase el borde de la imagen plana (cuando un panel tapa ese lado) */
+  pasarBorde = false;
   /** Se llama cuando el visitante gira la vista con el dedo o el mouse */
   alArrastrar: () => void = () => {};
 
@@ -102,6 +139,10 @@ export class Visor {
   private inercia = { yaw: 0, pitch: 0 };
   private reducido: boolean;
   private tocando = false;
+  private mouse: { x: number; y: number } | null = null;
+  private vacioCubo: WebGLTexture;
+  private vacio2D: WebGLTexture;
+  private readonly gl2: boolean;
 
   constructor(lienzo: HTMLCanvasElement, { reducido = false } = {}) {
     this.lienzo = lienzo;
@@ -111,8 +152,9 @@ export class Visor {
     const gl = gl2 ?? (lienzo.getContext('webgl', opciones) as WebGLRenderingContext | null);
     if (!gl) throw new Error('Este navegador no tiene WebGL');
     this.gl = gl;
+    this.gl2 = !!gl2;
     this.prog = this.programa(gl2 ? VERTICE_2 : VERTICE_1, gl2 ? FRAGMENTO_2 : FRAGMENTO_1);
-    for (const n of ['uA', 'uB', 'uMezcla', 'uR', 'uU', 'uF', 'uEsc']) this.u[n] = gl.getUniformLocation(this.prog, n);
+    for (const n of ['uA', 'uB', 'uA2', 'uB2', 'uPlanoA', 'uPlanoB', 'uMezcla', 'uR', 'uU', 'uF', 'uEsc']) this.u[n] = gl.getUniformLocation(this.prog, n);
     this.maxTextura = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
     this.anisotropia =
       gl.getExtension('EXT_texture_filter_anisotropic') ?? gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ?? gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
@@ -127,6 +169,16 @@ export class Visor {
     gl.useProgram(this.prog);
     gl.uniform1i(this.u.uA, 0);
     gl.uniform1i(this.u.uB, 1);
+    gl.uniform1i(this.u.uA2, 2);
+    gl.uniform1i(this.u.uB2, 3);
+    // Texturas vacías para que cada unidad tenga siempre algo de su tipo
+    const negro = new Uint8Array([0, 0, 0, 255]);
+    this.vacioCubo = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.vacioCubo);
+    for (let i = 0; i < 6; i++) gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, negro);
+    this.vacio2D = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_2D, this.vacio2D);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, negro);
 
     new ResizeObserver(() => this.ajustar()).observe(lienzo);
     this.ajustar();
@@ -227,6 +279,90 @@ export class Visor {
     return this.subir(caras);
   }
 
+  /** Descarga una imagen plana; `fovH` es el campo horizontal que abarca, en grados */
+  async cargarPlano(url: string, fovH: number, alAvanzar?: (p: number) => void): Promise<Textura> {
+    const blob = await this.bajar(url, alAvanzar && ((b, t) => alAvanzar(t ? Math.min(1, b / t) : 0)));
+    const img = await this.imagen(blob);
+    const gl = this.gl;
+    const tex = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    const { width: w, height: h } = img;
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    if ('close' in img && typeof img.close === 'function') img.close();
+    // WebGL 1 no hace mipmaps de imágenes que no miden potencias de 2
+    const mip = this.gl2 || ((w & (w - 1)) === 0 && (h & (h - 1)) === 0);
+    if (mip) gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    if (this.anisotropia) {
+      const max = gl.getParameter(this.anisotropia.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+      gl.texParameterf(gl.TEXTURE_2D, this.anisotropia.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, max));
+    }
+    this.sucio = true;
+    const tanH = Math.tan((fovH * RAD) / 2);
+    return { tex, lado: w, plano: { tanH, tanV: (tanH * h) / w } };
+  }
+
+  /** Dirección (yaw, pitch) de un punto de la imagen plana, con x e y de 0 a 1 desde arriba a la izquierda */
+  static direccionPlano(t: Textura, x: number, y: number) {
+    const { tanH, tanV } = t.plano!;
+    const dx = (2 * x - 1) * tanH;
+    const dy = (1 - 2 * y) * tanV;
+    return { yaw: Math.atan(dx) / RAD, pitch: Math.atan2(dy, Math.hypot(1, dx)) / RAD };
+  }
+
+  /** La imagen que se ve ahora (la de destino durante un fundido) */
+  get actual() {
+    return this.b ?? this.a;
+  }
+
+  /** fov vertical con el que la imagen plana llena justo la pantalla */
+  fovCubrir(t = this.actual) {
+    if (!t?.plano) return this.fovMax;
+    const { tanH, tanV } = t.plano;
+    return (2 * Math.atan(Math.min(tanV, tanH / this.aspecto))) / RAD;
+  }
+
+  /** Rango de giro posible con un fov: el encierro y, en una imagen plana, los bordes del cuadro */
+  rango(fov = this.vista.fov): Encierro {
+    let yaw: [number, number] = this.encierro ? [...this.encierro.yaw] : [-Infinity, Infinity];
+    let pitch: [number, number] = this.encierro ? [...this.encierro.pitch] : [-88, 88];
+    const t = this.actual;
+    if (t?.plano && !this.pasarBorde) {
+      const H = Math.atan(t.plano.tanH) / RAD;
+      const V = Math.atan(t.plano.tanV) / RAD;
+      const h = this.fovHorizontal(fov) / 2;
+      const v = fov / 2;
+      const mx = Math.max(0, H - h);
+      const my = Math.max(0, V - v);
+      yaw = [Math.max(yaw[0], -mx), Math.min(yaw[1], mx)];
+      pitch = [Math.max(pitch[0], -my), Math.min(pitch[1], my)];
+    }
+    if (yaw[0] > yaw[1]) yaw = [(yaw[0] + yaw[1]) / 2, (yaw[0] + yaw[1]) / 2];
+    if (pitch[0] > pitch[1]) pitch = [(pitch[0] + pitch[1]) / 2, (pitch[0] + pitch[1]) / 2];
+    return { yaw, pitch };
+  }
+
+  /** Ajusta una vista para que quede dentro de lo permitido */
+  acotar(v: Vista): Vista {
+    const fov = Math.max(this.fovMin, Math.min(this.fovMax, this.fovCubrir(), v.fov));
+    const r = this.rango(fov);
+    const dentro = (x: number, [a, b]: [number, number]) => Math.max(a, Math.min(b, x));
+    return { fov, yaw: dentro(v.yaw, r.yaw), pitch: dentro(v.pitch, r.pitch) };
+  }
+
+  /** Deja de seguir al mouse hasta que vuelva a moverse (tras usar las flechas) */
+  soltarMouse() {
+    this.mouse = null;
+  }
+
+  private get libre() {
+    return !this.encierro && !this.actual?.plano;
+  }
+
   private subir(caras: Imagen[]): Textura {
     const gl = this.gl;
     const tex = gl.createTexture()!;
@@ -285,10 +421,12 @@ export class Visor {
     this.anim?.listo();
     this.inercia = { yaw: 0, pitch: 0 };
     const desde = { ...this.vista };
-    const hasta: Vista = { ...desde, ...destino };
-    // Giro por el camino más corto
-    hasta.yaw = desde.yaw + ((((hasta.yaw - desde.yaw) % 360) + 540) % 360) - 180;
-    hasta.pitch = Math.max(-88, Math.min(88, hasta.pitch));
+    let hasta: Vista = { ...desde, ...destino };
+    if (this.libre) {
+      // Giro por el camino más corto
+      hasta.yaw = desde.yaw + ((((hasta.yaw - desde.yaw) % 360) + 540) % 360) - 180;
+      hasta.pitch = Math.max(-88, Math.min(88, hasta.pitch));
+    } else hasta = this.acotar(hasta);
     if (ms <= 0 || this.reducido) {
       this.vista = hasta;
       this.anim = null;
@@ -338,9 +476,23 @@ export class Visor {
     } else if (!this.tocando && Math.abs(this.inercia.yaw) + Math.abs(this.inercia.pitch) > 0.01) {
       this.vista.yaw += this.inercia.yaw;
       this.vista.pitch = Math.max(-88, Math.min(88, this.vista.pitch + this.inercia.pitch));
+      if (!this.libre) this.vista = this.acotar(this.vista);
       this.inercia.yaw *= 0.9;
       this.inercia.pitch *= 0.9;
       this.sucio = true;
+    } else if (this.deriva > 0 && this.mouse && !this.tocando && !this.reducido) {
+      // La mirada sigue al mouse con suavidad, dentro del margen que deja el encuadre
+      const r = this.rango();
+      const medio = (a: number, b: number, t: number) => (a + b) / 2 + ((b - a) / 2) * t * this.deriva;
+      const yaw = medio(r.yaw[0], r.yaw[1], this.mouse.x);
+      const pitch = medio(r.pitch[0], r.pitch[1], -this.mouse.y);
+      const dy = yaw - this.vista.yaw;
+      const dp = pitch - this.vista.pitch;
+      if (Math.abs(dy) + Math.abs(dp) > 0.005) {
+        this.vista.yaw += dy * 0.06;
+        this.vista.pitch += dp * 0.06;
+        this.sucio = true;
+      }
     }
     if (this.fundido) {
       const t = Math.min(1, (ahora - this.fundido.inicio) / this.fundido.ms);
@@ -365,10 +517,18 @@ export class Visor {
     const { f, r, u, esc } = this.base();
     gl.viewport(0, 0, this.lienzo.width, this.lienzo.height);
     gl.useProgram(this.prog);
+    const a = this.a!;
+    const b = this.b ?? a;
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.a!.tex);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, a.plano ? this.vacioCubo : a.tex);
     gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_CUBE_MAP, (this.b ?? this.a)!.tex);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, b.plano ? this.vacioCubo : b.tex);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, a.plano ? a.tex : this.vacio2D);
+    gl.activeTexture(gl.TEXTURE3);
+    gl.bindTexture(gl.TEXTURE_2D, b.plano ? b.tex : this.vacio2D);
+    gl.uniform4f(this.u.uPlanoA, a.plano ? 1 : 0, a.plano?.tanH ?? 1, a.plano?.tanV ?? 1, 0);
+    gl.uniform4f(this.u.uPlanoB, b.plano ? 1 : 0, b.plano?.tanH ?? 1, b.plano?.tanV ?? 1, 0);
     gl.uniform1f(this.u.uMezcla, this.b ? this.mezcla : 0);
     gl.uniform3fv(this.u.uR, r);
     gl.uniform3fv(this.u.uU, u);
@@ -412,8 +572,13 @@ export class Visor {
       }
     });
     el.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'mouse') {
+        const caja = el.getBoundingClientRect();
+        this.mouse = { x: ((e.clientX - caja.left) / caja.width) * 2 - 1, y: ((e.clientY - caja.top) / caja.height) * 2 - 1 };
+      }
       const antes = activos.get(e.pointerId);
-      if (!antes) return;
+      // Con el mouse, si la cámara lo sigue, arrastrar no gira
+      if (!antes || (e.pointerType === 'mouse' && this.deriva > 0)) return;
       const ahora = { x: e.clientX, y: e.clientY };
       activos.set(e.pointerId, ahora);
       if (activos.size === 2) {
@@ -428,6 +593,7 @@ export class Visor {
       const dp = (ahora.y - antes.y) * grados;
       this.vista.yaw -= dy;
       this.vista.pitch = Math.max(-88, Math.min(88, this.vista.pitch + dp));
+      if (!this.libre) this.vista = this.acotar(this.vista);
       const t = performance.now();
       const dt = Math.max(8, t - ultimo);
       ultimo = t;
@@ -446,6 +612,7 @@ export class Visor {
     };
     el.addEventListener('pointerup', soltar);
     el.addEventListener('pointercancel', soltar);
+    el.addEventListener('pointerleave', () => (this.mouse = null));
     el.addEventListener(
       'wheel',
       (e) => {
@@ -458,6 +625,7 @@ export class Visor {
 
   private zoom(fov: number) {
     this.vista.fov = Math.max(this.fovMin, Math.min(this.fovMax, fov));
+    if (!this.libre) this.vista = this.acotar(this.vista);
     this.sucio = true;
   }
 }

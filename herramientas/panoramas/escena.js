@@ -1,5 +1,6 @@
 // Escena 3D de la casona y de las cinco salas de los géneros, renderizada una sola vez
-// como panoramas 360° (cubemaps de seis caras) para el prototipo B.
+// como panoramas 360° (cubemaps de seis caras) para el prototipo B, o con ?fija como
+// tomas planas de cámara fija para el prototipo C (las piezas se agrupan frente a la cámara).
 // Ejes: -z = frente, +x = derecha, +z = fondo, -x = izquierda. 1 unidad = 1 metro.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -19,6 +20,7 @@ const CALIDAD = Number(params.get('calidad') ?? 0.84);
 const CALIDAD_MEDIA = Number(params.get('media') ?? 0.76);
 const SOLO = params.get('solo');
 const EXPO_BASE = Number(params.get('expo') ?? 1);
+const FIJA = params.has('fija');
 
 const OJO = 1.6;
 const R = 6; // media casona
@@ -395,7 +397,7 @@ const matDamero = new THREE.MeshStandardMaterial({ map: conRepeticion(texDamero,
 matDamero.map.rotation = Math.PI / 4;
 matDamero.map.center.set(0.5, 0.5);
 const matTechoCasona = P.matMadera('#3a1d0e', '#140702', 33, 0.75, 3);
-pisoYTecho(casona, 2 * R, 2 * R, ALTO, matDamero, matTechoCasona);
+const pisoCasona = pisoYTecho(casona, 2 * R, 2 * R, ALTO, matDamero, matTechoCasona);
 artesonado(casona, 2 * R, 2 * R, ALTO, 1.5);
 
 // Alfombra redonda bajo la cámara
@@ -480,16 +482,20 @@ const texPlaza = new THREE.Texture(imgPlaza);
 texPlaza.colorSpace = THREE.SRGBColorSpace;
 texPlaza.needsUpdate = true;
 
-colgar(casona.atras, P.cuadro(T.paisajeCosta(), 1.5, 1.12), -3.95, 2.5, 0.02);
+// En la vista fija el muro del fondo queda detrás de la cámara: el espejo y el gramófono pasan al frente
+if (!FIJA) colgar(casona.atras, P.cuadro(T.paisajeCosta(), 1.5, 1.12), -3.95, 2.5, 0.02);
 colgar(casona.atras, P.cuadro(T.lienzoCuadro(imgTondero, { fondo: ['#d8c497', '#6b5a3a'], ancho: 768, alto: 1024 }), 1.05, 1.4), 3.95, 2.55, 0.02);
-colgar(casona.atras, P.mesaConsola(1.25, 0.42), -3.95, 0, 0.26);
+if (!FIJA) colgar(casona.atras, P.mesaConsola(1.25, 0.42), -3.95, 0, 0.26);
 colgar(casona.atras, P.mesaConsola(1.25, 0.42), 3.95, 0, 0.26);
-for (const x of [-4.35, 3.55]) {
+for (const x of FIJA ? [3.55] : [-4.35, 3.55]) {
   const v = P.vela(0.22, 0.02);
   colgar(casona.atras, v, x, 0.86, 0.3);
 }
-colgar(casona.der, P.cuadro(T.lienzoCuadro(imgPinglo, { fondo: ['#6f6a7a', '#1f2033'], ancho: 768, alto: 1024 }), 0.84, 1.12), 0, 3.3, 0.02);
-colgar(casona.izq, P.cuadro(texPlaza, 1.2, 0.8), 0, 3.3, 0.02);
+const pinglo = colgar(casona.der, P.cuadro(T.lienzoCuadro(imgPinglo, { fondo: ['#6f6a7a', '#1f2033'], ancho: 768, alto: 1024 }), 0.84, 1.12), 0, 3.3, 0.02);
+const plaza = colgar(casona.izq, P.cuadro(texPlaza, 1.2, 0.8), 0, 3.3, 0.02);
+if (FIJA) {
+  marcas.push({ pano: 'casona', id: 'pinglo', objeto: pinglo }, { pano: 'casona', id: 'plaza', objeto: plaza });
+}
 for (const g of [casona.der, casona.izq]) {
   colgar(g, P.silla(0x7a1a20), -0.55, 0, 0.45).rotation.y = 0.15;
   colgar(g, P.silla(0x7a1a20), 0.55, 0, 0.45).rotation.y = -0.15;
@@ -505,12 +511,13 @@ for (const [g, x] of [
 
 // Fondo: balcón limeño, gramófono y espejo
 balcon(casona.adelante, VENTANA_FONDO, CAM_CASONA, luces.casona, { cieloAncho: 14, cieloAlto: 14 });
-const gramo = colgar(casona.adelante, P.gramofono(), -3.85, 0, 0.75);
-gramo.rotation.y = 0.5;
+const gramo = FIJA ? colgar(casona.atras, P.gramofono(), -3.95, 0, 0.7) : colgar(casona.adelante, P.gramofono(), -3.85, 0, 0.75);
+gramo.rotation.y = FIJA ? -0.35 : 0.5;
 marcas.push({ pano: 'casona', id: 'gramofono', objeto: gramo });
 colgar(casona.adelante, P.mesaConsola(1.2, 0.42), 3.85, 0, 0.26);
 const espejoCasona = P.espejo(1.0, 1.5, null);
-colgar(casona.adelante, espejoCasona.grupo, 3.85, 2.2, 0.03);
+if (FIJA) colgar(casona.atras, espejoCasona.grupo, -3.95, 2.45, 0.03);
+else colgar(casona.adelante, espejoCasona.grupo, 3.85, 2.2, 0.03);
 marcas.push({ pano: 'casona', id: 'espejo', objeto: espejoCasona.luna });
 for (const x of [3.45, 4.25]) colgar(casona.adelante, P.vela(0.22, 0.02), x, 0.86, 0.3);
 
@@ -531,6 +538,15 @@ casona.grupo.add(aranaCasona);
   luces.casona.push(luz);
   const relleno = new THREE.HemisphereLight(0xfff0dc, 0x5a3420, 0.35);
   escena.add(relleno);
+}
+if (FIJA) {
+  marcas.push({ pano: 'casona', id: 'arana', objeto: aranaCasona });
+  // La cámara mira desde más atrás del muro del fondo, que se oculta, para que los cinco
+  // arcos entren en un solo cuadro; el piso se alarga hasta debajo de la cámara
+  casona.adelante.visible = false;
+  pisoCasona.piso.geometry = new THREE.PlaneGeometry(2 * R, 4 * R);
+  pisoCasona.piso.position.z = R;
+  matDamero.map.repeat.set(2 * R, 4 * R);
 }
 
 /** Balcón limeño cerrado con celosías, visto desde dentro; la luz del día entra por él */
@@ -645,7 +661,8 @@ function nuevaSala(gen, { W = 8, D = 8.6, A = S_ALTO } = {}) {
   const vano = { x: xc - h.x, w: h.w, hs: h.hs };
   const exterior = sola ? null : gen.posicion === 0 ? 'izq' : 'der';
   escena.updateMatrixWorld(true);
-  const cam = c.grupo.localToWorld(new THREE.Vector3(0, OJO, 0));
+  // Vista fija: la cámara se para en la entrada y mira al fondo
+  const cam = c.grupo.localToWorld(new THREE.Vector3(0, OJO, FIJA ? D / 2 - 0.8 : 0));
   const s = { gen, c, W, D, A, vano, exterior, cam, luces: [], focos: [], principal: null };
   salas[gen.id] = s;
   camaras[gen.id] = cam;
@@ -733,6 +750,47 @@ function apoyar(s, objeto, x, z, mirar = true) {
   colgar(s.c.grupo, objeto, x, 0, z);
   if (mirar) mirarA(objeto, s.cam);
   return objeto;
+}
+
+/* ----- Vista fija: las cinco piezas sobre una tarima redonda al centro, frente a la cámara ----- */
+
+const ALTO_TARIMA = 0.2;
+
+function tarima(s, radio = 1.75, z = -1.1) {
+  const g = new THREE.Group();
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(radio, radio + 0.08, ALTO_TARIMA, 96), P.matMadera('#3a1a0a', '#120500', 71, 0.32));
+  base.position.y = ALTO_TARIMA / 2;
+  const canto = new THREE.Mesh(new THREE.TorusGeometry(radio + 0.02, 0.025, 8, 96), P.ORO);
+  canto.rotation.x = Math.PI / 2;
+  canto.position.y = ALTO_TARIMA;
+  const pano = new THREE.Mesh(new THREE.CircleGeometry(radio * 0.82, 96), new THREE.MeshStandardMaterial({ map: T.alfombraRedonda([s.gen.color, '#2a120a', '#d4a24a', '#efe2c4']), roughness: 0.95 }));
+  pano.rotation.x = -Math.PI / 2;
+  pano.position.y = ALTO_TARIMA + 0.004;
+  g.add(base, canto, pano);
+  g.traverse((n) => n.isMesh && ((n.castShadow = n !== pano), (n.receiveShadow = true)));
+  colgar(s.c.grupo, g, 0, 0, z);
+  s.tarima = { z };
+  return g;
+}
+
+/** Apoya una pieza sobre la tarima (x, z relativos a su centro) mirando a la cámara */
+function sobreTarima(s, objeto, x, z, giro = 0) {
+  colgar(s.c.grupo, objeto, x, ALTO_TARIMA, s.tarima.z + z);
+  mirarA(objeto, s.cam);
+  objeto.rotation.y += giro;
+  return objeto;
+}
+
+/** "Sala N · Nombre" pintado en una pared, como en el boceto del equipo */
+function letrero(s, pared, x, numero, y = 2.9) {
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.7, 1.7),
+    new THREE.MeshStandardMaterial({ map: T.letreroSala(numero, s.gen.nombre), transparent: true, roughness: 0.5, metalness: 0.3, emissive: 0xffffff, emissiveIntensity: 0.08, depthWrite: false }),
+  );
+  m.material.emissiveMap = m.material.map;
+  m.position.set(x, y, 0.02);
+  s.c[pared].add(m);
+  return m;
 }
 
 const matPiso = (tex, rep, rugosidad = 0.4, giro = 0) => {
@@ -959,6 +1017,7 @@ async function salaVals(gen) {
     luz(s, c[lateral], 0xffa64d, 2.5, x, 2.65, 0.45, 4.5);
   }
   const lado = s.exterior === 'izq' ? -1 : 1;
+  if (FIJA) return valsFija(s, lado, lateral);
   // Decoración: pareja bailando, busto de Pinglo, sofá azul
   const pareja = await modelo('02-vals-pareja.glb', 1.72);
   apoyar(s, pareja, -lado * 0.6, -3.0);
@@ -992,6 +1051,47 @@ async function salaVals(gen) {
   const td = apoyar(s, P.tocadiscos(), lado * 2.9, 2.6);
   marca(s, 'disco', td);
   foco(s, td, 70);
+}
+
+/** Vals en vista fija: las cinco piezas juntas sobre la tarima, como en el boceto de la sala 1 */
+async function valsFija(s, lado, lateral) {
+  const { c } = s;
+  tarima(s, 1.75, -0.7);
+  // Atrás el saco al centro, el farol y la guitarra a los lados; adelante la partitura y el tocadiscos,
+  // corridos hacia afuera para no tapar a las piezas de atrás
+  const sc = sobreTarima(s, P.saco(), 0, -0.75);
+  marca(s, 'saco', sc);
+  foco(s, sc, 70, 0.32);
+  const gt = sobreTarima(s, P.guitarra(), 0.8, -0.5, -0.25);
+  marca(s, 'guitarra', gt);
+  foco(s, gt, 55, 0.3);
+  const mf = sobreTarima(s, P.mesaRedonda(0.26, 0.62), -0.78, -0.55);
+  const fm = P.farolMesa();
+  fm.position.y = 0.62;
+  mf.add(fm);
+  luz(s, mf, 0xffa94a, 4, 0, 0.85, 0, 4);
+  marca(s, 'farol', mf, { foco: fm });
+  foco(s, mf, 25, 0.3);
+  const at = sobreTarima(s, P.atril(T.partitura()), -1.1, 0.55, 0.2);
+  marca(s, 'partitura', at);
+  foco(s, at, 50, 0.3);
+  const td = sobreTarima(s, P.tocadiscos(), 1.15, 0.5, -0.3);
+  marca(s, 'disco', td);
+  foco(s, td, 55, 0.3);
+  // Decoración al fondo: pareja bailando y busto de Pinglo a los costados
+  const pareja = await modelo('02-vals-pareja.glb', 1.72);
+  apoyar(s, pareja, lado * 2.7, -3.2);
+  foco(s, pareja, 28, 0.42, 0xffd6a0);
+  const pp = apoyar(s, P.plinto(0.45, 1.05), -lado * 2.9, -3.4);
+  const busto = await modelo('04-busto-pinglo.glb', 0.62);
+  busto.position.y = 1.05;
+  pp.add(busto);
+  mirarA(busto, s.cam);
+  foco(s, pp, 35, 0.35);
+  colgar(c[lateral], P.sofa(0x2b3f6b), 0.4, 0, 0.45);
+  colgar(c[lateral], P.cuadro(T.lienzoCuadro(imgPinglo, { fondo: ['#6f6a7a', '#1f2033'], ancho: 768, alto: 1024 }), 0.84, 1.12), 0.4, 2.6, 0.02);
+  for (const [x, z] of [[lado * 3.5, -3.7], [-lado * 3.5, -3.7]]) colgar(c.grupo, P.maceta(0.85, x * 3 + z), x, 0, z);
+  letrero(s, 'atras', -2.55, 1);
 }
 
 /* ----- Polka criolla: salón de baile con guirnaldas ----- */
@@ -1363,15 +1463,106 @@ async function panorama(nombre) {
   return { grandes, medianas };
 }
 
+/* ================= VISTAS FIJAS (prototipo C) ================= */
+
+// Toma plana de cada lugar: posición, punto al que mira, campo horizontal y proporción.
+// La sala principal se ve desde detrás del muro del fondo (oculto) para que entren los cinco arcos.
+// `env`: desde dónde se capturan los reflejos (en la casona, desde el centro y no desde fuera del muro)
+const VISTAS = { casona: { pos: new THREE.Vector3(0, 1.75, 10), env: CAM_CASONA, mira: new THREE.Vector3(0, 2.05, -R), fovH: 100, ancho: 4096, prop: 2 } };
+
+function vistasSalas() {
+  escena.updateMatrixWorld(true);
+  for (const s of Object.values(salas)) {
+    VISTAS[s.gen.id] = { pos: s.cam, mira: s.c.grupo.localToWorld(new THREE.Vector3(0, 1.2, -s.D / 2)), fovH: 80, ancho: 2560, prop: 2 };
+  }
+}
+
+/** Puntos tocables proyectados en la imagen (x, y de 0 a 1) y el campo para acercarse a cada pieza */
+function puntosFija(nombre, cam) {
+  const fuera = {};
+  const proyectar = (p) => {
+    const v = p.clone().project(cam);
+    return { x: +((v.x + 1) / 2).toFixed(4), y: +((1 - v.y) / 2).toFixed(4) };
+  };
+  // La salida de cada sala queda a espaldas de la cámara: en la vista fija es un botón
+  for (const m of marcas.filter((x) => x.pano === nombre && x.id !== 'salida')) {
+    if (m.local) {
+      const punto = proyectar(m.grupo.localToWorld(m.local.clone()));
+      if (m.arco) {
+        // Encuadre del asomo: del piso a la cartela y de jamba a jamba
+        const a = proyectar(m.grupo.localToWorld(new THREE.Vector3(m.arco.x, 0, 0)));
+        const b = proyectar(m.grupo.localToWorld(new THREE.Vector3(m.arco.x, m.arco.hs + m.arco.w / 2 + 1.0, 0)));
+        const i = proyectar(m.grupo.localToWorld(new THREE.Vector3(m.arco.x - m.arco.w / 2 - 0.3, 1.5, 0)));
+        const d = proyectar(m.grupo.localToWorld(new THREE.Vector3(m.arco.x + m.arco.w / 2 + 0.3, 1.5, 0)));
+        punto.caja = [Math.min(i.x, d.x), b.y, Math.max(i.x, d.x), a.y].map((n) => +n.toFixed(4));
+      }
+      fuera[m.id] = punto;
+    } else {
+      const caja = new THREE.Box3().setFromObject(m.foco ?? m.objeto);
+      const esquinas = [];
+      for (const x of [caja.min.x, caja.max.x]) for (const y of [caja.min.y, caja.max.y]) for (const z of [caja.min.z, caja.max.z]) esquinas.push(proyectar(new THREE.Vector3(x, y, z)));
+      const punto = proyectar(caja.getCenter(new THREE.Vector3()));
+      // Recuadro de la pieza en la imagen, para encuadrarla al acercarse
+      punto.caja = [Math.min(...esquinas.map((e) => e.x)), Math.min(...esquinas.map((e) => e.y)), Math.max(...esquinas.map((e) => e.x)), Math.max(...esquinas.map((e) => e.y))].map((n) => +THREE.MathUtils.clamp(n, 0, 1).toFixed(4));
+      fuera[m.id] = punto;
+    }
+  }
+  return fuera;
+}
+
+async function vistaFija(nombre) {
+  const v = VISTAS[nombre];
+  const alto = Math.round(v.ancho / v.prop);
+  estado(`Renderizando vista fija de ${nombre}…`);
+  prepararLuces(nombre);
+  renderer.toneMappingExposure = EXPO_BASE * (EXPO[nombre] ?? 1);
+  escena.environment = envEstudio;
+  escena.environmentIntensity = 0.12;
+  const previo = capturar(v.env ?? v.pos, 256);
+  const env = pmrem.fromCubemap(previo.texture).texture;
+  escena.environment = env;
+  escena.environmentIntensity = 0.85;
+  espejoCasona.luna.material.envMap = env;
+  for (const h of P.halos) h.lookAt(v.pos);
+  const tanH = Math.tan(THREE.MathUtils.degToRad(v.fovH / 2));
+  const cam = new THREE.PerspectiveCamera(THREE.MathUtils.radToDeg(2 * Math.atan(tanH / v.prop)), v.prop, 0.03, 200);
+  cam.position.copy(v.pos);
+  cam.lookAt(v.mira);
+  cam.updateMatrixWorld(true);
+  renderer.setSize(v.ancho * SS, alto * SS, false);
+  renderer.setRenderTarget(null);
+  renderer.render(escena, cam);
+  const salida = (w, calidad) => {
+    const [c2, g2] = T.lienzo(w, Math.round(w / v.prop));
+    g2.imageSmoothingQuality = 'high';
+    g2.drawImage(lienzo, 0, 0, c2.width, c2.height);
+    return c2.toDataURL('image/webp', calidad);
+  };
+  const grande = salida(v.ancho, CALIDAD);
+  const mediana = salida(v.ancho / 2, CALIDAD_MEDIA);
+  previo.dispose();
+  return { grande, mediana, datos: { ancho: v.ancho, alto, fovH: v.fovH, puntos: puntosFija(nombre, cam) } };
+}
+
 try {
   await document.fonts.load(`700 80px "Libre Baskerville"`);
   for (const gen of generos) await CONSTRUIR[gen.id](gen);
+  if (FIJA) {
+    vistasSalas();
+    const nombres = ['casona', ...generos.map((g) => g.id)].filter((n) => !SOLO || SOLO.split(',').includes(n));
+    window.fijas = { nombres, render: vistaFija };
+    estado('Listo');
+    window.listo = true;
+    throw null;
+  }
   calcularPuntos();
   const nombres = ['casona', ...generos.map((g) => g.id)].filter((n) => !SOLO || SOLO.split(',').includes(n));
   window.panoramas = { cara: CARA, nombres, render: async (n) => ({ ...(await panorama(n)), puntos: { camara: camaras[n].toArray().map((v) => +v.toFixed(3)), ...puntos[n] } }) };
   estado('Listo');
   window.listo = true;
 } catch (e) {
-  console.error(e);
-  Object.assign(window, { error: String(e?.stack ?? e) });
+  if (e !== null) {
+    console.error(e);
+    Object.assign(window, { error: String(e?.stack ?? e) });
+  }
 }

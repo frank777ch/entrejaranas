@@ -24,12 +24,14 @@ let alRegreso: () => void = () => {};
 let alEntrar: () => void = () => {};
 let alVolver: () => void = () => {};
 let alCerrarFicha: () => void = () => {};
+let alPaso: ((d: number) => void) | null = null;
 
 flechas.forEach((b) => b.addEventListener('click', () => alFlecha(b.dataset.dir as Dir)));
 regreso.addEventListener('click', () => alRegreso());
 $('.cartel__entrar').addEventListener('click', () => alEntrar());
 $('.cartel__volver').addEventListener('click', () => alVolver());
 $('.ficha__cerrar').addEventListener('click', () => alCerrarFicha());
+raiz.querySelectorAll<HTMLButtonElement>('.ficha__paso').forEach((b) => b.addEventListener('click', () => alPaso?.(Number(b.dataset.paso))));
 
 addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -115,14 +117,29 @@ infoAbrir.addEventListener('click', () => {
   $('.info-sala__cuerpo').hidden = abierto;
 });
 
-export function mostrarFicha(o: Objeto | null, cerrar: () => void = () => {}) {
+/** Recorrido de piezas dentro de la ficha: "Pieza 2 de 5" y flechas para pasar a la anterior o la siguiente */
+export interface PasoFicha {
+  indice: number;
+  total: number;
+  lugar: string;
+  paso: (d: number) => void;
+}
+
+export function mostrarFicha(o: Objeto | null, cerrar: () => void = () => {}, recorrido?: PasoFicha) {
   ficha.hidden = !o;
   raiz.classList.toggle('con-ficha', !!o);
   alCerrarFicha = cerrar;
+  alPaso = recorrido?.paso ?? null;
+  $('.ficha__nav').hidden = !recorrido;
+  $('.ficha__lugar').hidden = !recorrido;
+  if (o && recorrido) {
+    $('.ficha__contador').textContent = `${recorrido.indice + 1} / ${recorrido.total}`;
+    $('.ficha__lugar').textContent = recorrido.lugar;
+  }
   if (o?.id !== objetoFicha?.id) detenerFragmento();
   objetoFicha = o;
   if (!o) return;
-  $('.ficha__categoria').textContent = o.categoria;
+  $('.ficha__categoria').textContent = recorrido ? `Pieza ${recorrido.indice + 1} de ${recorrido.total} · ${o.categoria}` : o.categoria;
   $('.ficha__titulo').textContent = o.nombre;
   $('.ficha__texto').textContent = o.texto;
   $('.ficha__audio-texto').textContent = `· ${o.audio}`;

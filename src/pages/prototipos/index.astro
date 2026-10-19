@@ -1,6 +1,23 @@
 ---
 import Prototipo from '../../layouts/Prototipo.astro';
 
+// Propuesta vigente: la síntesis de A y B pedida en la reunión del 18 de octubre
+const propuesta = {
+  letra: 'C',
+  nombre: 'Cámara fija',
+  lema: 'Síntesis de A y B · propuesta actual',
+  href: '/prototipos/museo-c',
+  imagen: '/prototipos/portada-c.webp',
+  texto:
+    'Se juega como una novela visual (prototipo A) y se ve con la profundidad del 3D (prototipo B). La cámara no gira libre: sigue al mouse dentro del cuadro y, al elegir una pieza, se acerca y abre su ficha.',
+  puntos: [
+    'Sala principal con los cinco arcos a la vista: se mira a los costados y arriba',
+    'En cada sala, las cinco piezas juntas; la cámara solo se mueve a los lados',
+    'Ficha con “Pieza 1 de 5” y flechas para pasar a la siguiente',
+    'Lista para cambiar los renders por las ilustraciones del equipo de diseño (JPG)',
+  ],
+};
+
 const opciones = [
   {
     letra: 'A',
@@ -30,13 +47,30 @@ const opciones = [
     <header class="hub__cabecera">
       <img src="/museo/texturas/logo-mi-museo-criollo.webp" alt="Mi museo criollo" width="1073" height="367" class="hub__logo" />
       <p class="hub__ante">Rediseño del museo virtual · Prototipos</p>
-      <h1>Dos maneras de recorrer la casona</h1>
+      <h1>Recorrer la casona con cámara fija</h1>
       <p class="hub__intro">
-        Ambos prototipos siguen la misma propuesta: una casona limeña con cinco arcos, uno por género. Te asomas a cada sala, entras y conoces
-        sus cinco objetos, con su ficha y su música: <strong>festejo, marinera limeña, tondero, vals criollo y polka</strong>.
+        Una casona limeña con una sala principal y cinco salas, una por género: <strong>vals criollo, marinera limeña, tondero, polka y festejo</strong>.
+        Cada sala reúne cinco piezas, con su ficha y su música.
       </p>
     </header>
 
+    <a class="opcion opcion--destacada" href={propuesta.href}>
+      <div class="opcion__imagen">
+        <img src={propuesta.imagen} alt="" width="1280" height="720" />
+        <span class="opcion__letra">{propuesta.letra}</span>
+      </div>
+      <div class="opcion__cuerpo">
+        <p class="opcion__lema">{propuesta.lema}</p>
+        <h2>{propuesta.nombre}</h2>
+        <p>{propuesta.texto}</p>
+        <ul>
+          {propuesta.puntos.map((p) => <li>{p}</li>)}
+        </ul>
+        <span class="boton boton--oro opcion__boton">Abrir prototipo C</span>
+      </div>
+    </a>
+
+    <h2 class="hub__anteriores">Prototipos anteriores, como referencia</h2>
     <div class="hub__opciones">
       {
         opciones.map((o) => (
@@ -64,10 +98,10 @@ const opciones = [
     <section class="hub__nota">
       <h2>Cómo probarlo</h2>
       <ul>
-        <li><strong>Mirar alrededor:</strong> flechas en los bordes (o las teclas de flecha).</li>
-        <li><strong>Asomarse a una sala:</strong> toca un arco. Tócalo otra vez para entrar.</li>
-        <li><strong>Conocer un objeto:</strong> tócalo para ver su ficha.</li>
-        <li><strong>Volver:</strong> botón inferior izquierdo.</li>
+        <li><strong>Mirar:</strong> en el prototipo C, mueve el mouse (en celular, desliza); también hay flechas en los bordes y en el teclado.</li>
+        <li><strong>Asomarse a una sala:</strong> toca un arco. Tócalo otra vez para entrar. En el prototipo C ya está lista la sala 1, vals criollo.</li>
+        <li><strong>Conocer una pieza:</strong> tócala para acercarte y ver su ficha; las flechas de la ficha pasan a la siguiente.</li>
+        <li><strong>Volver:</strong> la × cierra la ficha; el botón inferior izquierdo regresa a la sala principal.</li>
         <li><strong>Sonido:</strong> la música empieza con el primer toque; el botón de arriba a la derecha la silencia.</li>
       </ul>
       <p>
@@ -122,8 +156,30 @@ const opciones = [
     color: rgb(240 231 216 / 0.85);
   }
 
-  .hub__opciones {
+  .opcion--destacada {
     margin-top: clamp(2rem, 5vw, 3rem);
+  }
+
+  @media (min-width: 56rem) {
+    .opcion.opcion--destacada {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+    }
+
+    .opcion--destacada .opcion__imagen {
+      aspect-ratio: auto;
+      min-height: 22rem;
+    }
+  }
+
+  .hub__anteriores {
+    margin: clamp(2.5rem, 6vw, 3.5rem) 0 0;
+    font-size: 1.15rem;
+    color: rgb(240 231 216 / 0.8);
+  }
+
+  .hub__opciones {
+    margin-top: 1rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
     gap: 1.5rem;

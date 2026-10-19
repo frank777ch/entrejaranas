@@ -1238,3 +1238,33 @@ export function puertaAzul() {
   manchas(g, 256, 512, r, 30, 'rgba(255,255,255,0.12)', 'rgba(60,30,10,0.25)', [10, 50]);
   return aTextura(c);
 }
+
+/** Letrero pintado en la pared de la sala (vista fija): número arriba, nombre en dos líneas, fondo transparente */
+export function letreroSala(numero, nombre, color = '#f0d38a') {
+  const [c, g] = lienzo(1024, 1024);
+  g.fillStyle = color;
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.shadowColor = 'rgba(0,0,0,0.35)';
+  g.shadowBlur = 6;
+  g.font = `700 84px ${FUENTE}`;
+  g.fillText(`SALA ${numero}`, 512, 250);
+  // Filete con rombo
+  g.fillRect(352, 340, 130, 4);
+  g.fillRect(542, 340, 130, 4);
+  g.beginPath();
+  g.moveTo(512, 322);
+  g.lineTo(530, 342);
+  g.lineTo(512, 362);
+  g.lineTo(494, 342);
+  g.fill();
+  const palabras = nombre.toUpperCase().split(' ');
+  const lineas = palabras.length > 1 ? [palabras.slice(0, -1).join(' '), palabras.at(-1)] : palabras;
+  let size = 150;
+  do {
+    g.font = `700 ${size}px ${FUENTE}`;
+    size -= 4;
+  } while (Math.max(...lineas.map((l) => g.measureText(l).width)) > 900);
+  lineas.forEach((l, i) => g.fillText(l, 512, 480 + i * size * 1.2));
+  return aTextura(c);
+}
