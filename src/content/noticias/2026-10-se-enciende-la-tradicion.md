@@ -2,7 +2,7 @@
 titulo: Entre Jaranas se enciende la tradición
 fecha: 2026-10-11
 resumen: Este 14 de octubre, al mediodía, Entre Jaranas te espera en la Facultad de Letras y Ciencias Humanas con música, baile y ese encanto criollo que invita a quedarse. ¡El ingreso es libre!
-imagen: ../../assets/prensa/afiche-lanzamiento.jpg
+imagen: ../../assets/noticias/afiche-lanzamiento.jpg
 imagenAlt: 'Afiche del evento de lanzamiento de Entre Jaranas: 14 de octubre, de 12:00 a 2:00 p. m., en la explanada del nuevo pabellón de la FLCH.'
 ---
 

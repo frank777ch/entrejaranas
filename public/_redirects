@@ -1,0 +1,2 @@
+# Prensa pasó a llamarse Noticias: los enlaces antiguos siguen funcionando
+/prensa/*  /noticias/:splat  301

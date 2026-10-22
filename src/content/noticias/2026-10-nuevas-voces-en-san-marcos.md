@@ -2,7 +2,7 @@
 titulo: 'Entre Jaranas: la música criolla encuentra nuevas voces en San Marcos'
 fecha: 2026-10-15
 resumen: Estudiantes de Comunicación Social realizaron su primera activación cultural en la Facultad de Letras, con una jornada de música, danza y participación que buscó acercar la tradición criolla a las nuevas generaciones.
-imagen: ../../assets/prensa/primera-activacion.jpg
+imagen: ../../assets/noticias/primera-activacion.jpg
 imagenAlt: 'Los integrantes de Entre Jaranas el 14 de octubre, durante la primera activación en la Facultad de Letras y Ciencias Humanas.'
 ---
 

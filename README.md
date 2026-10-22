@@ -37,7 +37,7 @@ Todo se edita en archivos; al hacer `git push`, Cloudflare Pages publica los cam
 
 | Qué | Dónde |
 |---|---|
-| Noticias de prensa | `src/content/noticias/*.md` (se muestran las 4 más recientes) |
+| Noticias | `src/content/noticias/*.md` (se muestran las 4 más recientes) |
 | Microdocumentales | `src/content/documentales/*.md` |
 | Talleres | `src/content/talleres/*.md` |
 | Nuevas promesas (mapa) | `src/content/promesas/*.json` |
