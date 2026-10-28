@@ -94,8 +94,8 @@ export const generos: Genero[] = [
     sala: 2,
     nombre: 'Marinera limeña',
     color: '#93171e',
-    pared: 'frente',
-    posicion: 0,
+    pared: 'izquierda',
+    posicion: 1,
     ambientacion: 'Salón de jarana limeña, con muebles de época y balcón.',
     intro:
       'Baile de pareja de la costa central, elegante y pícaro. También se le llama canto de jarana: se canta en contrapunto y se baila con pañuelo, en un cortejo lleno de gracia.',
@@ -154,7 +154,7 @@ export const generos: Genero[] = [
     sala: 3,
     nombre: 'Tondero',
     color: '#5f7d2e',
-    pared: 'derecha',
+    pared: 'izquierda',
     posicion: 0,
     ambientacion: 'Casa norteña de luz clara, con algarrobos y paisaje de Piura al fondo.',
     intro:
@@ -214,8 +214,8 @@ export const generos: Genero[] = [
     sala: 1,
     nombre: 'Vals criollo',
     color: '#2b3f6b',
-    pared: 'derecha',
-    posicion: 1,
+    pared: 'frente',
+    posicion: 0,
     ambientacion: 'Salón nocturno de luz tenue, con farolas y balcón con vista a la ciudad.',
     intro:
       'El vals criollo nació en los barrios y callejones de Lima y se volvió la voz de la ciudad: canciones de amor, de barrio y de nostalgia, en compás de tres tiempos y con guitarras.',
@@ -274,7 +274,7 @@ export const generos: Genero[] = [
     sala: 4,
     nombre: 'Polka criolla',
     color: '#a24b78',
-    pared: 'izquierda',
+    pared: 'derecha',
     posicion: 0,
     ambientacion: 'Salón de baile social de época, con guirnaldas y pista de baile.',
     intro:
@@ -334,7 +334,7 @@ export const generos: Genero[] = [
     sala: 5,
     nombre: 'Festejo',
     color: '#c4561f',
-    pared: 'izquierda',
+    pared: 'derecha',
     posicion: 1,
     ambientacion: 'Patio o callejón afroperuano, de colores cálidos y paredes de adobe.',
     intro:

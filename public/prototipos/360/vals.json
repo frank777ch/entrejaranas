@@ -1,41 +1,41 @@
 {
   "cara": 2048,
   "camara": [
-    10.9,
+    0,
     1.6,
-    4
+    -10.9
   ],
   "salida": {
-    "yaw": -73.18,
-    "pitch": 5.09
+    "yaw": 180,
+    "pitch": 5.31
   },
   "saco": {
-    "yaw": 133.51,
+    "yaw": 43.51,
     "pitch": -11.91,
     "fov": 46.74
   },
   "guitarra": {
-    "yaw": 169.33,
+    "yaw": 79.33,
     "pitch": -17.12,
     "fov": 33.95
   },
   "partitura": {
-    "yaw": 18.21,
+    "yaw": -71.79,
     "pitch": -18.17,
     "fov": 43.22
   },
   "farol": {
-    "yaw": -36.25,
+    "yaw": -126.25,
     "pitch": -9.1,
     "fov": 24
   },
   "disco": {
-    "yaw": -136.9,
+    "yaw": 133.1,
     "pitch": -17.09,
     "fov": 34.55
   },
   "entrada": {
-    "yaw": 90,
+    "yaw": 0,
     "pitch": 0
   }
 }

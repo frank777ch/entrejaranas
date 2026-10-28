@@ -1,6 +1,6 @@
 ---
 // Sala principal: el patio-salón de la casona, con sus cuatro paredes, el techo y el piso.
-// frente: marinera · derecha: tondero y vals · fondo: balcón, gramófono y espejo · izquierda: polka y festejo
+// frente: vals · derecha: polka y festejo · fondo: balcón, gramófono y espejo · izquierda: tondero y marinera
 import { casona, generos, type GeneroId } from '../../../data/museo-prototipo';
 import Pared from './Pared.astro';
 import Arco from './Arco.astro';
@@ -41,13 +41,21 @@ const casetones = Array.from({ length: 24 }, (_, i) => ({ c: i % 6, f: Math.floo
     </Cuadro>
     <Aplique x={470} y={360} />
     <Aplique x={1130} y={360} />
-    <Arco genero={g('marinera')} cx={800} ancho={400} alto={520}>
-      <rect x="704" y="200" width="192" height="434" fill="url(#p-damasco)" opacity="0.55" />
-      <Lampara x={800} y={330} escala={0.32} cadena={140} />
-      <rect x="822" y="455" width="54" height="74" fill="url(#g-oro-h)" />
-      <image href="/prototipos/2d/pareja.webp" x="828" y="461" width="42" height="62" preserveAspectRatio="xMidYMid slice" />
-      <image href="/prototipos/2d/vestido.webp" x="712" y="520" width="92" height="120" />
-      <rect x="740" y="610" width="120" height="22" rx="4" fill="#6e0f14" opacity="0.6" />
+    <Arco genero={g('vals')} cx={800} ancho={400} alto={520}>
+      <g transform="translate(800 720) scale(1.25) translate(-1080 -720)">
+        <rect x="1026" y="420" width="108" height="140" fill="#14203b" />
+        <circle cx="1106" cy="448" r="12" fill="#f6efd0" />
+        <path d="M1026 560 V520 h14 v-16 h12 v24 h10 v-36 h16 v28 h12 v-20 h14 v30 h10 v-12 h24 V560Z" fill="#0b1426" />
+        <g fill="#f6c95a">
+          <rect x="1044" y="526" width="3" height="4" />
+          <rect x="1068" y="512" width="3" height="4" />
+          <rect x="1096" y="532" width="3" height="4" />
+        </g>
+        <rect x="1026" y="420" width="108" height="140" fill="none" stroke="#3a2a1a" stroke-width="8" />
+        <circle cx="1124" cy="590" r="40" fill="url(#g-halo)" />
+        <path d="M1124 640 v-44" stroke="#1a1a1a" stroke-width="4" />
+        <rect x="1116" y="580" width="16" height="18" fill="#ffd77a" stroke="#1a1a1a" stroke-width="2" />
+      </g>
     </Arco>
     <Maceta x={548} y={piso} escala={0.8} />
     <Maceta x={1052} y={piso} escala={0.8} />
@@ -57,48 +65,50 @@ const casetones = Array.from({ length: 24 }, (_, i) => ({ c: i % 6, f: Math.floo
 <!-- DERECHA -->
 <div class="vista-2d" data-vista="derecha" data-ancho="1600">
   <Pared vista="derecha">
-    <!-- Sombrero de paja colgado junto al tondero -->
-    <g transform="translate(272 410)" filter="url(#f-sombra)">
-      <circle cx="0" cy="-34" r="7" fill="url(#g-madera)" />
-      <ellipse cx="0" cy="18" rx="70" ry="22" fill="#d9b56a" stroke="#9c7a35" stroke-width="2" />
-      <path d="M-36 14 C-38 -30 38 -30 36 14Z" fill="#e3c27a" stroke="#9c7a35" stroke-width="2" />
-      <path d="M-37 2 C-20 8 20 8 37 2 L36 12 C20 18 -20 18 -36 12Z" fill="#3a1d08" />
-      <path d="M-60 18 h120 M-50 26 h100 M-26 -10 h52" stroke="#b8954a" stroke-width="2" opacity="0.7" />
-    </g>
-    <Arco genero={g('tondero')} cx={520} ancho={300} alto={430}>
-      <rect x="466" y="420" width="108" height="140" fill="url(#g-cielo)" />
-      <path d="M466 520 Q500 500 530 512 T574 506 V560 H466Z" fill="#e8c98a" />
-      <path d="M492 530 v-36 M492 500 c-30 -4 -34 -30 -10 -36 c6 -20 36 -18 40 0 c22 2 22 30 0 34 c-10 6 -22 6 -30 2z" fill="#4c6b25" stroke="#5a3a18" stroke-width="5" />
-      <rect x="466" y="420" width="108" height="140" fill="none" stroke="#7a5228" stroke-width="8" />
-      <path d="M520 420 v140 M466 490 h108" stroke="#7a5228" stroke-width="4" />
-      <ellipse cx="500" cy="636" rx="34" ry="9" fill="#d9b56a" />
-      <path d="M484 634 c0 -16 32 -16 32 0z" fill="#e3c27a" />
+    <Arco genero={g('polka')} cx={520} ancho={300} alto={430}>
+      <path d="M448 440 Q484 470 520 440 T592 440" fill="none" stroke="#f6e2b0" stroke-width="3" />
+      <path d="M448 480 Q484 510 520 480 T592 480" fill="none" stroke="#f6e2b0" stroke-width="3" />
+      {[456, 476, 496, 520, 544, 564, 584].map((x, i) => (
+        <path d={`M${x} ${448 + Math.abs(Math.sin(i)) * 10} l7 16 l7 -16z`} fill={['#e5b23c', '#f3e6cc', '#2f8a7a'][i % 3]} />
+      ))}
+      <ellipse cx="520" cy="620" rx="60" ry="12" fill="#f3d9e6" opacity="0.35" />
+      <circle cx="560" cy="590" r="7" fill="#f3e6cc" opacity="0.7" />
+      <path d="M478 640 c4 -40 10 -60 14 -70 c6 10 10 30 12 70z" fill="#5c1f3e" opacity="0.8" />
     </Arco>
+    <!-- Guirnalda sobre el arco de la polka -->
+    <path d="M350 150 Q435 204 520 150 T690 150" fill="none" stroke="#5a3a18" stroke-width="3" />
+    {banderines.map((b) => <path d={`M${b.x - 11} ${b.y} h22 l-11 26z`} fill={b.color} stroke="#5a3a18" stroke-width="1.5" />)}
     <Aplique x={800} y={380} escala={0.85} />
     <Maceta x={800} y={piso} escala={0.62} />
-    <Arco genero={g('vals')} cx={1080} ancho={300} alto={430}>
-      <rect x="1026" y="420" width="108" height="140" fill="#14203b" />
-      <circle cx="1106" cy="448" r="12" fill="#f6efd0" />
-      <path d="M1026 560 V520 h14 v-16 h12 v24 h10 v-36 h16 v28 h12 v-20 h14 v30 h10 v-12 h24 V560Z" fill="#0b1426" />
-      <g fill="#f6c95a">
-        <rect x="1044" y="526" width="3" height="4" />
-        <rect x="1068" y="512" width="3" height="4" />
-        <rect x="1096" y="532" width="3" height="4" />
+    <Arco genero={g('festejo')} cx={1080} ancho={300} alto={430}>
+      <g stroke="#7a3412" stroke-width="2" opacity="0.5">
+        {[440, 470, 500, 530, 560, 590].map((y, i) => (
+          <path d={`M1008 ${y} H1152 ${Array.from({ length: 5 }, (_, j) => `M${1018 + j * 30 + (i % 2) * 15} ${y} v30`).join(' ')}`} />
+        ))}
       </g>
-      <rect x="1026" y="420" width="108" height="140" fill="none" stroke="#3a2a1a" stroke-width="8" />
-      <circle cx="1124" cy="590" r="40" fill="url(#g-halo)" />
-      <path d="M1124 640 v-44" stroke="#1a1a1a" stroke-width="4" />
-      <rect x="1116" y="580" width="16" height="18" fill="#ffd77a" stroke="#1a1a1a" stroke-width="2" />
+      <!-- Máscara festiva con flecos -->
+      <g transform="translate(1080 482)">
+        {[-30, -18, -6, 6, 18, 30].map((x, i) => (
+          <path d={`M${x} 26 q${i % 2 ? 4 : -4} 22 0 40`} stroke={['#e5b23c', '#2f8a7a', '#c0303a'][i % 3]} stroke-width="5" fill="none" stroke-linecap="round" />
+        ))}
+        <path d="M0 -44 C26 -44 34 -20 32 4 C30 28 16 40 0 42 C-16 40 -30 28 -32 4 C-34 -20 -26 -44 0 -44Z" fill="#1d1d1d" stroke="#e5b23c" stroke-width="3" />
+        <path d="M-32 -6 H32 M-30 14 H30" stroke="#c0303a" stroke-width="4" />
+        <path d="M-20 -18 q8 -8 16 0 q-8 6 -16 0Z M4 -18 q8 -8 16 0 q-8 6 -16 0Z" fill="#f3e6cc" />
+        <path d="M-10 26 q10 6 20 0" stroke="#f3e6cc" stroke-width="3" fill="none" />
+        <path d="M0 -4 v16" stroke="#e5b23c" stroke-width="3" />
+        <circle cx="0" cy="-34" r="4" fill="#2f8a7a" />
+        <path d="M-22 -40 l-10 -16 M22 -40 l10 -16 M0 -44 v-18" stroke="#e5b23c" stroke-width="4" stroke-linecap="round" />
+      </g>
+      <rect x="1036" y="586" width="44" height="54" fill="url(#g-madera)" stroke="#3a1d08" stroke-width="2" />
+      <circle cx="1058" cy="608" r="7" fill="#2a1406" />
     </Arco>
-    <!-- Farol junto al vals -->
-    <g transform="translate(1330 712)">
-      <circle cx="0" cy="-300" r="110" fill="url(#g-halo)" />
-      <ellipse cx="0" cy="4" rx="40" ry="8" fill="#1c0b03" opacity="0.4" />
-      <rect x="-22" y="-20" width="44" height="20" rx="3" fill="#24201c" />
-      <rect x="-6" y="-270" width="12" height="252" fill="#2b2622" />
-      <path d="M-26 -276 h52 l-8 -50 h-36z" fill="#ffe3a0" stroke="#24201c" stroke-width="5" />
-      <path d="M-30 -326 h60 l-30 -24z" fill="#24201c" />
-      <path d="M0 -276 v-50" stroke="#24201c" stroke-width="3" />
+    <!-- Cajón junto al festejo -->
+    <g transform="translate(1316 712)" filter="url(#f-sombra)">
+      <path d="M-50 -150 h100 l18 -18 h-100z" fill="#b5743c" />
+      <path d="M50 -150 l18 -18 v150 l-18 18z" fill="#6e3e18" />
+      <rect x="-50" y="-150" width="100" height="150" fill="url(#g-madera-h)" stroke="#3a1d08" stroke-width="2" />
+      <circle cx="0" cy="-60" r="18" fill="#2a1406" />
+      <rect x="-50" y="-150" width="100" height="150" fill="none" stroke="#e5b23c" stroke-width="3" opacity="0.35" />
     </g>
   </Pared>
 </div>
@@ -160,51 +170,35 @@ const casetones = Array.from({ length: 24 }, (_, i) => ({ c: i % 6, f: Math.floo
 <!-- IZQUIERDA -->
 <div class="vista-2d" data-vista="izquierda" data-ancho="1600">
   <Pared vista="izquierda">
-    <Arco genero={g('polka')} cx={520} ancho={300} alto={430}>
-      <path d="M448 440 Q484 470 520 440 T592 440" fill="none" stroke="#f6e2b0" stroke-width="3" />
-      <path d="M448 480 Q484 510 520 480 T592 480" fill="none" stroke="#f6e2b0" stroke-width="3" />
-      {[456, 476, 496, 520, 544, 564, 584].map((x, i) => (
-        <path d={`M${x} ${448 + Math.abs(Math.sin(i)) * 10} l7 16 l7 -16z`} fill={['#e5b23c', '#f3e6cc', '#2f8a7a'][i % 3]} />
-      ))}
-      <ellipse cx="520" cy="620" rx="60" ry="12" fill="#f3d9e6" opacity="0.35" />
-      <circle cx="560" cy="590" r="7" fill="#f3e6cc" opacity="0.7" />
-      <path d="M478 640 c4 -40 10 -60 14 -70 c6 10 10 30 12 70z" fill="#5c1f3e" opacity="0.8" />
+    <!-- Sombrero de paja colgado junto al tondero -->
+    <g transform="translate(272 410)" filter="url(#f-sombra)">
+      <circle cx="0" cy="-34" r="7" fill="url(#g-madera)" />
+      <ellipse cx="0" cy="18" rx="70" ry="22" fill="#d9b56a" stroke="#9c7a35" stroke-width="2" />
+      <path d="M-36 14 C-38 -30 38 -30 36 14Z" fill="#e3c27a" stroke="#9c7a35" stroke-width="2" />
+      <path d="M-37 2 C-20 8 20 8 37 2 L36 12 C20 18 -20 18 -36 12Z" fill="#3a1d08" />
+      <path d="M-60 18 h120 M-50 26 h100 M-26 -10 h52" stroke="#b8954a" stroke-width="2" opacity="0.7" />
+    </g>
+    <Arco genero={g('tondero')} cx={520} ancho={300} alto={430}>
+      <rect x="466" y="420" width="108" height="140" fill="url(#g-cielo)" />
+      <path d="M466 520 Q500 500 530 512 T574 506 V560 H466Z" fill="#e8c98a" />
+      <path d="M492 530 v-36 M492 500 c-30 -4 -34 -30 -10 -36 c6 -20 36 -18 40 0 c22 2 22 30 0 34 c-10 6 -22 6 -30 2z" fill="#4c6b25" stroke="#5a3a18" stroke-width="5" />
+      <rect x="466" y="420" width="108" height="140" fill="none" stroke="#7a5228" stroke-width="8" />
+      <path d="M520 420 v140 M466 490 h108" stroke="#7a5228" stroke-width="4" />
+      <ellipse cx="500" cy="636" rx="34" ry="9" fill="#d9b56a" />
+      <path d="M484 634 c0 -16 32 -16 32 0z" fill="#e3c27a" />
     </Arco>
-    <!-- Guirnalda sobre el arco de la polka -->
-    <path d="M350 150 Q435 204 520 150 T690 150" fill="none" stroke="#5a3a18" stroke-width="3" />
-    {banderines.map((b) => <path d={`M${b.x - 11} ${b.y} h22 l-11 26z`} fill={b.color} stroke="#5a3a18" stroke-width="1.5" />)}
     <Aplique x={800} y={380} escala={0.85} />
     <Maceta x={800} y={piso} escala={0.62} />
-    <Arco genero={g('festejo')} cx={1080} ancho={300} alto={430}>
-      <g stroke="#7a3412" stroke-width="2" opacity="0.5">
-        {[440, 470, 500, 530, 560, 590].map((y, i) => (
-          <path d={`M1008 ${y} H1152 ${Array.from({ length: 5 }, (_, j) => `M${1018 + j * 30 + (i % 2) * 15} ${y} v30`).join(' ')}`} />
-        ))}
+    <Arco genero={g('marinera')} cx={1080} ancho={300} alto={430}>
+      <g transform="translate(1080 720) scale(0.8) translate(-800 -720)">
+        <rect x="704" y="200" width="192" height="434" fill="url(#p-damasco)" opacity="0.55" />
+        <Lampara x={800} y={330} escala={0.32} cadena={140} />
+        <rect x="822" y="455" width="54" height="74" fill="url(#g-oro-h)" />
+        <image href="/prototipos/2d/pareja.webp" x="828" y="461" width="42" height="62" preserveAspectRatio="xMidYMid slice" />
+        <image href="/prototipos/2d/vestido.webp" x="712" y="520" width="92" height="120" />
+        <rect x="740" y="610" width="120" height="22" rx="4" fill="#6e0f14" opacity="0.6" />
       </g>
-      <!-- Máscara festiva con flecos -->
-      <g transform="translate(1080 482)">
-        {[-30, -18, -6, 6, 18, 30].map((x, i) => (
-          <path d={`M${x} 26 q${i % 2 ? 4 : -4} 22 0 40`} stroke={['#e5b23c', '#2f8a7a', '#c0303a'][i % 3]} stroke-width="5" fill="none" stroke-linecap="round" />
-        ))}
-        <path d="M0 -44 C26 -44 34 -20 32 4 C30 28 16 40 0 42 C-16 40 -30 28 -32 4 C-34 -20 -26 -44 0 -44Z" fill="#1d1d1d" stroke="#e5b23c" stroke-width="3" />
-        <path d="M-32 -6 H32 M-30 14 H30" stroke="#c0303a" stroke-width="4" />
-        <path d="M-20 -18 q8 -8 16 0 q-8 6 -16 0Z M4 -18 q8 -8 16 0 q-8 6 -16 0Z" fill="#f3e6cc" />
-        <path d="M-10 26 q10 6 20 0" stroke="#f3e6cc" stroke-width="3" fill="none" />
-        <path d="M0 -4 v16" stroke="#e5b23c" stroke-width="3" />
-        <circle cx="0" cy="-34" r="4" fill="#2f8a7a" />
-        <path d="M-22 -40 l-10 -16 M22 -40 l10 -16 M0 -44 v-18" stroke="#e5b23c" stroke-width="4" stroke-linecap="round" />
-      </g>
-      <rect x="1036" y="586" width="44" height="54" fill="url(#g-madera)" stroke="#3a1d08" stroke-width="2" />
-      <circle cx="1058" cy="608" r="7" fill="#2a1406" />
     </Arco>
-    <!-- Cajón junto al festejo -->
-    <g transform="translate(1316 712)" filter="url(#f-sombra)">
-      <path d="M-50 -150 h100 l18 -18 h-100z" fill="#b5743c" />
-      <path d="M50 -150 l18 -18 v150 l-18 18z" fill="#6e3e18" />
-      <rect x="-50" y="-150" width="100" height="150" fill="url(#g-madera-h)" stroke="#3a1d08" stroke-width="2" />
-      <circle cx="0" cy="-60" r="18" fill="#2a1406" />
-      <rect x="-50" y="-150" width="100" height="150" fill="none" stroke="#e5b23c" stroke-width="3" opacity="0.35" />
-    </g>
   </Pared>
 </div>
 

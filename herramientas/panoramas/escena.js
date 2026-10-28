@@ -808,8 +808,11 @@ async function salaMarinera(gen) {
   artesonado(c, s.W, s.D, s.A, 1.5);
   const VENTANA_M = { x: 0, y0: 0.9, w: 2.6, h: 2.9 };
   const crema = new THREE.MeshStandardMaterial({ color: 0xf1e6cf, roughness: 0.6 });
-  paredesSala(s, { mat: matDamasco, huecos: { izq: [VENTANA_M] }, cornisaMat: crema, filete: true });
-  balcon(c.izq, VENTANA_M, s.cam, s.luces, { cieloDist: 3, cieloAncho: 6, cieloAlto: 10 });
+  // El balcón va en el muro exterior: el otro costado da a la sala vecina
+  const exterior = s.exterior ?? 'izq';
+  const interior = exterior === 'izq' ? 'der' : 'izq';
+  paredesSala(s, { mat: matDamasco, huecos: { [exterior]: [VENTANA_M] }, cornisaMat: crema, filete: true });
+  balcon(c[exterior], VENTANA_M, s.cam, s.luces, { cieloDist: 3, cieloAncho: 6, cieloAlto: 10 });
   for (const x of [-3.2, 3.2]) pilastra(c.adelante, x, s.A - 0.4, crema);
   const alfombraM = new THREE.Mesh(new THREE.CircleGeometry(2.0, 96), new THREE.MeshStandardMaterial({ map: T.alfombraRedonda(['#93171e', '#3a160c', '#fead15', '#f0e7d8']), roughness: 0.96 }));
   alfombraM.rotation.x = -Math.PI / 2;
@@ -825,13 +828,13 @@ async function salaMarinera(gen) {
     colgar(c.atras, P.aplique(), x, 2.5, 0.1);
     luz(s, c.atras, 0xffa64d, 2, x, 2.65, 0.45, 4.5);
   }
-  colgar(c.der, P.cuadro(T.paisajeCosta(), 1.6, 1.2), 0, 2.45, 0.02);
-  colgar(c.der, P.mesaConsola(1.4, 0.44), 0, 0, 0.26);
-  for (const x of [-0.45, 0.45]) colgar(c.der, P.vela(0.24, 0.02), x, 0.86, 0.3);
-  colgar(c.der, P.silla(0x8a1c22), -1.6, 0, 0.5).rotation.y = 0.3;
-  colgar(c.der, P.silla(0x8a1c22), 1.6, 0, 0.5).rotation.y = -0.3;
-  colgar(c.izq, P.silla(0x8a1c22), -2.3, 0, 0.6).rotation.y = 0.5;
-  colgar(c.izq, P.silla(0x8a1c22), 2.3, 0, 0.6).rotation.y = -0.5;
+  colgar(c[interior], P.cuadro(T.paisajeCosta(), 1.6, 1.2), 0, 2.45, 0.02);
+  colgar(c[interior], P.mesaConsola(1.4, 0.44), 0, 0, 0.26);
+  for (const x of [-0.45, 0.45]) colgar(c[interior], P.vela(0.24, 0.02), x, 0.86, 0.3);
+  colgar(c[interior], P.silla(0x8a1c22), -1.6, 0, 0.5).rotation.y = 0.3;
+  colgar(c[interior], P.silla(0x8a1c22), 1.6, 0, 0.5).rotation.y = -0.3;
+  colgar(c[exterior], P.silla(0x8a1c22), -2.3, 0, 0.6).rotation.y = 0.5;
+  colgar(c[exterior], P.silla(0x8a1c22), 2.3, 0, 0.6).rotation.y = -0.5;
   for (const [x, z] of [[-4.0, -4.0], [4.0, -4.0]]) colgar(c.grupo, P.maceta(0.9, x + z + 40), x, 0, z);
 
   const tarima = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.54, 0.14, 48), P.MADERA);
@@ -972,36 +975,41 @@ async function salaVals(gen) {
   const BALCON = { x: 0, w: 2.2, hs: 2.6 };
   const VENT = { x: 0, y0: 0.9, w: 2.0, h: 2.4 };
   const maderaOscura = P.matMadera('#2a160a', '#0a0402', 53, 0.4);
-  paredesSala(s, { mat: matPared, huecos: { [s.exterior]: [BALCON], atras: [VENT] }, matZocalo: maderaOscura, cornisaMat: new THREE.MeshStandardMaterial({ color: 0xcfc4ae, roughness: 0.7 }), filete: true });
-  marcoArco(c[s.exterior], BALCON, 0.18, 0.08, maderaOscura);
+  // Al frente la sala va sola y sus costados quedan junto a las otras salas: el balcón pasa al fondo
+  const conBalcon = s.exterior ?? 'atras';
+  const huecos = conBalcon === 'atras' ? { atras: [BALCON] } : { [conBalcon]: [BALCON], atras: [VENT] };
+  paredesSala(s, { mat: matPared, huecos, matZocalo: maderaOscura, cornisaMat: new THREE.MeshStandardMaterial({ color: 0xcfc4ae, roughness: 0.7 }), filete: true });
+  marcoArco(c[conBalcon], BALCON, 0.18, 0.08, maderaOscura);
   // Ciudad de noche y farolas al otro lado del balcón
   const ciudad = new THREE.Mesh(new THREE.PlaneGeometry(14, 7), new THREE.MeshBasicMaterial({ map: T.nocheLima(), color: new THREE.Color(1.15, 1.15, 1.25) }));
   ciudad.position.set(0, 2.4, -G - 3.6);
-  c[s.exterior].add(ciudad);
+  c[conBalcon].add(ciudad);
   const piso = new THREE.Mesh(new THREE.PlaneGeometry(4, 2.4), new THREE.MeshStandardMaterial({ color: 0x3a3330, roughness: 0.9 }));
   piso.rotation.x = -Math.PI / 2;
   piso.position.set(0, 0.0, -G - 1.2);
-  c[s.exterior].add(piso);
+  c[conBalcon].add(piso);
   for (let k = -3; k <= 3; k++) {
     const b = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.0, 8), P.NEGRO);
     b.position.set(k * 0.3, 0.5, -G - 2.3);
-    c[s.exterior].add(b);
+    c[conBalcon].add(b);
   }
   const baranda = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.05, 0.05), P.NEGRO);
   baranda.position.set(0, 1.0, -G - 2.3);
-  c[s.exterior].add(baranda);
+  c[conBalcon].add(baranda);
   for (const x of [-2.4, 2.6]) {
     const f = P.farola(3.0);
     f.position.set(x, 0, -G - 3.0);
-    c[s.exterior].add(f);
-    luz(s, c[s.exterior], 0xffb45a, 10, x, 3.0, -G - 2.6, 6);
+    c[conBalcon].add(f);
+    luz(s, c[conBalcon], 0xffb45a, 10, x, 3.0, -G - 2.6, 6);
   }
-  const ciudad2 = new THREE.Mesh(new THREE.PlaneGeometry(9, 6), new THREE.MeshBasicMaterial({ map: T.nocheLima(), color: new THREE.Color(1.1, 1.1, 1.2) }));
-  ciudad2.position.set(0, 2.2, -G - 2.5);
-  c.atras.add(ciudad2);
-  const marcoV = P.marco(VENT.w, VENT.h, 0.12, 0.1, maderaOscura);
-  marcoV.position.set(0, VENT.y0 + VENT.h / 2, 0.01);
-  c.atras.add(marcoV);
+  if (conBalcon !== 'atras') {
+    const ciudad2 = new THREE.Mesh(new THREE.PlaneGeometry(9, 6), new THREE.MeshBasicMaterial({ map: T.nocheLima(), color: new THREE.Color(1.1, 1.1, 1.2) }));
+    ciudad2.position.set(0, 2.2, -G - 2.5);
+    c.atras.add(ciudad2);
+    const marcoV = P.marco(VENT.w, VENT.h, 0.12, 0.1, maderaOscura);
+    marcoV.position.set(0, VENT.y0 + VENT.h / 2, 0.01);
+    c.atras.add(marcoV);
+  }
   // Luz tenue: araña baja y apliques
   const ar = P.arana(6, 0.5, 0.9);
   ar.position.set(0, s.A - 0.9, 0);

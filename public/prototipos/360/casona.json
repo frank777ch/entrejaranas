@@ -5,7 +5,7 @@
     1.6,
     0
   ],
-  "marinera": {
+  "vals": {
     "yaw": 0,
     "pitch": 4.76,
     "asomo": {
@@ -14,7 +14,7 @@
       "ancho": 35.14
     }
   },
-  "tondero": {
+  "polka": {
     "yaw": 65.77,
     "pitch": 3.62,
     "asomo": {
@@ -23,7 +23,7 @@
       "ancho": 24.46
     }
   },
-  "vals": {
+  "festejo": {
     "yaw": 114.23,
     "pitch": 3.62,
     "asomo": {
@@ -32,8 +32,8 @@
       "ancho": 24.46
     }
   },
-  "polka": {
-    "yaw": -114.23,
+  "marinera": {
+    "yaw": -65.77,
     "pitch": 3.62,
     "asomo": {
       "pitch": 7,
@@ -41,8 +41,8 @@
       "ancho": 24.46
     }
   },
-  "festejo": {
-    "yaw": -65.77,
+  "tondero": {
+    "yaw": -114.23,
     "pitch": 3.62,
     "asomo": {
       "pitch": 7,
