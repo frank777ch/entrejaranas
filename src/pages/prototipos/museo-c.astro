@@ -1,13 +1,13 @@
 ---
 // Prototipo C: síntesis de A y B pedida en la reunión del 18 de octubre.
-// Cámara fija de novela visual sobre tomas con profundidad 3D (luego, ilustraciones del equipo de diseño).
+// Cámara fija de novela visual sobre tomas ilustradas (herramientas/fija-ilustrada).
 import Prototipo from '../../layouts/Prototipo.astro';
 import Interfaz from '../../components/prototipo/Interfaz.astro';
 ---
 
 <Prototipo titulo="Museo · Prototipo C">
   <link rel="preload" href="/prototipos/fija/casona.json" as="fetch" crossorigin="anonymous" />
-  <link rel="preload" href="/prototipos/fija/casona-2048.webp" as="fetch" crossorigin="anonymous" />
+  <link rel="preload" href="/prototipos/fija/casona-1774.webp" as="fetch" crossorigin="anonymous" />
   <Interfaz etiqueta="Prototipo C · Cámara fija" clase="proto--fija">
     <canvas class="visor-360" role="img" aria-label="Sala principal de la casona limeña. Mueve el mouse o desliza para mirar; elige un arco o una pieza."></canvas>
     <div class="puntos-360"></div>

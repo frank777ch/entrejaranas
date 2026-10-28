@@ -76,7 +76,7 @@ export function mostrarRegreso(texto: string | null, cb: () => void = () => {}) 
 }
 
 /** Panel del asomo: el visitante ve parte de la sala y decide si entra */
-export function mostrarCartel(g: Genero | null, cbs?: { entrar: () => void; volver: () => void }) {
+export function mostrarCartel(g: Genero | null, cbs?: { entrar: () => void; volver: () => void; piezas?: string[] }) {
   cartel.hidden = !g;
   generoCartel = g;
   sincronizarFondo();
@@ -85,7 +85,7 @@ export function mostrarCartel(g: Genero | null, cbs?: { entrar: () => void; volv
   $('.cartel__titulo').textContent = g.nombre;
   $('.cartel__texto').textContent = g.intro;
   $('.cartel__lista').replaceChildren(
-    ...objetosPorSala[g.id].map((n) => Object.assign(document.createElement('li'), { textContent: n })),
+    ...(cbs.piezas ?? objetosPorSala[g.id]).map((n) => Object.assign(document.createElement('li'), { textContent: n })),
   );
   const entrar = $<HTMLButtonElement>('.cartel__entrar');
   entrar.textContent = g.completa ? 'Entrar a la sala' : 'Sala en preparación';

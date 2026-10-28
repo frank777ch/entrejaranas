@@ -65,10 +65,17 @@ vec2 uvPlano(vec3 d, vec4 pl) {
   float z = max(-d.z, 1e-4);
   return vec2(0.5 + d.x / z / pl.y * 0.5, 0.5 - d.y / z / pl.z * 0.5);
 }
+// Cuando la vista pasa el borde (para dejar una pieza junto a la ficha), fuera de la imagen
+// se funde a penumbra en vez de estirar la última columna de píxeles
+vec4 plano(sampler2D t, vec3 d, vec4 pl) {
+  vec2 uv = uvPlano(d, pl);
+  vec2 fuera = max(-uv, uv - 1.0);
+  return mix(texture(t, uv), vec4(0.035, 0.03, 0.045, 1.0), smoothstep(0.0, 0.06, max(fuera.x, fuera.y)));
+}
 void main() {
   vec3 d = uR * vP.x * uEsc.x + uU * vP.y * uEsc.y + uF;
-  vec4 a = uPlanoA.x > 0.5 ? texture(uA2, uvPlano(d, uPlanoA)) : texture(uA, d);
-  vec4 b = uPlanoB.x > 0.5 ? texture(uB2, uvPlano(d, uPlanoB)) : texture(uB, d);
+  vec4 a = uPlanoA.x > 0.5 ? plano(uA2, d, uPlanoA) : texture(uA, d);
+  vec4 b = uPlanoB.x > 0.5 ? plano(uB2, d, uPlanoB) : texture(uB, d);
   color = mix(a, b, uMezcla);
 }`;
 
@@ -93,10 +100,15 @@ vec2 uvPlano(vec3 d, vec4 pl) {
   float z = max(-d.z, 1e-4);
   return vec2(0.5 + d.x / z / pl.y * 0.5, 0.5 - d.y / z / pl.z * 0.5);
 }
+vec4 plano(sampler2D t, vec3 d, vec4 pl) {
+  vec2 uv = uvPlano(d, pl);
+  vec2 fuera = max(-uv, uv - 1.0);
+  return mix(texture2D(t, uv), vec4(0.035, 0.03, 0.045, 1.0), smoothstep(0.0, 0.06, max(fuera.x, fuera.y)));
+}
 void main() {
   vec3 d = uR * vP.x * uEsc.x + uU * vP.y * uEsc.y + uF;
-  vec4 a = uPlanoA.x > 0.5 ? texture2D(uA2, uvPlano(d, uPlanoA)) : textureCube(uA, d);
-  vec4 b = uPlanoB.x > 0.5 ? texture2D(uB2, uvPlano(d, uPlanoB)) : textureCube(uB, d);
+  vec4 a = uPlanoA.x > 0.5 ? plano(uA2, d, uPlanoA) : textureCube(uA, d);
+  vec4 b = uPlanoB.x > 0.5 ? plano(uB2, d, uPlanoB) : textureCube(uB, d);
   gl_FragColor = mix(a, b, uMezcla);
 }`;
 

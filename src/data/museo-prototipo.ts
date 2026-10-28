@@ -32,6 +32,8 @@ export interface Genero {
   /** true: la sala se puede recorrer completa en el prototipo */
   completa: boolean;
   objetos: Objeto[];
+  /** Piezas del prototipo C cuando ya llegaron las artes del equipo de diseño (reemplazan a `objetos`) */
+  objetosFija?: Objeto[];
 }
 
 export const casona = {
@@ -266,6 +268,54 @@ export const generos: Genero[] = [
           'Con los discos y la radio, el vals criollo salió de los barrios y llegó a todo el país. Cada familia tenía sus valses favoritos.',
         audio: 'Vals de disco antiguo',
         dato: 'Lucha Reyes, "la Morena de Oro del Perú", grabó valses que siguen sonando en cada fiesta.',
+      },
+    ],
+    // Artes de la sala 1 del equipo de Cinthia (Drive, "MUSEO VIRTUAL-VERSIÓN ACTUAL", 23 de octubre)
+    objetosFija: [
+      {
+        id: 'pareja-vals',
+        categoria: 'Vestimenta',
+        nombre: 'Pareja de vals',
+        texto:
+          'En las fiestas criollas el vals se baila en pareja, abrazados y girando por el salón. Ellas lucían vestidos de volantes y ellos terno oscuro con corbata de lazo.',
+        audio: 'Vals para bailar',
+        dato: 'El vals llegó a Lima en el siglo XIX como baile de salón europeo; en los barrios se acriolló con guitarras y, después, con cajón.',
+      },
+      {
+        id: 'pintura-vals',
+        categoria: 'Símbolo visual',
+        nombre: 'Pintura de un baile de salón',
+        texto:
+          'Antes de sonar en callejones y quintas, el vals se bailó en los salones elegantes de Lima. Esta pintura recuerda esas noches de gala, con velas, cuadros y piso de madera.',
+        audio: 'Vals instrumental',
+        dato: 'El Día de la Canción Criolla, cada 31 de octubre, se instituyó en 1944.',
+      },
+      {
+        id: 'busto-pinglo',
+        categoria: 'Símbolo visual',
+        nombre: 'Busto de Felipe Pinglo Alva',
+        texto:
+          'Felipe Pinglo Alva (1899-1936), nacido en los Barrios Altos de Lima, es llamado el padre de la música criolla. Sus valses retratan el amor, el trabajo y la vida del barrio.',
+        audio: 'El plebeyo, vals de Felipe Pinglo',
+        dato: '"El plebeyo" cuenta un amor imposible entre clases sociales y es uno de los valses más queridos del Perú.',
+      },
+      {
+        id: 'guitarra-vals',
+        categoria: 'Instrumento',
+        nombre: 'Guitarra criolla',
+        texto:
+          'La guitarra es el alma del vals: una lleva los acordes y otra, la primera guitarra, adorna la melodía con punteos y bordoneos.',
+        audio: 'Punteo de guitarra criolla',
+        dato: 'Óscar Avilés fue llamado "la primera guitarra del Perú".',
+      },
+      {
+        id: 'cancionero',
+        categoria: 'Vida cotidiana',
+        nombre: 'Cancionero de vals',
+        texto:
+          'Las letras de los valses se copiaban en cuadernos y se imprimían en cancioneros que se vendían en la calle. Así, cualquiera podía cantar en la jarana las canciones de moda.',
+        audio: 'La flor de la canela',
+        dato: 'Chabuca Granda compuso "La flor de la canela" (1950), un paseo por la Lima antigua, del puente a la alameda.',
       },
     ],
   },

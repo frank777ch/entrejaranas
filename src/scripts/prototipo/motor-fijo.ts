@@ -1,10 +1,10 @@
 // Prototipo C: cámara fija, como en una novela visual, con la profundidad del prototipo B.
-// Cada lugar es una sola imagen plana más grande que la pantalla (hoy un render 3D; mañana la
-// ilustración del equipo de diseño). La cámara sigue al mouse dentro de un margen y nunca sale
-// del cuadro; al elegir una pieza se acerca a ella y abre su ficha. La sala principal deja mirar
-// más (a los costados y arriba); en las salas solo se mira a los costados.
-// Las tomas se renderizan con: node herramientas/panoramas/render.mjs --fija
-import { casona, generos, type Genero, type GeneroId, type Objeto } from '../../data/museo-prototipo';
+// Cada lugar es una sola ilustración más grande que la pantalla: un fondo pintado con las artes del
+// equipo de diseño encima. La cámara sigue al mouse dentro de un margen y nunca sale del cuadro;
+// al elegir una pieza se acerca a ella y abre su ficha. La sala principal deja mirar más (a los
+// costados y arriba); en las salas solo se mira a los costados.
+// Las tomas se arman con: node herramientas/fija-ilustrada/componer.mjs
+import { casona, generos as todos, type Genero, type GeneroId, type Objeto } from '../../data/museo-prototipo';
 import * as ui from './interfaz';
 import { Visor, type Textura, type Vista } from './visor-360';
 
@@ -26,9 +26,12 @@ interface DatosVista {
   puntos: Record<string, DatosPunto>;
 }
 
+/** En este prototipo cada sala muestra las artes del equipo de diseño cuando ya llegaron */
+const generos: Genero[] = todos.map((g) => ({ ...g, objetos: g.objetosFija ?? g.objetos }));
+
 const RUTA = '/prototipos/fija';
 /** Salas que ya tienen su toma de cámara fija; las demás se muestran "en preparación" */
-const LISTAS: GeneroId[] = ['vals'];
+const LISTAS: GeneroId[] = ['tondero', 'marinera', 'vals', 'polka', 'festejo'];
 /** Qué parte del ancho de la imagen se ve de una vez: la sala principal deja recorrer más */
 const ENCUADRE: Record<'casona' | 'sala', number> = { casona: 0.6, sala: 0.8 };
 
@@ -239,7 +242,7 @@ async function asomarse(g: Genero) {
   ui.mostrarFicha(null);
   const p = datos.casona!.puntos[g.id];
   const listo = lista(g);
-  ui.mostrarCartel({ ...g, completa: listo }, { entrar: () => entrar(g), volver: () => volver() });
+  ui.mostrarCartel({ ...g, completa: listo }, { entrar: () => entrar(g), volver: () => volver(), piezas: g.objetos.map((o) => o.nombre) });
   // El arco arriba y al centro; el panel del asomo ocupa la parte de abajo
   const hueco = innerWidth <= 640 ? { x0: 0.05, x1: 0.95, y0: 0.1, y1: 0.55 } : { x0: 0.1, x1: 0.9, y0: 0.08, y1: 0.62 };
   liberar();
@@ -443,7 +446,8 @@ async function iniciar() {
   if (!instantaneo) {
     await reposo(T(1600));
     ui.mostrarPista(ui.tactil ? 'Desliza para mirar · toca un arco para asomarte' : 'Mueve el mouse para mirar · haz clic en un arco para asomarte');
-    setTimeout(() => LISTAS.forEach((l) => cargar(l)), 2500);
+    // Solo la sala del centro: las demás se cargan al asomarse (cada toma pesa ~1 MB y ocupa GPU)
+    setTimeout(() => cargar('vals'), 2500);
   }
 }
 
