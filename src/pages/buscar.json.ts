@@ -20,15 +20,15 @@ export const GET: APIRoute = async () => {
     { tipo: 'Sección', titulo: sitio.museoVirtual.nombre, texto: sitio.museoVirtual.descripcion, url: '/museo-virtual' },
     { tipo: 'Sección', titulo: 'Microdocumentales', texto: 'Experiencias: historias de la música criolla.', url: '/#experiencias' },
     { tipo: 'Sección', titulo: 'Nuevas Promesas', texto: 'Mapa de jóvenes intérpretes de música criolla en Lima. Postula.', url: '/#promesas' },
-    { tipo: 'Sección', titulo: 'Prensa', texto: 'Noticias y notas de prensa.', url: '/#prensa' },
+    { tipo: 'Sección', titulo: 'Noticias', texto: 'Noticias, crónicas y notas de prensa.', url: '/#noticias' },
     { tipo: 'Sección', titulo: 'Contacto', texto: 'Escríbenos: talleres, prensa, alianzas, formulario, correo.', url: '/#contacto' },
   ];
 
   const noticias = (await getCollection('noticias')).map((n) => ({
-    tipo: 'Prensa',
+    tipo: 'Noticia',
     titulo: n.data.titulo,
     texto: n.data.resumen,
-    url: n.data.enlace ?? (n.body?.trim() ? `/prensa/${n.id}` : `/#noticia-${n.id}`),
+    url: n.data.enlace ?? (n.body?.trim() ? `/noticias/${n.id}` : `/#noticia-${n.id}`),
   }));
   const documentales = (await getCollection('documentales')).map((d) => ({
     tipo: 'Documental',

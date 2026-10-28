@@ -15,10 +15,12 @@ const noticias = defineCollection({
       fecha: z.coerce.date(),
       resumen: z.string(),
       // Enlace a la nota completa (medio de prensa, post en redes, etc.).
-      // Sin enlace, si el archivo tiene texto debajo del encabezado, se publica en /prensa/<archivo>
+      // Sin enlace, si el archivo tiene texto debajo del encabezado, se publica en /noticias/<archivo>
       enlace: enlace().optional(),
       imagen: image().optional(),
       imagenAlt: z.string().optional(),
+      // Etiqueta sobre el título en la página de la nota (Crónica, Entrevista, etc.)
+      tipo: z.string().default('Nota de prensa'),
     }),
 });
 

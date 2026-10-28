@@ -4,7 +4,7 @@ import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 
-// Una página por cada nota de prensa que tenga texto completo y no apunte a un medio externo
+// Una página por cada noticia que tenga texto completo y no apunte a un medio externo
 export const getStaticPaths = (async () => {
   const noticias = await getCollection('noticias', (n) => !n.data.enlace && Boolean(n.body?.trim()));
   return noticias.map((noticia) => ({ params: { id: noticia.id }, props: { noticia } }));
@@ -12,7 +12,7 @@ export const getStaticPaths = (async () => {
 
 const { noticia } = Astro.props;
 const { Content } = await render(noticia);
-const { titulo, resumen, fecha, imagen, imagenAlt } = noticia.data;
+const { titulo, resumen, fecha, imagen, imagenAlt, tipo } = noticia.data;
 // Las fotos horizontales van grandes, antes del texto; los afiches verticales, al costado
 const horizontal = imagen ? imagen.width > imagen.height : false;
 const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
@@ -21,9 +21,9 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
 <Base titulo={titulo} descripcion={resumen}>
   <article class="seccion">
     <div class="contenedor nota">
-      <a href="/#prensa" class="nota__volver">← Volver a Prensa</a>
+      <a href="/#noticias" class="nota__volver">← Volver a Noticias</a>
       <header class="nota__cabeza">
-        <p class="antetitulo">Nota de prensa</p>
+        <p class="antetitulo">{tipo}</p>
         <h1 class="titulo-seccion">{titulo}</h1>
         <p class="nota__bajada">{resumen}</p>
         <time datetime={fecha.toISOString()}>{formatoFecha.format(fecha)}</time>
@@ -124,6 +124,17 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
   .nota__texto :global(a) {
     color: var(--vino);
     text-underline-offset: 3px;
+  }
+  /* Fotos dentro del texto (crónicas) */
+  .nota__texto :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0.8rem 0;
+    border-radius: 6px;
+    background: var(--blanco);
+    padding: 0.5rem;
+    box-shadow: var(--sombra);
   }
 
   .nota__imagen {

@@ -9,7 +9,7 @@ const noticias = (await getCollection('noticias'))
   .map((n) => ({
     ...n,
     // Enlace externo, o la página propia de la nota si tiene texto completo
-    href: n.data.enlace ?? (n.body?.trim() ? `/prensa/${n.id}` : undefined),
+    href: n.data.enlace ?? (n.body?.trim() ? `/noticias/${n.id}` : undefined),
   }));
 
 // Foto grupal: basta con poner el archivo en src/assets/fotos/equipo.jpg (o .png / .webp)
@@ -69,8 +69,8 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
       </div>
     </div>
 
-    <aside id="prensa" class="prensa revelar" aria-labelledby="prensa-titulo">
-      <h2 id="prensa-titulo" class="prensa__titulo">Prensa</h2>
+    <aside id="noticias" class="prensa revelar" aria-labelledby="noticias-titulo">
+      <h2 id="noticias-titulo" class="prensa__titulo">Noticias</h2>
       <ol>
         {
           noticias.map((n) => (
