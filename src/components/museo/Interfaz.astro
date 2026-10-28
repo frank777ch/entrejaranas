@@ -1,0 +1,108 @@
+---
+// Controles del museo virtual: la escena va en el slot
+interface Props {
+  /** Clase extra para variar el estilo */
+  clase?: string;
+}
+
+const { clase } = Astro.props;
+---
+
+<div class:list={['proto', clase]} data-modo="carga">
+  <div class="proto__escena">
+    <slot />
+  </div>
+
+  <header class="barra">
+    <a class="barra__marca" href="/" aria-label="Mi museo criollo · volver a Entre Jaranas">
+      <img src="/museo/logo-mi-museo-criollo.webp" alt="Mi museo criollo" width="1073" height="367" />
+    </a>
+    <p class="barra__lugar" aria-live="polite"><span class="barra__punto" aria-hidden="true"></span><span class="barra__texto">Casona limeña</span></p>
+    <div class="barra__der">
+      <button type="button" class="barra__boton barra__sonido" aria-pressed="true" aria-label="Silenciar efectos" title="Sonido">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="icono-on"><path d="M4 9h4l5-4v14l-5-4H4zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="icono-off"><path d="M4 9h4l5-4v14l-5-4H4zM17 9l5 6M22 9l-5 6" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <button type="button" class="flecha flecha--izquierda" data-dir="izquierda" aria-label="Mirar a la izquierda" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+  </button>
+  <button type="button" class="flecha flecha--derecha" data-dir="derecha" aria-label="Mirar a la derecha" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+  </button>
+  <button type="button" class="flecha flecha--arriba" data-dir="arriba" aria-label="Mirar arriba" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7" /></svg>
+  </button>
+  <button type="button" class="flecha flecha--abajo" data-dir="abajo" aria-label="Mirar abajo" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7" /></svg>
+  </button>
+
+  <button type="button" class="regreso" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6l-6 6 6 6M4 12h16" /></svg>
+    <span class="regreso__texto">Volver</span>
+  </button>
+
+  <section class="cartel" aria-labelledby="cartel-titulo" hidden>
+    <p class="cartel__ante">Te asomas a la sala</p>
+    <h2 class="cartel__titulo" id="cartel-titulo"></h2>
+    <p class="cartel__texto"></p>
+    <ul class="cartel__lista" aria-label="Objetos de la sala"></ul>
+    <div class="cartel__botones">
+      <button type="button" class="boton boton--oro cartel__entrar">Entrar a la sala</button>
+      <button type="button" class="cartel__volver">Volver a la casona</button>
+    </div>
+  </section>
+
+  <section class="info-sala" aria-labelledby="info-titulo" hidden>
+    <button type="button" class="info-sala__abrir" aria-expanded="false">
+      <span class="info-sala__punto" aria-hidden="true"></span>
+      <span id="info-titulo" class="info-sala__titulo"></span>
+      <span class="info-sala__contador"></span>
+    </button>
+    <div class="info-sala__cuerpo" hidden>
+      <p class="info-sala__texto"></p>
+      <p class="info-sala__interpretes"></p>
+    </div>
+  </section>
+
+  <aside class="ficha" role="dialog" aria-labelledby="ficha-titulo" hidden>
+    <button type="button" class="ficha__cerrar" aria-label="Cerrar ficha">×</button>
+    <p class="ficha__categoria"></p>
+    <h2 class="ficha__titulo" id="ficha-titulo" tabindex="-1"></h2>
+    <p class="ficha__lugar" hidden></p>
+    <p class="ficha__texto"></p>
+    <button type="button" class="ficha__audio" aria-pressed="false">
+      <span class="ficha__play" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="icono-play"><path d="M8 5v14l11-7z" /></svg>
+        <svg viewBox="0 0 24 24" class="icono-pausa"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+      </span>
+      <span class="ficha__audio-info">
+        <span><strong class="ficha__audio-accion">Escuchar</strong> <span class="ficha__audio-texto"></span></span>
+        <span class="ficha__barra" aria-hidden="true"><span></span></span>
+      </span>
+    </button>
+    <div class="ficha__dato">
+      <strong>¿Sabías que…?</strong>
+      <p></p>
+    </div>
+    <nav class="ficha__nav" aria-label="Piezas de la sala" hidden>
+      <button type="button" class="ficha__paso" data-paso="-1" aria-label="Pieza anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+      </button>
+      <span class="ficha__contador" aria-live="polite"></span>
+      <button type="button" class="ficha__paso" data-paso="1" aria-label="Pieza siguiente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+      </button>
+    </nav>
+  </aside>
+
+  <p class="pista" aria-hidden="true"></p>
+
+  <div class="carga">
+    <img src="/museo/logo-mi-museo-criollo.webp" alt="" width="1073" height="367" class="carga__logo" />
+    <div class="carga__barra" aria-hidden="true"><span></span></div>
+    <p class="carga__estado" role="status">Abriendo la casona…</p>
+  </div>
+</div>

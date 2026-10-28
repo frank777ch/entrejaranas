@@ -14,9 +14,8 @@ export const sitio = {
   museoVirtual: {
     nombre: 'Museo Virtual de la Jarana',
     descripcion:
-      'Recorre salas dedicadas a los instrumentos, las voces y los barrios que hicieron la música criolla. Acércate a cada pieza, escucha su historia y vuelve cuando quieras: las salas se irán ampliando.',
-    // Primera sala en 3D (src/scripts/museo). Las piezas se editan en src/scripts/museo/piezas.ts
-    sala: 'Mi museo criollo',
+      'Entra a una casona limeña y recorre sus cinco salas: tondero, marinera limeña, vals criollo, polka y festejo. Acércate a cada pieza, escucha su música y conoce su historia.',
+    // Salas y piezas: src/data/museo.ts. Imágenes de cada sala: herramientas/fija-ilustrada
   },
 
   // Dejar en '' las redes que no existan y no se mostrarán

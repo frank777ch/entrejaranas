@@ -1,4 +1,4 @@
-// Qué lleva cada toma ilustrada del prototipo C. Todas las medidas van en px del fondo original
+// Qué lleva cada toma ilustrada del museo virtual. Todas las medidas van en px del fondo original
 // (el que entregó Codex, ~1774×887); componer.mjs las escala.
 //
 // - piezas: artes del equipo que se pegan encima. `base` es el centro del punto de apoyo y `alto`
@@ -31,11 +31,11 @@ export const LUGARES = {
     fondo: 'fondos/vals.webp',
     fovH: 80,
     piezas: [
-      { id: 'pintura-vals', arte: 'artes/vals/pintura.png', cubrir: [341, 156, 615, 339], recorte: 0.02, ajuste: ['-modulate', '86,92,100'] },
+      { id: 'pintura', arte: 'artes/vals/pintura.png', cubrir: [341, 156, 615, 339], recorte: 0.02, ajuste: ['-modulate', '86,92,100'] },
       { id: 'busto-pinglo', arte: 'artes/vals/busto-pinglo.png', base: [170, 366], alto: 165, ajuste: NOCHE },
       { id: 'cancionero', arte: 'artes/vals/cancionero.png', base: [1250, 388], alto: 165, ajuste: NOCHE },
-      { id: 'guitarra-vals', arte: 'artes/vals/guitarra.png', base: [1636, 606], alto: 320, sombra: 0.4, ajuste: NOCHE },
-      { id: 'pareja-vals', arte: 'artes/vals/pareja.png', base: [887, 712], alto: 525, sombra: 0.42, ajuste: NOCHE },
+      { id: 'guitarra', arte: 'artes/vals/guitarra.png', base: [1636, 606], alto: 320, sombra: 0.4, ajuste: NOCHE },
+      { id: 'pareja', arte: 'artes/vals/pareja.png', base: [887, 712], alto: 525, sombra: 0.42, ajuste: NOCHE },
     ],
   },
   // Salas 2 a 5: piezas provisionales pintadas por Codex hasta que lleguen las artes del equipo

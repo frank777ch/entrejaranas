@@ -1,10 +1,10 @@
-"""Música de muestra para los prototipos del museo.
+"""Música de muestra para el museo virtual.
 
 Piezas originales (no son grabaciones ni canciones existentes) en el ritmo de cada
 género, sintetizadas con cuerdas pulsadas (Karplus-Strong) y percusión. Sirven para
 probar la experiencia; en la versión final se reemplazan por grabaciones con permiso.
 
-Uso:  python3 herramientas/musica/componer.py public/prototipos/audio
+Uso:  python3 herramientas/musica/componer.py public/museo/audio
 Requiere numpy, scipy y ffmpeg (con libmp3lame).
 """
 
@@ -448,11 +448,11 @@ def main(salida: Path):
     # Vals criollo
     guardar(bucle(mezclar(p, {'guitarra': 0.9, 'melodia': 0.9}), L), salida / 'ambiente-vals.mp3')
     medio = L / 2
-    guardar(fragmento(mezclar(p, todo(p))), salida / 'saco.mp3')
+    guardar(fragmento(mezclar(p, todo(p))), salida / 'pareja.mp3')
     guardar(fragmento(mezclar(p, {'guitarra': 1.0, 'melodia': 0.6}, desde=medio / 2)), salida / 'guitarra.mp3')
-    guardar(fragmento(mezclar(p, {'melodia': 1.0, 'guitarra': 0.25})), salida / 'partitura.mp3')
-    guardar(fragmento(paso_bajo(mezclar(p, todo(p), desde=medio / 2, rev=0.4), 2500)), salida / 'farol.mp3')
-    guardar(fragmento(crujido(mezclar(pg, todo(pg), desde=medio / 2, rev=0.12))), salida / 'disco.mp3')
+    guardar(fragmento(mezclar(p, {'melodia': 1.0, 'guitarra': 0.25})), salida / 'busto-pinglo.mp3')
+    guardar(fragmento(paso_bajo(mezclar(p, todo(p), desde=medio / 2, rev=0.4), 2500)), salida / 'cancionero.mp3')
+    guardar(fragmento(crujido(mezclar(pg, todo(pg), desde=medio / 2, rev=0.12))), salida / 'pintura.mp3')
 
     # Marinera limeña
     p, L = marinera()
@@ -496,4 +496,4 @@ def main(salida: Path):
 
 
 if __name__ == '__main__':
-    main(Path(sys.argv[1] if len(sys.argv) > 1 else 'public/prototipos/audio'))
+    main(Path(sys.argv[1] if len(sys.argv) > 1 else 'public/museo/audio'))

@@ -2,8 +2,10 @@
 import { Image } from 'astro:assets';
 import isotipo from '../assets/marca/isotipo.png';
 import { sitio } from '../data/sitio';
+import { generos } from '../data/museo';
 
-const salas = ['Instrumentos', 'Voces', 'Barrios', 'Fiestas'];
+// En el orden de los arcos de la casona, de izquierda a derecha
+const salas = ['tondero', 'marinera', 'vals', 'polka', 'festejo'].map((id) => generos.find((g) => g.id === id)!.nombre);
 ---
 
 <section id="museo" class="museo">

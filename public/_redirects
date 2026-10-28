@@ -1,2 +1,6 @@
 # Prensa pasó a llamarse Noticias: los enlaces antiguos siguen funcionando
 /prensa/*  /noticias/:splat  301
+
+# El museo virtual salió de los prototipos: los enlaces que se compartieron llevan al museo
+/prototipos/*  /museo-virtual  301
+/prototipos  /museo-virtual  301

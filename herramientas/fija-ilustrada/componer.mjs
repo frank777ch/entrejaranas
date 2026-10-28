@@ -1,4 +1,4 @@
-// Tomas ilustradas del prototipo C: fondo pintado + artes del equipo de diseño encima.
+// Tomas ilustradas del museo virtual: fondo pintado + artes del equipo de diseño encima.
 // Los fondos los pintó Codex (GPT) en el estilo de las artes del equipo; las piezas que ya llegaron
 // se pegan tal cual, sin redibujarlas, y sus recuadros salen solos para los puntos tocables.
 // Cuando el equipo mande las artes de otra sala: pedir su fondo vacío, copiar las artes a artes/<sala>
@@ -6,7 +6,7 @@
 //
 //   node herramientas/fija-ilustrada/componer.mjs [casona,vals,...]
 //
-// Requiere ImageMagick 7 (`magick`). Escribe en public/prototipos/fija: <lugar>-<ancho>.webp,
+// Requiere ImageMagick 7 (`magick`). Escribe en public/museo/salas: <lugar>-<ancho>.webp,
 // <lugar>-<ancho/2>.webp y <lugar>.json, lo mismo que el render 3D.
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { LUGARES } from './lugares.mjs';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
-const salida = path.resolve(aqui, '../../public/prototipos/fija');
+const salida = path.resolve(aqui, '../../public/museo/salas');
 /** Los fondos salen de Codex a ~1774 px; se agrandan para que las artes del equipo luzcan nítidas */
 const ESCALA = 2;
 const CALIDAD = 86;

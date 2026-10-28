@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { sitio } from '../data/sitio';
+import { generos } from '../data/museo';
 
 // Índice del buscador. Se genera al compilar a partir del contenido,
 // así que todo lo que se agregue en src/content/ aparece solo.
@@ -18,6 +19,13 @@ export const GET: APIRoute = async () => {
     },
     { tipo: 'Sección', titulo: 'Nuestro propósito', texto: 'Misión, visión y valores: pertenencia, innovación, responsabilidad sociocultural, alegría, creatividad y jovialidad.', url: '/#proposito' },
     { tipo: 'Sección', titulo: sitio.museoVirtual.nombre, texto: sitio.museoVirtual.descripcion, url: '/museo-virtual' },
+    // Cada sala del museo, con sus piezas, para que "quijada" o "marinera" lleven directo a ella
+    ...generos.map((g) => ({
+      tipo: 'Museo virtual',
+      titulo: `Sala ${g.sala}: ${g.nombre}`,
+      texto: `${g.intro} Piezas: ${g.objetos.map((o) => o.nombre).join(', ')}.`,
+      url: `/museo-virtual?sala=${g.id}`,
+    })),
     { tipo: 'Sección', titulo: 'Microdocumentales', texto: 'Experiencias: historias de la música criolla.', url: '/#experiencias' },
     { tipo: 'Sección', titulo: 'Nuevas Promesas', texto: 'Mapa de jóvenes intérpretes de música criolla en Lima. Postula.', url: '/#promesas' },
     { tipo: 'Sección', titulo: 'Noticias', texto: 'Noticias, crónicas y notas de prensa.', url: '/#noticias' },
