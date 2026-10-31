@@ -44,16 +44,16 @@ export const LUGARES = {
       'guitarra-cajon': { caja: [1500, 410, 1750, 730] },
     },
   },
-  // Tondero y festejo: pintadas completas por Codex (pedidos/tondero.md y festejo.md)
+  // Tondero: sala pintada completa por Codex (pedidos/tondero-final.md), piezas en el mismo fondo
   tondero: {
     fondo: 'fondos/tondero.webp',
     fovH: 80,
     puntos: {
-      sombrero: { caja: [44, 133, 281, 414] },
-      checo: { caja: [407, 384, 628, 702] },
-      mapa: { caja: [769, 103, 1094, 488] },
-      'panuelo-color': { caja: [1160, 155, 1316, 540] },
-      canasta: { caja: [1412, 355, 1744, 710] },
+      checo: { caja: [60, 400, 350, 590] },
+      morropon: { caja: [355, 120, 690, 460] },
+      'pareja-tondero': { caja: [660, 130, 1160, 760] },
+      'simbolos-tondero': { caja: [1090, 380, 1370, 680] },
+      'teresa-olaya': { caja: [1370, 180, 1760, 750] },
     },
   },
   // Polka: sala pintada completa por Codex (pedidos/polka-final.md), piezas en el mismo fondo
@@ -68,15 +68,16 @@ export const LUGARES = {
       'guardia-vieja': { caja: [1300, 215, 1740, 700] },
     },
   },
+  // Festejo: sala pintada completa por Codex (pedidos/festejo-final.md), piezas en el mismo fondo
   festejo: {
     fondo: 'fondos/festejo.webp',
     fovH: 80,
     puntos: {
-      falda: { caja: [7, 185, 443, 680] },
-      quijada: { caja: [503, 140, 739, 650] },
-      mascara: { caja: [761, 133, 990, 451] },
-      cinta: { caja: [1064, 170, 1330, 577] },
-      cajita: { caja: [1382, 362, 1766, 628] },
+      'cajon-cajita-quijada': { caja: [20, 310, 355, 620] },
+      'origenes-festejo': { caja: [340, 190, 700, 690] },
+      'pareja-festejo': { caja: [700, 180, 1140, 700] },
+      'santa-cruz': { caja: [1100, 125, 1440, 420] },
+      decima: { caja: [1450, 260, 1740, 700] },
     },
   },
 };

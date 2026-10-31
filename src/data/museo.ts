@@ -116,46 +116,47 @@ export const generos: Genero[] = [
       'Baile alegre del norte del Perú, sobre todo de Piura y Lambayeque. Recrea el cortejo de las aves: la pareja se busca, se esquiva y se enamora al ritmo de guitarras, cajón y checo.',
     interpretes: [],
     completa: true,
+    // Piezas pensadas con el equipo de diseño (Drive, SALA 5, 31 de octubre); la sala la pinta Codex
     objetos: [
-      {
-        id: 'sombrero',
-        categoria: 'Vestimenta',
-        nombre: 'Sombrero de paja',
-        texto:
-          'En Piura el sombrero de paja se teje a mano, con paciencia y paja muy fina. Protege del sol del norte y completa el traje del bailarín de tondero.',
-        dato: 'El tondero se baila en tres partes: la glosa, el dulce y la fuga.',
-      },
       {
         id: 'checo',
         categoria: 'Instrumento',
         nombre: 'Checo',
         texto:
-          'Es una calabaza seca y hueca, abierta por un lado, que se golpea con las manos. Su sonido grave y redondo marca el ritmo de la música norteña.',
-        dato: 'El checo nace del campo: se hace con un mate o calabaza, un fruto que se cultiva en la costa norte.',
+          'Es una calabaza grande, seca y hueca, abierta por un lado, que se golpea con las manos. Su sonido grave y redondo marca el ritmo del tondero y de la música de la costa norte.',
+        dato: 'El checo nace del campo: se hace con un mate o calabaza, un fruto que se cultiva en los valles de Piura y Lambayeque.',
       },
       {
-        id: 'panuelo-color',
-        categoria: 'Accesorio de baile',
-        nombre: 'Pañuelo de color',
-        texto:
-          'Como en la marinera, el pañuelo guía el cortejo. En el tondero suele ser de colores vivos y acompaña giros, persecuciones y coqueteos.',
-        dato: 'Muchos pasos del tondero imitan el vuelo y el cortejo de las aves.',
-      },
-      {
-        id: 'canasta',
-        categoria: 'Vida cotidiana',
-        nombre: 'Canasta de cosecha',
-        texto:
-          'La canasta recuerda la vida del campo piurano: la cosecha, los mercados y las fiestas del pueblo, donde el tondero no podía faltar.',
-        dato: 'El algarrobo, árbol del bosque seco, es un símbolo de Piura y de la costa norte.',
-      },
-      {
-        id: 'mapa',
+        id: 'morropon',
         categoria: 'Símbolo visual',
-        nombre: 'Mapa de Piura',
+        nombre: 'Plaza de Morropón',
         texto:
-          'Piura es la cuna del tondero. Desde sus valles y pueblos, el baile se extendió por toda la costa norte del Perú.',
-        dato: 'El tondero es fruto de la mezcla de herencias españolas, africanas e indígenas en la costa norte.',
+          'Morropón, en Piura, es considerado la cuna del tondero. En su plaza, con su pileta y su iglesia, se celebran las fiestas donde el baile se vive de verdad: entre chicha, guitarras y cajón.',
+        dato: 'Morropón se llama a sí mismo "capital del tondero" y cada año celebra un festival dedicado a este baile.',
+      },
+      {
+        id: 'pareja-tondero',
+        categoria: 'Accesorio de baile',
+        nombre: 'Pareja de tondero',
+        texto:
+          'Se baila descalzo, con pañuelo en alto y sombrero de paja en la mano. Ella luce vestido de volantes y flor en el cabello; él, camisa blanca y faja. La pareja se busca, se esquiva y se enamora, como las aves en el cortejo.',
+        dato: 'El tondero se baila en tres partes: la glosa, el dulce y la fuga.',
+      },
+      {
+        id: 'simbolos-tondero',
+        categoria: 'Vida cotidiana',
+        nombre: 'Sombrero, chicha y pañuelo',
+        texto:
+          'Sombrero de paja de ala ancha, chicha de jora en cántaros de barro y pañuelo bordado: así se arma una fiesta norteña. La chicha, bebida de maíz fermentado, acompaña al tondero desde siempre.',
+        dato: 'En Piura los sombreros de paja se tejen a mano, con fibra muy fina, y protegen del sol fuerte del norte.',
+      },
+      {
+        id: 'teresa-olaya',
+        categoria: 'Personaje',
+        nombre: 'Teresa Olaya',
+        texto:
+          'Teresa Isabel Olaya Díaz es una de las cultoras del tondero de Morropón: bailarina y maestra que ha enseñado a varias generaciones a bailarlo como se baila en su tierra, con pañuelo, vestido de volantes y los pies descalzos.',
+        dato: 'Los cultores y cultoras son quienes guardan y enseñan un baile tradicional en su propio pueblo; de ellos aprenden las nuevas generaciones.',
       },
     ],
   },
@@ -277,46 +278,47 @@ export const generos: Genero[] = [
       'Ritmo afroperuano lleno de energía, con cajón, quijada y palmas. Es celebración, memoria y resistencia, y se baila con alegría y movimiento de cadera.',
     interpretes: ['Nicomedes Santa Cruz', 'Victoria Santa Cruz', 'Porfirio Vásquez', 'Perú Negro', 'Eva Ayllón', 'Susana Baca'],
     completa: true,
+    // Piezas pensadas con el equipo de diseño (Drive, SALA 4, 31 de octubre); la sala la pinta Codex
     objetos: [
       {
-        id: 'falda',
-        categoria: 'Vestimenta',
-        nombre: 'Falda amplia',
-        texto:
-          'Las bailarinas de festejo usan faldas amplias y coloridas que giran y se levantan con cada movimiento de cadera.',
-        dato: 'Cada 4 de junio se celebra el Día de la Cultura Afroperuana, en homenaje al nacimiento de Nicomedes Santa Cruz.',
-      },
-      {
-        id: 'quijada',
+        id: 'cajon-cajita-quijada',
         categoria: 'Instrumento',
-        nombre: 'Quijada de burro',
+        nombre: 'Cajón, cajita y quijada',
         texto:
-          'Es la mandíbula seca de un burro, mula o caballo. Al golpearla con la palma, los dientes sueltos vibran como un cascabel; también se raspa con un palillo.',
-        dato: 'La quijada nació de hacer música con lo que se tenía a mano, y hoy es un símbolo de la percusión afroperuana.',
-      },
-      {
-        id: 'cinta',
-        categoria: 'Accesorio de baile',
-        nombre: 'Cinta de cintura',
-        texto:
-          'Cintas y fajas de colores marcan la cintura y resaltan el movimiento de cadera, protagonista del festejo.',
+          'Los tres instrumentos de la percusión afroperuana. El cajón es una caja de madera que se toca sentado encima; la cajita, una cajita con tapa que se abre y cierra al ritmo; la quijada, la mandíbula seca de un burro cuyos dientes vibran al golpearla.',
         dato: 'En 2001 el cajón peruano fue declarado Patrimonio Cultural de la Nación.',
       },
       {
-        id: 'mascara',
-        categoria: 'Vida cotidiana',
-        nombre: 'Máscara festiva decorativa',
+        id: 'origenes-festejo',
+        categoria: 'Historia',
+        nombre: 'Los orígenes del festejo',
         texto:
-          'Las máscaras recuerdan las comparsas populares, como el son de los diablos, que recorría las calles de Lima en carnavales y fiestas.',
-        dato: 'Esta máscara es un recurso de ambientación: evoca lo festivo, pero no es un elemento obligatorio del festejo.',
+          'El festejo nació en la costa peruana entre los africanos esclavizados y sus descendientes, en los siglos XVII y XVIII. Con tambores, palmas y canto, fue celebración y también resistencia: una manera de mantener viva la memoria de África.',
+        dato: 'Cada 4 de junio se celebra el Día de la Cultura Afroperuana, en homenaje al nacimiento de Nicomedes Santa Cruz.',
       },
       {
-        id: 'cajita',
-        categoria: 'Símbolo visual',
-        nombre: 'Cajita afroperuana',
+        id: 'pareja-festejo',
+        categoria: 'Vestimenta',
+        nombre: 'Pareja de festejo',
         texto:
-          'Pequeña caja de madera con tapa, que se cuelga del cuello o la cintura. Se toca abriendo y cerrando la tapa y golpeando un costado con un palillo.',
-        dato: 'La cajita acompaña danzas como el son de los diablos y es uno de los sonidos más reconocibles de la música afroperuana.',
+          'Se baila descalzo, con alegría y mucho movimiento de cadera. Ella lleva vestido rojo de vuelos con enagua blanca y flor en el pelo; él, camisa blanca, chaleco rojo y pantalón blanco. Los colores vivos son parte de la fiesta.',
+        dato: 'El festejo se baila en pareja suelta: los bailarines no se toman, se provocan y se responden con el cuerpo.',
+      },
+      {
+        id: 'santa-cruz',
+        categoria: 'Personaje',
+        nombre: 'Nicomedes y Victoria Santa Cruz',
+        texto:
+          'Hermanos limeños que rescataron la cultura afroperuana en el siglo XX. Nicomedes (1925-1992), decimista y poeta, llevó la décima y el festejo a la radio y los discos; Victoria (1922-2014), coreógrafa y compositora, recreó danzas y fundó conjuntos que recorrieron el mundo.',
+        dato: 'Victoria Santa Cruz es autora del poema "Me gritaron negra", un himno del orgullo afroperuano.',
+      },
+      {
+        id: 'decima',
+        categoria: 'Vida cotidiana',
+        nombre: 'Una décima manuscrita',
+        texto:
+          'La décima es un poema de diez versos que los decimistas afroperuanos componen y recitan, muchas veces de memoria o improvisando. Habla de la vida diaria, de amores, de injusticias y de humor, y suele acompañarse de guitarra y cajón.',
+        dato: 'Nicomedes Santa Cruz escribió cientos de décimas; con ellas contó la historia del Perú negro.',
       },
     ],
   },
