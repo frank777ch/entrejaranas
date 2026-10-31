@@ -54,7 +54,7 @@ export const generos: Genero[] = [
       'Baile de pareja de la costa central, elegante y pícaro. También se le llama canto de jarana: se canta en contrapunto y se baila con pañuelo, en un cortejo lleno de gracia.',
     interpretes: ['Augusto Ascuez', 'Elías Ascuez', 'Abelardo Vásquez'],
     completa: true,
-    // Artes de la sala de marinera del equipo de Cinthia (Drive, "MUSEO VIRTUAL-VERSIÓN ACTUAL/SALA 3", 30 de octubre)
+    // Piezas pensadas con el equipo de diseño (Drive, SALA 3, 30 de octubre); la sala la pinta Codex
     objetos: [
       {
         id: 'tunante',
@@ -169,7 +169,7 @@ export const generos: Genero[] = [
       'El vals criollo nació en los barrios y callejones de Lima y se volvió la voz de la ciudad: canciones de amor, de barrio y de nostalgia, en compás de tres tiempos y con guitarras.',
     interpretes: ['Felipe Pinglo Alva', 'Chabuca Granda', 'Lucha Reyes', 'Óscar Avilés', 'Jesús Vásquez', 'Arturo "Zambo" Cavero'],
     completa: true,
-    // Artes de la sala 1 del equipo de Cinthia (Drive, "MUSEO VIRTUAL-VERSIÓN ACTUAL", 23 de octubre)
+    // Piezas pensadas con el equipo de diseño (Drive, SALA 1, 23 de octubre); la sala la pinta Codex
     objetos: [
       {
         id: 'pareja',
@@ -223,7 +223,7 @@ export const generos: Genero[] = [
       'La polka llegó de Europa en el siglo XIX y en Lima se acriolló: rápida, juguetona y bailable, en compás de dos tiempos, con guitarras y mandolinas.',
     interpretes: [],
     completa: true,
-    // Artes de la sala de polka del equipo de Cinthia (Drive, "MUSEO VIRTUAL-VERSIÓN ACTUAL/SALA 2", 30 de octubre)
+    // Piezas pensadas con el equipo de diseño (Drive, SALA 2, 30 de octubre); la sala la pinta Codex
     objetos: [
       {
         id: 'acordeon',

@@ -1,14 +1,11 @@
 // Qué lleva cada toma ilustrada del museo virtual. Todas las medidas van en px del fondo original
-// (el que entregó Codex, ~1774×887); componer.mjs las escala.
+// (el que entregó Codex, 1774×887); componer.mjs las escala.
 //
-// - piezas: artes del equipo que se pegan encima. `base` es el centro del punto de apoyo y `alto`
-//   su altura; `cubrir` llena un hueco (el interior de un marco). `ajuste` son opciones de
-//   ImageMagick para entonarlas con la luz de la sala.
-// - puntos: arcos o piezas que ya vienen pintadas en el fondo, con su recuadro (y su punto, si no
-//   es el centro del recuadro).
-
-/** Las artes del equipo vienen con luz pareja: se oscurecen un poco para la noche de la sala */
-const NOCHE = ['-modulate', '90,94,100'];
+// Desde el 31 de octubre todas las salas van pintadas completas por Codex (los jefes de Marce
+// prefirieron ese estilo a las artes recortadas del equipo), así que solo se usan `puntos`:
+// arcos o piezas pintadas en el fondo, con su recuadro (y su punto, si no es el centro).
+// `piezas` (artes sueltas pegadas encima, con `base`/`alto` o `cubrir`) sigue disponible en
+// componer.mjs por si vuelve a hacer falta.
 
 export const LUGARES = {
   casona: {
@@ -22,31 +19,32 @@ export const LUGARES = {
       festejo: { caja: [1392, 124, 1664, 637], x: 1498, y: 430 },
     },
   },
+  // Vals: sala pintada completa por Codex (pedidos/vals-final.md), piezas en el mismo fondo
   vals: {
     fondo: 'fondos/vals.webp',
     fovH: 80,
-    piezas: [
-      { id: 'pintura', arte: 'artes/vals/pintura.png', cubrir: [341, 156, 615, 339], recorte: 0.02, ajuste: ['-modulate', '86,92,100'] },
-      { id: 'busto-pinglo', arte: 'artes/vals/busto-pinglo.png', base: [170, 366], alto: 165, ajuste: NOCHE },
-      { id: 'cancionero', arte: 'artes/vals/cancionero.png', base: [1250, 388], alto: 165, ajuste: NOCHE },
-      { id: 'guitarra', arte: 'artes/vals/guitarra.png', base: [1636, 606], alto: 320, sombra: 0.4, ajuste: NOCHE },
-      { id: 'pareja', arte: 'artes/vals/pareja.png', base: [887, 712], alto: 525, sombra: 0.42, ajuste: NOCHE },
-    ],
+    puntos: {
+      'busto-pinglo': { caja: [110, 170, 290, 440] },
+      pintura: { caja: [290, 70, 660, 520] },
+      pareja: { caja: [690, 150, 1130, 800] },
+      cancionero: { caja: [1170, 290, 1400, 470] },
+      guitarra: { caja: [1500, 240, 1720, 760] },
+    },
   },
-  // Marinera: artes del equipo (30 de octubre) sobre el fondo vacío de pedidos/marinera-v2.md
+  // Marinera: sala pintada completa por Codex (pedidos/marinera-final.md), piezas en el mismo fondo
   marinera: {
     fondo: 'fondos/marinera.webp',
     fovH: 80,
-    piezas: [
-      { id: 'marinera-antigua', arte: 'artes/marinera/marinera-antigua.png', cubrir: [441, 193, 618, 416], contener: true, ajuste: ['-modulate', '94,96,100'] },
-      { id: 'marinera-actual', arte: 'artes/marinera/marinera-actual.png', cubrir: [1140, 190, 1324, 418], contener: true, ajuste: ['-modulate', '94,96,100'] },
-      { id: 'ancla', arte: 'artes/marinera/ancla.png', base: [560, 655], alto: 200, sombra: 0.3, ajuste: NOCHE },
-      { id: 'tunante', arte: 'artes/marinera/tunante.png', base: [272, 715], alto: 255, sombra: 0.3, ajuste: NOCHE },
-      { id: 'guitarra-cajon', arte: 'artes/marinera/guitarra-cajon.png', base: [1245, 668], alto: 255, sombra: 0.35, ajuste: NOCHE },
-      { id: 'pareja-marinera', arte: 'artes/marinera/pareja.png', base: [887, 740], alto: 520, sombra: 0.42, ajuste: NOCHE },
-    ],
+    puntos: {
+      tunante: { caja: [5, 330, 380, 760] },
+      'marinera-antigua': { caja: [290, 105, 600, 470] },
+      'pareja-marinera': { caja: [560, 200, 930, 760] },
+      'marinera-actual': { caja: [1000, 105, 1320, 470] },
+      ancla: { caja: [1290, 400, 1480, 720] },
+      'guitarra-cajon': { caja: [1500, 410, 1750, 730] },
+    },
   },
-  // Tondero y festejo: piezas provisionales pintadas por Codex hasta que lleguen las artes del equipo
+  // Tondero y festejo: pintadas completas por Codex (pedidos/tondero.md y festejo.md)
   tondero: {
     fondo: 'fondos/tondero.webp',
     fovH: 80,
@@ -58,17 +56,17 @@ export const LUGARES = {
       canasta: { caja: [1412, 355, 1744, 710] },
     },
   },
-  // Polka: artes del equipo (30 de octubre) sobre el fondo vacío de pedidos/polka-v2.md (sala de día: sin ajuste)
+  // Polka: sala pintada completa por Codex (pedidos/polka-final.md), piezas en el mismo fondo
   polka: {
     fondo: 'fondos/polka.webp',
     fovH: 80,
-    piezas: [
-      { id: 'mapa-bohemia', arte: 'artes/polka/mapa.png', cubrir: [1131, 181, 1286, 403], contener: true, margen: 0.05 },
-      { id: 'cuadro-callao', arte: 'artes/polka/cuadro-callao.png', base: [532, 420], alto: 230 },
-      { id: 'acordeon', arte: 'artes/polka/acordeon.png', base: [232, 446], alto: 135 },
-      { id: 'guardia-vieja', arte: 'artes/polka/guardia-vieja.png', base: [1535, 575], alto: 340, sombra: 0.35 },
-      { id: 'pareja-polka', arte: 'artes/polka/pareja.png', base: [874, 705], alto: 510, sombra: 0.42 },
-    ],
+    puntos: {
+      acordeon: { caja: [70, 330, 300, 520] },
+      'cuadro-callao': { caja: [325, 115, 640, 520] },
+      'pareja-polka': { caja: [590, 215, 1030, 760] },
+      'mapa-bohemia': { caja: [1030, 150, 1290, 490] },
+      'guardia-vieja': { caja: [1300, 215, 1740, 700] },
+    },
   },
   festejo: {
     fondo: 'fondos/festejo.webp',
