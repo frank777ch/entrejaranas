@@ -20,11 +20,6 @@ export const LUGARES = {
       vals: { caja: [799, 281, 975, 539], x: 887, y: 441 },
       polka: { caja: [1200, 265, 1288, 560], x: 1239, y: 442 },
       festejo: { caja: [1392, 124, 1664, 637], x: 1498, y: 430 },
-      gramofono: { caja: [667, 460, 745, 545] },
-      espejo: { caja: [679, 390, 726, 460] },
-      plaza: { caja: [382, 288, 452, 388] },
-      pinglo: { caja: [1335, 275, 1393, 395] },
-      arana: { caja: [820, 103, 954, 255] },
     },
   },
   vals: {

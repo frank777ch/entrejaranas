@@ -39,48 +39,8 @@ export const casona = {
   nombre: 'Casona limeña',
   intro:
     'Bienvenido al patio-salón de una casona limeña de estilo virreinal. Desde aquí se abren cinco arcos: cada uno lleva a un género de nuestra música criolla.',
-  objetos: [
-    {
-      id: 'gramofono',
-      categoria: 'Introducción',
-      nombre: 'Gramófono',
-      texto:
-        'La música criolla se escuchó primero en jaranas, callejones y salones. Con los discos y la radio del siglo XX llegó a todas las casas de Lima y del país.',
-      dato: 'Cada 31 de octubre se celebra en el Perú el Día de la Canción Criolla.',
-    },
-    {
-      id: 'espejo',
-      categoria: 'Introducción',
-      nombre: 'Espejo de marco dorado',
-      texto:
-        'Lo criollo es el reflejo de muchas herencias: española, africana y andina se mezclaron en la costa y dieron forma a ritmos, bailes y formas de celebrar.',
-      dato: 'Cinco arcos, cinco géneros: festejo, marinera limeña, tondero, vals criollo y polka. Elige uno y asómate.',
-    },
-    {
-      id: 'pinglo',
-      categoria: 'Símbolo visual',
-      nombre: 'Retrato de Felipe Pinglo',
-      texto:
-        'Felipe Pinglo Alva (1899-1936) es llamado el padre de la música criolla. Compuso cerca de 300 canciones que retratan la vida de los barrios de Lima.',
-      dato: 'Su vals "El plebeyo" cuenta un amor imposible entre clases sociales y es una de las canciones criollas más conocidas.',
-    },
-    {
-      id: 'plaza',
-      categoria: 'Símbolo visual',
-      nombre: 'Cuadro de la Plaza de Armas',
-      texto:
-        'Lima fue el gran escenario de la música criolla: sus plazas, balcones y callejones vieron nacer serenatas, jaranas y valses.',
-      dato: 'Los callejones y quintas de los Barrios Altos y el Rímac fueron cuna de muchos compositores criollos.',
-    },
-    {
-      id: 'arana',
-      categoria: 'Vida cotidiana',
-      nombre: 'Araña de velas',
-      texto:
-        'Las jaranas se celebraban en los salones de las casonas, bajo la luz de arañas de velas. Una buena jarana podía durar toda la noche y hasta días.',
-      dato: 'Antes de la luz eléctrica, las velas de las arañas se encendían una a una con una vara larga.',
-    },
-  ] satisfies Objeto[],
+  // En la sala principal solo se tocan los arcos de las cinco salas: sin piezas propias
+  objetos: [] as Objeto[],
 };
 
 export const generos: Genero[] = [
