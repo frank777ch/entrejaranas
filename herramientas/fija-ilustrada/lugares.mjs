@@ -2,10 +2,9 @@
 // (el que entregó Codex, 1774×887); componer.mjs las escala.
 //
 // Desde el 31 de octubre todas las salas van pintadas completas por Codex (los jefes de Marce
-// prefirieron ese estilo a las artes recortadas del equipo), así que solo se usan `puntos`:
-// arcos o piezas pintadas en el fondo, con su recuadro (y su punto, si no es el centro).
-// `piezas` (artes sueltas pegadas encima, con `base`/`alto` o `cubrir`) sigue disponible en
-// componer.mjs por si vuelve a hacer falta.
+// prefirieron ese estilo a las artes recortadas del equipo). Se usan `puntos` (arcos o piezas
+// pintadas en el fondo, con su recuadro) y, solo donde el equipo quiere su arte tal cual,
+// `piezas` (artes sueltas pegadas encima, con `base`/`alto` o `cubrir`).
 
 export const LUGARES = {
   casona: {
@@ -23,11 +22,12 @@ export const LUGARES = {
   vals: {
     fondo: 'fondos/vals.webp',
     fovH: 80,
+    // El cancionero va con el arte original del equipo, apoyado en el atril pintado
+    piezas: [{ id: 'cancionero', arte: 'artes/vals/cancionero.png', base: [1284, 483], alto: 282 }],
     puntos: {
       'busto-pinglo': { caja: [110, 170, 290, 440] },
       pintura: { caja: [290, 70, 660, 520] },
       pareja: { caja: [690, 150, 1130, 800] },
-      cancionero: { caja: [1170, 250, 1400, 480] },
       guitarra: { caja: [1500, 240, 1720, 760] },
     },
   },
@@ -60,11 +60,12 @@ export const LUGARES = {
   polka: {
     fondo: 'fondos/polka.webp',
     fovH: 80,
+    // El mapa va con el arte original del equipo, dentro del marco pintado
+    piezas: [{ id: 'mapa-bohemia', arte: 'artes/polka/mapa.png', cubrir: [1048, 166, 1280, 465], contener: true, margen: 0 }],
     puntos: {
       acordeon: { caja: [70, 330, 300, 520] },
       'cuadro-callao': { caja: [325, 115, 640, 520] },
       'pareja-polka': { caja: [590, 215, 1030, 760] },
-      'mapa-bohemia': { caja: [1030, 150, 1290, 490] },
       'guardia-vieja': { caja: [1300, 215, 1740, 700] },
     },
   },
