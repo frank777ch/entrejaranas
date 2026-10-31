@@ -1,5 +1,6 @@
 ---
-// Convierte un enlace de YouTube o Vimeo en un video incrustado
+// Convierte un enlace de YouTube, Vimeo o Cloudflare Stream en un video incrustado.
+// Un enlace directo a un .mp4 se reproduce con el reproductor del navegador.
 interface Props {
   url: string;
   titulo: string;
@@ -16,14 +17,26 @@ function aEmbed(enlace: string): string | null {
     return `https://www.youtube-nocookie.com/embed/${id}`;
   }
   if (host.endsWith('vimeo.com')) return `https://player.vimeo.com/video/${u.pathname.split('/').pop()}`;
+  // Cloudflare Stream: sirve el enlace "Watch" (…/<uid>/watch), el del iframe (…/<uid>/iframe)
+  // o el corto https://iframe.videodelivery.net/<uid>
+  if (host.endsWith('cloudflarestream.com')) {
+    const uid = u.pathname.split('/').filter(Boolean)[0];
+    return `https://${u.hostname}/${uid}/iframe`;
+  }
+  if (host === 'iframe.videodelivery.net' || host === 'watch.videodelivery.net') {
+    return `https://iframe.videodelivery.net/${u.pathname.split('/').filter(Boolean)[0]}`;
+  }
   return null;
 }
 
 const embed = aEmbed(url);
+const directo = !embed && /\.(mp4|webm)(\?|$)/i.test(url);
 ---
 
 {
-  embed ? (
+  directo ? (
+    <video src={url} title={titulo} controls preload="metadata" playsinline />
+  ) : embed ? (
     <iframe
       src={embed}
       title={titulo}
@@ -39,9 +52,15 @@ const embed = aEmbed(url);
 }
 
 <style>
-  iframe {
+  iframe,
+  video {
+    display: block;
     width: 100%;
     height: 100%;
     border: 0;
+  }
+  video {
+    object-fit: cover;
+    background: #000;
   }
 </style>

@@ -6,7 +6,15 @@ export type GeneroId = 'festejo' | 'marinera' | 'tondero' | 'vals' | 'polka';
 
 export interface Objeto {
   id: string;
-  categoria: 'Vestimenta' | 'Instrumento' | 'Accesorio de baile' | 'Vida cotidiana' | 'Símbolo visual' | 'Introducción';
+  categoria:
+    | 'Vestimenta'
+    | 'Instrumento'
+    | 'Accesorio de baile'
+    | 'Vida cotidiana'
+    | 'Símbolo visual'
+    | 'Personaje'
+    | 'Historia'
+    | 'Introducción';
   nombre: string;
   texto: string;
   /** Qué sonaría al abrir la ficha (el audio real se agrega en la versión final) */
@@ -93,51 +101,61 @@ export const generos: Genero[] = [
       'Baile de pareja de la costa central, elegante y pícaro. También se le llama canto de jarana: se canta en contrapunto y se baila con pañuelo, en un cortejo lleno de gracia.',
     interpretes: ['Augusto Ascuez', 'Elías Ascuez', 'Abelardo Vásquez'],
     completa: true,
+    // Artes de la sala de marinera del equipo de Cinthia (Drive, "MUSEO VIRTUAL-VERSIÓN ACTUAL/SALA 3", 30 de octubre)
     objetos: [
       {
-        id: 'manto',
-        categoria: 'Vestimenta',
-        nombre: 'Traje y manto femenino',
+        id: 'tunante',
+        categoria: 'Personaje',
+        nombre: 'Abelardo Gamarra, "El Tunante"',
         texto:
-          'La bailarina luce un traje de época de falda amplia, que se recoge y se mueve con el baile. El manto y los adornos hablan de la elegancia de los salones limeños.',
-        audio: 'Marinera limeña instrumental',
+          'Escritor y periodista (1850-1924), nacido en Huamachuco. En 1879, en plena Guerra del Pacífico, propuso que el baile que hasta entonces se llamaba "chilena" pasara a llamarse marinera, en homenaje a la Marina de Guerra del Perú.',
+        audio: 'Marinera de jarana',
+        dato: 'Escribió la letra de "La Concheperla", la primera marinera que se puso en partitura, con música de José Alvarado "Alvaradito".',
+      },
+      {
+        id: 'marinera-antigua',
+        categoria: 'Historia',
+        nombre: 'La marinera de antes',
+        texto:
+          'En el siglo XIX este baile se llamaba zamacueca y se bailaba en callejones y fiestas populares: sombrero de paja, faja a la cintura y faldas de lunares, al son de guitarra, cajón y palmas.',
+        audio: 'Guitarra, cajón y palmas',
+        dato: 'La zamacueca viajó por todo el Pacífico: de ella descienden la cueca chilena, la zamba argentina y la marinera peruana.',
+      },
+      {
+        id: 'pareja-marinera',
+        categoria: 'Accesorio de baile',
+        nombre: 'Pareja de marinera limeña',
+        texto:
+          'Baile de salón elegante y pícaro, siempre con el pañuelo en la mano derecha. La dama luce vestido largo de volantes y flores en el cabello; el varón, terno y pañuelo blanco. Se baila con pasos cortos, sin levantar mucho los pies.',
+        audio: 'Marinera limeña completa',
         dato: 'La marinera limeña se baila en tres partes: la marinera, la resbalosa y la fuga.',
       },
       {
-        id: 'arpa',
-        categoria: 'Instrumento',
-        nombre: 'Arpa',
+        id: 'marinera-actual',
+        categoria: 'Historia',
+        nombre: 'La marinera de hoy',
         texto:
-          'El arpa llegó al Perú con los españoles y se volvió parte de la música popular. Su sonido acompañó muchas reuniones de jarana junto a guitarras y cajón.',
-        audio: 'Fragmento de arpa',
-        dato: 'Antes de llamarse marinera, este baile era conocido como zamacueca o chilena. El nombre "marinera" se le dio en 1879, en homenaje a la Marina de Guerra del Perú.',
+          'Hoy la marinera limeña se baila en jaranas, peñas y concursos: vestido largo de volantes, terno oscuro, sombrero y pañuelo, en un cortejo de pasos cortos, giros y mucha elegancia.',
+        audio: 'Marinera con arpa',
+        dato: 'El 7 de octubre se celebra el Día de la Marinera, en homenaje al nacimiento de Augusto Ascuez, gran cantor de la jarana limeña.',
       },
       {
-        id: 'panuelo',
-        categoria: 'Accesorio de baile',
-        nombre: 'Pañuelo blanco',
-        texto:
-          'El pañuelo es el gran compañero del baile: se agita, se ofrece y se esconde. Con él la pareja conversa sin palabras durante el cortejo.',
-        audio: 'Palmas y cajón',
-        dato: 'Bailarines y bailarinas usan el pañuelo en la mano derecha y lo mueven al compás de la música.',
-      },
-      {
-        id: 'abanico',
-        categoria: 'Vida cotidiana',
-        nombre: 'Abanico',
-        texto:
-          'En los salones limeños, el abanico era señal de elegancia y distinción. Servía para refrescarse, pero también para coquetear y comunicarse con discreción.',
-        audio: 'Guitarra de salón',
-        dato: 'En 1929, El Comercio hizo una encuesta que dividió a Lima entre quienes defendían la gracia del abanico y quienes preferían tener las manos libres.',
-      },
-      {
-        id: 'cuadro',
+        id: 'ancla',
         categoria: 'Símbolo visual',
-        nombre: 'Cuadro de una pareja bailando',
+        nombre: 'Ancla con cuerda',
         texto:
-          'Las pinturas costumbristas retrataron la vida de Lima: sus fiestas, sus calles y sus bailes. Una pareja bailando resume el espíritu de la jarana.',
+          'El ancla recuerda de dónde viene el nombre del baile: la Marina de Guerra del Perú y sus marinos, héroes de la guerra de 1879. El azul del paño evoca el mar del Callao y el uniforme de la marinería.',
         audio: 'Marinera con guitarra y cajón',
-        dato: 'Pancho Fierro, acuarelista limeño del siglo XIX, pintó escenas de bailes populares que hoy son una fuente para conocer esa época.',
+        dato: 'Con el nombre de marinera, el baile se volvió un símbolo de orgullo nacional en los años más difíciles de la guerra.',
+      },
+      {
+        id: 'guitarra-cajon',
+        categoria: 'Instrumento',
+        nombre: 'Guitarra y cajón',
+        texto:
+          'La marinera limeña es canto de jarana: se canta en contrapunto y se acompaña con guitarras, cajón y palmas. La guitarra lleva la melodía y el cajón marca el ritmo del zapateo.',
+        audio: 'Guitarra y cajón',
+        dato: 'En la jarana limeña se cantan "tres de a cinco": tres marineras seguidas, luego la resbalosa y las fugas.',
       },
     ],
   },
@@ -268,51 +286,52 @@ export const generos: Genero[] = [
       'La polka llegó de Europa en el siglo XIX y en Lima se acriolló: rápida, juguetona y bailable, en compás de dos tiempos, con guitarras y mandolinas.',
     interpretes: [],
     completa: true,
+    // Artes de la sala de polka del equipo de Cinthia (Drive, "MUSEO VIRTUAL-VERSIÓN ACTUAL/SALA 2", 30 de octubre)
     objetos: [
       {
-        id: 'chaleco',
-        categoria: 'Vestimenta',
-        nombre: 'Chaleco de época',
-        texto:
-          'En los bailes sociales de época, los caballeros vestían chaleco, saco y corbata. La polka se bailaba en salones, clubes y fiestas de barrio.',
-        audio: 'Polka instrumental',
-        dato: 'La polka nació en Bohemia, en la actual República Checa, hacia 1830.',
-      },
-      {
-        id: 'mandolina',
+        id: 'acordeon',
         categoria: 'Instrumento',
-        nombre: 'Mandolina',
+        nombre: 'Acordeón',
         texto:
-          'De cuerdas dobles y sonido brillante, la mandolina adorna la melodía con trémolos rápidos, ideales para el ritmo saltarín de la polka.',
-        audio: 'Mandolina en trémolo',
-        dato: 'Las estudiantinas, grupos con mandolinas, bandurrias y guitarras, fueron muy populares en el Perú a inicios del siglo XX.',
+          'De fuelle y teclas, el acordeón llegó de Europa junto con la polka y se sumó a guitarras y mandolinas en los bailes de salón y de barrio. Su sonido alegre y continuo marca el paso rápido de la polka.',
+        audio: 'Polka instrumental',
+        dato: 'El acordeón se patentó en Viena en 1829, en los mismos años en que la polka empezaba a bailarse en Europa.',
       },
       {
-        id: 'zapatos',
-        categoria: 'Accesorio de baile',
-        nombre: 'Zapatos de baile',
+        id: 'cuadro-callao',
+        categoria: 'Símbolo visual',
+        nombre: 'Cuadro del puerto del Callao',
         texto:
-          'La polka se baila con pasos cortos, rápidos y saltados. Los zapatos de baile debían ser firmes y ligeros para aguantar toda la noche.',
-        audio: 'Polka rápida',
-        dato: 'Su compás de dos tiempos la hace una de las danzas más ágiles del repertorio criollo.',
+          'Ancla, muelle y gaviotas: el Callao es uno de los barrios de origen de la polka criolla. En el puerto, músicos y marinos la tocaban rápida y alegre, y de ahí salieron muchas polkas dedicadas al primer puerto.',
+        audio: 'Polka con mandolina',
+        dato: 'Al Callao se le llama el primer puerto del Perú y a su gente, chalacos; muchas polkas criollas nacieron en sus barrios de pescadores y estibadores.',
       },
       {
-        id: 'invitacion',
-        categoria: 'Vida cotidiana',
-        nombre: 'Invitación antigua de baile',
+        id: 'pareja-polka',
+        categoria: 'Vestimenta',
+        nombre: 'Pareja de polka',
         texto:
-          'Las invitaciones impresas anunciaban los bailes de sociedad y su programa de piezas: valses, polkas y otros ritmos de moda.',
-        audio: 'Salón de baile',
+          'La polka se baila en pareja, abrazados y con pasos cortos y saltados. Ella, de vestido entallado con volantes y abanico; él, de terno oscuro y corbatín: así se vestía en los bailes de sociedad de inicios del siglo XX.',
+        audio: 'Polka para bailar',
         dato: 'De la fiebre por la polka en el siglo XIX viene el nombre en inglés del estampado de lunares: "polka dots".',
       },
       {
-        id: 'reloj',
-        categoria: 'Símbolo visual',
-        nombre: 'Reloj de bolsillo antiguo',
+        id: 'mapa-bohemia',
+        categoria: 'Historia',
+        nombre: 'Mapa: de Bohemia al Perú',
         texto:
-          'El reloj de bolsillo, colgado de una cadena, era el accesorio del caballero elegante y recuerda los salones de baile de inicios del siglo XX.',
-        audio: 'Polka con mandolina',
-        dato: 'En la polka criolla la guitarra marca un bajo y un acorde alternados, como un paso que invita a saltar.',
+          'La polka nació en Bohemia, en la actual República Checa, hacia 1830, y en pocos años se bailaba en París, Londres y toda Europa. Los barcos y los inmigrantes la trajeron a Lima y al Callao, donde se acriolló con guitarras.',
+        audio: 'Salón de baile',
+        dato: 'Su nombre vendría del checo "půlka", que significa "medio paso", por sus pasos cortos.',
+      },
+      {
+        id: 'guardia-vieja',
+        categoria: 'Personaje',
+        nombre: 'La Guardia Vieja',
+        texto:
+          'Así se llama a la primera generación de músicos criollos de Lima, de fines del siglo XIX e inicios del XX: tocaban valses, polkas y marineras en jaranas y callejones, con guitarras, mandolinas y laúdes, antes de los discos y la radio.',
+        audio: 'Estudiantina de cuerdas',
+        dato: 'Muchas canciones de la Guardia Vieja no tienen autor conocido: pasaron de boca en boca. Felipe Pinglo recogió esa herencia y abrió la etapa siguiente de la canción criolla.',
       },
     ],
   },

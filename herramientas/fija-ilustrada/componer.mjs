@@ -58,12 +58,15 @@ function componer(nombre, lugar) {
       let x0, y0, w, h;
       const ajuste = p.ajuste ?? [];
       if (p.cubrir) {
-        // Llena un hueco (el interior de un marco), recortando lo que sobre del arte
+        // Llena un hueco (el interior de un marco), recortando lo que sobre del arte;
+        // con `contener` el arte entra completo, centrado, y deja ver el fondo del marco alrededor
         const [a, b, c, d] = p.cubrir.map((n) => n * ESCALA);
         [x0, y0, w, h] = [a, b, c - a, d - b];
         const r = p.recorte ?? 0;
         const crop = `${Math.round(sw * (1 - 2 * r))}x${Math.round(sh * (1 - 2 * r))}+${Math.round(sx + sw * r)}+${Math.round(sy + sh * r)}`;
-        capas.push(['(', arte, '-crop', crop, '+repage', ...ajuste, '-resize', `${w}x${h}^`, '-gravity', 'center', '-extent', `${w}x${h}`, ')', '-gravity', 'northwest', '-geometry', `+${x0}+${y0}`, '-composite']);
+        const m = p.contener ? 1 - (p.margen ?? 0.08) : 1;
+        const tam = p.contener ? `${Math.round(w * m)}x${Math.round(h * m)}` : `${w}x${h}^`;
+        capas.push(['(', arte, '-crop', crop, '+repage', ...ajuste, '-resize', tam, '-background', 'none', '-gravity', 'center', '-extent', `${w}x${h}`, ')', '-gravity', 'northwest', '-geometry', `+${x0}+${y0}`, '-composite']);
       } else {
         // Apoyada: se da el punto donde toca (centro de la base) y su alto en el fondo original
         h = Math.round(p.alto * ESCALA);

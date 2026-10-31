@@ -458,11 +458,12 @@ def main(salida: Path):
     p, L = marinera()
     mez = {'guitarra': 0.8, 'arpa': 0.9, 'cajon': 0.7, 'palmas': 0.45}
     guardar(bucle(mezclar(p, mez), L), salida / 'ambiente-marinera.mp3')
-    guardar(fragmento(mezclar(p, mez)), salida / 'manto.mp3')
-    guardar(fragmento(mezclar(p, {'arpa': 1.0, 'guitarra': 0.2})), salida / 'arpa.mp3')
-    guardar(fragmento(mezclar(p, {'cajon': 1.0, 'palmas': 0.8})), salida / 'panuelo.mp3')
-    guardar(fragmento(mezclar(p, {'guitarra': 1.0}, rev=0.35)), salida / 'abanico.mp3')
-    guardar(fragmento(mezclar(p, mez, desde=L / 2)), salida / 'cuadro.mp3')
+    guardar(fragmento(mezclar(p, mez)), salida / 'pareja-marinera.mp3')
+    guardar(fragmento(mezclar(p, {'guitarra': 1.0, 'cajon': 0.8}, rev=0.3)), salida / 'tunante.mp3')
+    guardar(fragmento(mezclar(p, {'guitarra': 0.9, 'cajon': 1.0, 'palmas': 0.9}, rev=0.15)), salida / 'marinera-antigua.mp3')
+    guardar(fragmento(mezclar(p, {'arpa': 1.0, 'guitarra': 0.5, 'cajon': 0.5})), salida / 'marinera-actual.mp3')
+    guardar(fragmento(mezclar(p, {'guitarra': 1.0, 'cajon': 0.7}, desde=L / 2)), salida / 'ancla.mp3')
+    guardar(fragmento(mezclar(p, {'guitarra': 1.0, 'cajon': 1.0}, rev=0.12)), salida / 'guitarra-cajon.mp3')
 
     # Festejo
     p, L = festejo()
@@ -488,11 +489,11 @@ def main(salida: Path):
     p, L = polka()
     mez = {'guitarra': 0.8, 'mandolina': 0.8}
     guardar(bucle(mezclar(p, mez), L), salida / 'ambiente-polka.mp3')
-    guardar(fragmento(mezclar(p, mez)), salida / 'chaleco.mp3')
-    guardar(fragmento(mezclar(p, {'mandolina': 1.0, 'guitarra': 0.2})), salida / 'mandolina.mp3')
-    guardar(fragmento(mezclar(p, mez, desde=L / 4)), salida / 'zapatos.mp3')
-    guardar(fragmento(mezclar(p, mez, rev=0.4)), salida / 'invitacion.mp3')
-    guardar(fragmento(mezclar(p, mez, desde=L / 2)), salida / 'reloj.mp3')
+    guardar(fragmento(mezclar(p, mez)), salida / 'acordeon.mp3')
+    guardar(fragmento(mezclar(p, {'mandolina': 1.0, 'guitarra': 0.5}, desde=L / 4)), salida / 'cuadro-callao.mp3')
+    guardar(fragmento(mezclar(p, mez, desde=L / 2)), salida / 'pareja-polka.mp3')
+    guardar(fragmento(mezclar(p, mez, rev=0.4)), salida / 'mapa-bohemia.mp3')
+    guardar(fragmento(mezclar(p, {'mandolina': 1.0, 'guitarra': 0.8}, rev=0.3)), salida / 'guardia-vieja.mp3')
 
 
 if __name__ == '__main__':

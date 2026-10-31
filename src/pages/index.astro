@@ -6,6 +6,7 @@ import Nosotros from '../components/Nosotros.astro';
 import Proposito from '../components/Proposito.astro';
 import MuseoInvitacion from '../components/MuseoInvitacion.astro';
 import Documentales from '../components/Documentales.astro';
+import Talleres from '../components/Talleres.astro';
 import Promesas from '../components/Promesas.astro';
 import Contacto from '../components/Contacto.astro';
 import Onda from '../components/Onda.astro';
@@ -21,7 +22,9 @@ import Onda from '../components/Onda.astro';
   <MuseoInvitacion />
   <Onda color="var(--cafe)" fondo="var(--crema)" variante={3} invertir />
   <Documentales />
-  <!-- Minitalleres oculto hasta tener los videos: volver a poner <Talleres /> entre dos <Onda color="var(--oro)"> -->
+  <Onda color="var(--oro)" fondo="var(--crema)" variante={1} />
+  <Talleres />
+  <Onda color="var(--oro)" fondo="var(--crema)" variante={2} invertir />
   <Promesas />
   <Onda color="var(--vino)" fondo="var(--crema)" variante={3} />
   <Contacto />

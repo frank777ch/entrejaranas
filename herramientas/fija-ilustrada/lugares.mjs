@@ -38,18 +38,20 @@ export const LUGARES = {
       { id: 'pareja', arte: 'artes/vals/pareja.png', base: [887, 712], alto: 525, sombra: 0.42, ajuste: NOCHE },
     ],
   },
-  // Salas 2 a 5: piezas provisionales pintadas por Codex hasta que lleguen las artes del equipo
+  // Marinera: artes del equipo (30 de octubre) sobre el fondo vacío de pedidos/marinera-v2.md
   marinera: {
     fondo: 'fondos/marinera.webp',
     fovH: 80,
-    puntos: {
-      manto: { caja: [30, 207, 377, 680] },
-      abanico: { caja: [392, 244, 665, 547] },
-      cuadro: { caja: [687, 111, 1087, 584] },
-      panuelo: { caja: [1101, 370, 1437, 687] },
-      arpa: { caja: [1493, 133, 1693, 680] },
-    },
+    piezas: [
+      { id: 'marinera-antigua', arte: 'artes/marinera/marinera-antigua.png', cubrir: [441, 193, 618, 416], contener: true, ajuste: ['-modulate', '94,96,100'] },
+      { id: 'marinera-actual', arte: 'artes/marinera/marinera-actual.png', cubrir: [1140, 190, 1324, 418], contener: true, ajuste: ['-modulate', '94,96,100'] },
+      { id: 'ancla', arte: 'artes/marinera/ancla.png', base: [560, 655], alto: 200, sombra: 0.3, ajuste: NOCHE },
+      { id: 'tunante', arte: 'artes/marinera/tunante.png', base: [272, 715], alto: 255, sombra: 0.3, ajuste: NOCHE },
+      { id: 'guitarra-cajon', arte: 'artes/marinera/guitarra-cajon.png', base: [1245, 668], alto: 255, sombra: 0.35, ajuste: NOCHE },
+      { id: 'pareja-marinera', arte: 'artes/marinera/pareja.png', base: [887, 740], alto: 520, sombra: 0.42, ajuste: NOCHE },
+    ],
   },
+  // Tondero y festejo: piezas provisionales pintadas por Codex hasta que lleguen las artes del equipo
   tondero: {
     fondo: 'fondos/tondero.webp',
     fovH: 80,
@@ -61,16 +63,17 @@ export const LUGARES = {
       canasta: { caja: [1412, 355, 1744, 710] },
     },
   },
+  // Polka: artes del equipo (30 de octubre) sobre el fondo vacío de pedidos/polka-v2.md (sala de día: sin ajuste)
   polka: {
     fondo: 'fondos/polka.webp',
     fovH: 80,
-    puntos: {
-      chaleco: { caja: [174, 148, 352, 443] },
-      mandolina: { caja: [488, 170, 606, 440] },
-      zapatos: { caja: [717, 251, 1061, 451] },
-      invitacion: { caja: [1116, 148, 1353, 421] },
-      reloj: { caja: [1427, 263, 1611, 440] },
-    },
+    piezas: [
+      { id: 'mapa-bohemia', arte: 'artes/polka/mapa.png', cubrir: [1131, 181, 1286, 403], contener: true, margen: 0.05 },
+      { id: 'cuadro-callao', arte: 'artes/polka/cuadro-callao.png', base: [532, 420], alto: 230 },
+      { id: 'acordeon', arte: 'artes/polka/acordeon.png', base: [232, 446], alto: 135 },
+      { id: 'guardia-vieja', arte: 'artes/polka/guardia-vieja.png', base: [1535, 575], alto: 340, sombra: 0.35 },
+      { id: 'pareja-polka', arte: 'artes/polka/pareja.png', base: [874, 705], alto: 510, sombra: 0.42 },
+    ],
   },
   festejo: {
     fondo: 'fondos/festejo.webp',

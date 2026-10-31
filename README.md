@@ -63,11 +63,22 @@ enlace: https://medio.pe/nota   # opcional
 ---
 titulo: Nombre del documental
 descripcion: Breve descripción.
-video: https://www.youtube.com/watch?v=XXXX   # opcional, YouTube o Vimeo
+video: https://www.youtube.com/watch?v=XXXX   # opcional: YouTube, Vimeo o Cloudflare Stream (enlace "Watch" del video)
 imagen: ../../assets/documentales/foto.jpg    # opcional, si no hay video
 orden: 5
 ---
 ```
+
+#### Subir un video a Cloudflare Stream
+
+Los videos propios (microdocumentales, minitalleres) se alojan en Cloudflare Stream (plan Starter Bundle, US$5/mes).
+Con el token en `.dev.vars` (ver `.env.example`):
+
+```
+python3 herramientas/stream/subir.py "ruta/al/video.mp4" "Nombre del video"
+```
+
+Imprime el enlace que va en el campo `video` del `.md`. Con `--listar` muestra los videos ya subidos y sus enlaces.
 
 ### Agregar una nueva promesa al mapa
 

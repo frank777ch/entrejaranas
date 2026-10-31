@@ -27,6 +27,7 @@ export const GET: APIRoute = async () => {
       url: `/museo-virtual?sala=${g.id}`,
     })),
     { tipo: 'Sección', titulo: 'Microdocumentales', texto: 'Experiencias: historias de la música criolla.', url: '/#experiencias' },
+    { tipo: 'Sección', titulo: 'Minitalleres', texto: 'Módulos con video: teoría, pasos básicos y pasos avanzados.', url: '/#talleres' },
     { tipo: 'Sección', titulo: 'Nuevas Promesas', texto: 'Mapa de jóvenes intérpretes de música criolla en Lima. Postula.', url: '/#promesas' },
     { tipo: 'Sección', titulo: 'Noticias', texto: 'Noticias, crónicas y notas de prensa.', url: '/#noticias' },
     { tipo: 'Sección', titulo: 'Contacto', texto: 'Escríbenos: talleres, prensa, alianzas, formulario, correo.', url: '/#contacto' },
