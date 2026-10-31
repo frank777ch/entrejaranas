@@ -87,17 +87,6 @@
   transition: background 0.6s;
 }
 
-.barra__boton {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 1px solid var(--borde-vidrio);
-  background: var(--vidrio);
-}
-
-.barra__boton svg,
 .flecha svg,
 .regreso svg {
   width: 1.25rem;
@@ -398,15 +387,6 @@
   font-size: 0.97rem;
   line-height: 1.6;
 }
-
-
-
-
-
-
-
-
-
 
 .ficha__dato {
   margin-top: 1rem;

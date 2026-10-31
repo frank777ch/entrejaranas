@@ -122,7 +122,7 @@ interface Animacion {
 
 export class Visor {
   readonly gl: WebGL2RenderingContext | WebGLRenderingContext;
-  /** Lado máximo de una cara de cubemap que admite la GPU */
+  /** Lado máximo de una textura que admite la GPU */
   readonly maxTextura: number;
   private anisotropia: EXT_texture_filter_anisotropic | null;
   vista: Vista = { yaw: 0, pitch: 0, fov: 72 };
@@ -168,7 +168,7 @@ export class Visor {
     this.gl2 = !!gl2;
     this.prog = this.programa(gl2 ? VERTICE_2 : VERTICE_1, gl2 ? FRAGMENTO_2 : FRAGMENTO_1);
     for (const n of ['uA', 'uB', 'uA2', 'uB2', 'uPlanoA', 'uPlanoB', 'uMezcla', 'uR', 'uU', 'uF', 'uEsc']) this.u[n] = gl.getUniformLocation(this.prog, n);
-    this.maxTextura = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+    this.maxTextura = Math.min(gl.getParameter(gl.MAX_TEXTURE_SIZE), gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
     this.anisotropia =
       gl.getExtension('EXT_texture_filter_anisotropic') ?? gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ?? gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
 
@@ -574,8 +574,6 @@ export class Visor {
     el.addEventListener('pointerdown', (e) => {
       el.setPointerCapture(e.pointerId);
       activos.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      this.anim?.listo();
-      this.anim = null;
       this.inercia = { yaw: 0, pitch: 0 };
       el.classList.add('arrastrando');
       this.tocando = true;
@@ -600,6 +598,11 @@ export class Visor {
         if (distancia) this.zoom(this.vista.fov * (distancia / d));
         distancia = d;
         return;
+      }
+      // Recién al arrastrar de verdad se corta la animación que hubiera (un clic suelto la deja seguir)
+      if (this.anim) {
+        this.anim.listo();
+        this.anim = null;
       }
       const grados = this.vista.fov / Math.max(1, el.clientHeight);
       const dy = (ahora.x - antes.x) * grados;

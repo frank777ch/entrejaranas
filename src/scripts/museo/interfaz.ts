@@ -1,6 +1,6 @@
 // Controles del museo virtual: flechas, regreso, asomo y ficha.
 // Cada motor (2D o 360°) decide qué mostrar y llama a estas funciones.
-import { casona, type Genero, type Objeto } from '../../data/museo';
+import type { Genero, Objeto } from '../../data/museo';
 
 export type Dir = 'izquierda' | 'derecha' | 'arriba' | 'abajo';
 export type Modo = 'carga' | 'casona' | 'asomo' | 'sala';
@@ -155,4 +155,7 @@ export function terminarCarga() {
   raiz.classList.add('cargado');
 }
 
-export { casona };
+/** Vuelve a tapar el museo con la pantalla de carga (para avisar de un problema) */
+export function mostrarCarga() {
+  raiz.classList.remove('cargado');
+}

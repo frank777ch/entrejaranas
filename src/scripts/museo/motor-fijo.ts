@@ -27,14 +27,12 @@ interface DatosVista {
 }
 
 const RUTA = '/museo/salas';
-/** Salas que ya tienen su toma de cámara fija; las demás se muestran "en preparación" */
-const LISTAS: GeneroId[] = ['tondero', 'marinera', 'vals', 'polka', 'festejo'];
 /** Qué parte del ancho de la imagen se ve de una vez: la sala principal deja recorrer más */
 const ENCUADRE: Record<'casona' | 'sala', number> = { casona: 0.6, sala: 0.8 };
 
 const lienzo = document.querySelector<HTMLCanvasElement>('.visor-360')!;
 const capa = document.querySelector<HTMLElement>('.puntos-360')!;
-const visor = new Visor(lienzo, { reducido: ui.sinMovimiento });
+const visor = crearVisor();
 const params = new URLSearchParams(location.search);
 const instantaneo = params.has('sala') || params.has('asomo') || params.has('ficha');
 const T = (ms: number) => (instantaneo || ui.sinMovimiento ? 0 : ms);
@@ -46,12 +44,31 @@ const nitida = visor.maxTextura >= 4096 && !nav.connection?.saveData && !modesto
 const datos: Partial<Record<Lugar, DatosVista>> = {};
 const texturas: Partial<Record<Lugar, Textura>> = {};
 const cargas: Partial<Record<Lugar, Promise<Textura>>> = {};
+const generacion: Partial<Record<Lugar, number>> = {};
 let lugar: Lugar = 'casona';
 let sala: Genero | null = null;
 let ocupado = false;
 const vistos = new Set<string>();
 
-const lista = (g: Genero) => LISTAS.includes(g.id);
+/** Salas que se pueden recorrer (src/data/museo.ts: `completa`); las demás se muestran "en preparación" */
+const lista = (g: Genero) => g.completa;
+
+function crearVisor() {
+  try {
+    return new Visor(lienzo, { reducido: ui.sinMovimiento });
+  } catch (e) {
+    ui.progreso(0, 'Este navegador no puede mostrar el museo: necesita WebGL. Prueba con otro navegador o actualízalo.');
+    throw e;
+  }
+}
+
+// Si el navegador descarta el contexto gráfico (pasa en celulares al cambiar de app), se vuelve a abrir
+lienzo.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  ui.mostrarCarga();
+  ui.progreso(0, 'La imagen del museo se perdió. Toca la pantalla para volver a abrirlo.');
+  addEventListener('pointerdown', () => location.reload(), { once: true, capture: true });
+});
 
 /* ---------- Encuadre ---------- */
 
@@ -84,18 +101,39 @@ function ajustarLimites() {
 
 /* ---------- Carga ---------- */
 
-async function cargar(l: Lugar, alAvanzar?: (p: number) => void) {
+/** Devuelve la mejor textura que haya del lugar (la grande si ya llegó). Si la descarga falla, se puede reintentar. */
+async function cargar(l: Lugar, alAvanzar?: (p: number) => void): Promise<Textura> {
   if (texturas[l]) return texturas[l]!;
-  cargas[l] ??= (async () => {
-    const d: DatosVista = datos[l] ?? (await fetch(`${RUTA}/${l}.json`).then((r) => r.json()));
-    datos[l] = d;
-    // Primero la imagen mediana; la grande llega después sin hacer esperar
-    const t = await visor.cargarPlano(`${RUTA}/${l}-${d.ancho / 2}.webp`, d.fovH, alAvanzar);
-    texturas[l] = t;
-    if (nitida) mejorar(l, t);
-    return t;
-  })();
-  return cargas[l]!;
+  if (!cargas[l]) {
+    // Número de esta descarga: si soltarMenos() la cancela mientras baja, el número cambia
+    const n = (generacion[l] = (generacion[l] ?? 0) + 1);
+    cargas[l] = (async () => {
+      try {
+        const d: DatosVista =
+          datos[l] ??
+          (await fetch(`${RUTA}/${l}.json`).then((r) => {
+            if (!r.ok) throw new Error(`${r.status} ${l}.json`);
+            return r.json();
+          }));
+        datos[l] = d;
+        // Primero la imagen mediana; la grande llega después sin hacer esperar
+        const t = await visor.cargarPlano(`${RUTA}/${l}-${d.ancho / 2}.webp`, d.fovH, alAvanzar);
+        if (generacion[l] !== n) {
+          // Mientras bajaba, el visitante se fue a otra sala y ya no hace falta
+          visor.liberar(t);
+          throw new Error(`carga de ${l} cancelada`);
+        }
+        texturas[l] = t;
+        if (nitida) mejorar(l, t);
+        return t;
+      } catch (e) {
+        if (generacion[l] === n) delete cargas[l];
+        throw e;
+      }
+    })();
+  }
+  const t = await cargas[l]!;
+  return texturas[l] ?? t;
 }
 
 async function mejorar(l: Lugar, chica: Textura) {
@@ -110,12 +148,14 @@ async function mejorar(l: Lugar, chica: Textura) {
   }
 }
 
+/** Libera las tomas de las otras salas, incluidas las que todavía estaban bajando */
 function soltarMenos(...quedan: Lugar[]) {
-  for (const l of Object.keys(texturas) as Lugar[]) {
+  for (const l of new Set([...Object.keys(texturas), ...Object.keys(cargas)]) as Set<Lugar>) {
     if (l === 'casona' || quedan.includes(l)) continue;
-    visor.liberar(texturas[l]!);
+    if (texturas[l]) visor.liberar(texturas[l]!);
     delete texturas[l];
     delete cargas[l];
+    generacion[l] = (generacion[l] ?? 0) + 1;
   }
 }
 
@@ -201,7 +241,9 @@ const ladoFicha = (p: DatosPunto) => (p.x > 0.5 ? 'izquierda' : 'derecha');
 /** Parte de la pantalla que deja libre la ficha (a un costado) o la hoja inferior (en celular) */
 function huecoFicha(lado: 'izquierda' | 'derecha') {
   if (conHoja()) return { x0: 0, x1: 1, y0: 0.14, y1: 0.4 };
-  const ficha = (Math.min(24 * 16, innerWidth - 32) + 32) / innerWidth;
+  // Ancho de la ficha según museo.css (24rem, o la pantalla menos los márgenes)
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const ficha = (Math.min(24 * rem, innerWidth - 32) + 32) / innerWidth;
   return lado === 'derecha' ? { x0: 0.02, x1: 1 - ficha, y0: 0.1, y1: 0.95 } : { x0: ficha, x1: 0.98, y0: 0.1, y1: 0.95 };
 }
 
@@ -239,18 +281,20 @@ async function asomarse(g: Genero) {
   if (ocupado) return;
   if (asomado?.id === g.id) return entrar(g);
   asomado = g;
+  enFicha = null;
   ui.modo('asomo');
   ui.mostrarFlechas({});
   ui.mostrarFicha(null);
   const p = datos.casona!.puntos[g.id];
   const listo = lista(g);
-  ui.mostrarCartel({ ...g, completa: listo }, { entrar: () => entrar(g), volver: () => volver() });
+  ui.mostrarCartel(g, { entrar: () => entrar(g), volver: () => volver() });
   // El arco arriba y al centro; el panel del asomo ocupa la parte de abajo
-  const hueco = innerWidth <= 640 ? { x0: 0.05, x1: 0.95, y0: 0.1, y1: 0.55 } : { x0: 0.1, x1: 0.9, y0: 0.08, y1: 0.62 };
+  const hueco = conHoja() ? { x0: 0.05, x1: 0.95, y0: 0.1, y1: 0.55 } : { x0: 0.1, x1: 0.9, y0: 0.08, y1: 0.62 };
   liberar();
   const vista = encuadrar(p.caja!, 0.95, hueco);
   mostrarPuntos([{ id: g.id, nombre: listo ? 'Entrar' : 'En preparación', color: g.color, alTocar: () => entrar(g), siempre: true }]);
-  if (listo) cargar(g.id);
+  // Se adelanta la descarga de la sala; si falla, entrar() la vuelve a pedir
+  if (listo) cargar(g.id).catch(() => {});
   await visor.ir(vista, T(900));
 }
 
@@ -270,29 +314,43 @@ async function entrar(g: Genero) {
   if (ocupado || !lista(g)) return;
   ocupado = true;
   asomado = null;
+  enFicha = null;
   ui.mostrarCartel(null);
   ocultarPuntos(true);
-  const t = await cargar(g.id);
-  const p = datos.casona!.puntos[g.id];
-  // Cruza el arco: acercamiento al vano y fundido hacia la sala, que aparece algo acercada
-  const centro = dir(p.x, p.y);
-  const acercar = visor.ir({ ...centro, fov: Math.max(8, visor.vista.fov * 0.45) }, T(900));
-  await new Promise((r) => setTimeout(r, T(380)));
-  await visor.mostrar(t, T(650));
-  await acercar;
-  lugar = g.id;
-  sala = g;
-  soltarMenos(g.id);
-  visor.vista = { yaw: 0, pitch: 0, fov: fovBase() * 0.7 };
-  ui.modo('sala');
-  ui.lugar(`Sala ${g.sala} · ${g.nombre}`, g.color);
-  ui.mostrarInfoSala(g, vistosSala());
-  ui.mostrarRegreso('Volver a la sala principal', salir);
-  ui.mostrarFlechas({ izquierda: true, derecha: true });
-  puntosSala();
-  ocultarPuntos(false);
-  await reposo(T(1100));
-  ocupado = false;
+  try {
+    await cargar(g.id);
+  } catch {
+    // Sin la toma no se puede entrar: de vuelta a la sala principal, con aviso
+    enCasona();
+    ocupado = false;
+    void reposo(T(600));
+    ui.mostrarPista('No se pudo abrir la sala. Revisa tu conexión y vuelve a intentar.');
+    return;
+  }
+  try {
+    const p = datos.casona!.puntos[g.id];
+    // Cruza el arco: acercamiento al vano y fundido hacia la sala, que aparece algo acercada
+    const centro = dir(p.x, p.y);
+    const acercar = visor.ir({ ...centro, fov: Math.max(8, visor.vista.fov * 0.45) }, T(900));
+    await new Promise((r) => setTimeout(r, T(380)));
+    // La textura se toma recién aquí: si la versión grande llegó durante la espera, la mediana ya se liberó
+    await visor.mostrar(texturas[g.id]!, T(650));
+    await acercar;
+    lugar = g.id;
+    sala = g;
+    soltarMenos(g.id);
+    visor.vista = { yaw: 0, pitch: 0, fov: fovBase() * 0.7 };
+    ui.modo('sala');
+    ui.lugar(`Sala ${g.sala} · ${g.nombre}`, g.color);
+    ui.mostrarInfoSala(g, vistosSala());
+    ui.mostrarRegreso('Volver a la sala principal', salir);
+    ui.mostrarFlechas({ izquierda: true, derecha: true });
+    puntosSala();
+    ocultarPuntos(false);
+    await reposo(T(1100));
+  } finally {
+    ocupado = false;
+  }
   ui.mostrarPista(ui.tactil ? 'Desliza para mirar · toca una pieza' : 'Mueve el mouse para mirar · haz clic en una pieza');
 }
 
@@ -313,20 +371,22 @@ async function salir() {
   ocultarPuntos(true);
   ui.mostrarRegreso(null);
   ui.mostrarInfoSala(null);
-  const t = await cargar('casona');
-  const alejar = visor.ir({ fov: Math.min(visor.fovCubrir(), visor.vista.fov * 1.2) }, T(700));
-  await visor.mostrar(t, T(650));
-  await alejar;
-  lugar = 'casona';
-  sala = null;
-  soltarMenos();
-  // De vuelta en la sala principal, frente al arco por el que se salió
-  const p = datos.casona!.puntos[g.id];
-  liberar();
-  visor.vista = { ...dir(p.x, p.y), fov: 14 };
-  enCasona();
-  await reposo(T(1000), { yaw: dir(p.x, p.y).yaw * 0.5, pitch: 0 });
-  ocupado = false;
+  try {
+    const alejar = visor.ir({ fov: Math.min(visor.fovCubrir(), visor.vista.fov * 1.2) }, T(700));
+    await visor.mostrar(texturas.casona!, T(650));
+    await alejar;
+    lugar = 'casona';
+    sala = null;
+    soltarMenos();
+    // De vuelta en la sala principal, frente al arco por el que se salió
+    const p = datos.casona!.puntos[g.id];
+    liberar();
+    visor.vista = { ...dir(p.x, p.y), fov: 14 };
+    enCasona();
+    await reposo(T(1000), { yaw: dir(p.x, p.y).yaw * 0.5, pitch: 0 });
+  } finally {
+    ocupado = false;
+  }
 }
 
 /* ---------- Fichas ---------- */
@@ -371,7 +431,7 @@ async function cerrarFicha() {
   await reposo(T(750), { yaw: antes.yaw, pitch: lugar === 'casona' ? antes.pitch : 0 });
   if (sala && vistosSala() === sala.objetos.length && !celebradas.has(sala.id)) {
     celebradas.add(sala.id);
-    ui.mostrarPista('¡Conociste las cinco piezas! Vuelve a la sala principal para visitar otra');
+    ui.mostrarPista('¡Conociste todas las piezas de la sala! Vuelve a la sala principal para visitar otra');
   }
 }
 const celebradas = new Set<string>();
@@ -445,9 +505,12 @@ async function iniciar() {
   }
   if (!instantaneo) {
     await reposo(T(1600));
-    ui.mostrarPista(ui.tactil ? 'Desliza para mirar · toca un arco para asomarte' : 'Mueve el mouse para mirar · haz clic en un arco para asomarte');
+    // Salvo que el visitante ya se haya asomado a un arco mientras tanto
+    if (lugar === 'casona' && !asomado && !ocupado) {
+      ui.mostrarPista(ui.tactil ? 'Desliza para mirar · toca un arco para asomarte' : 'Mueve el mouse para mirar · haz clic en un arco para asomarte');
+    }
     // Solo la sala del centro: las demás se cargan al asomarse (cada toma pesa ~1 MB y ocupa GPU)
-    setTimeout(() => cargar('vals'), 2500);
+    setTimeout(() => cargar('vals').catch(() => {}), 2500);
   }
 }
 
