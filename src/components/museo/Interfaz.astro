@@ -18,12 +18,6 @@ const { clase } = Astro.props;
       <img src="/museo/logo-mi-museo-criollo.webp" alt="Mi museo criollo" width="1073" height="367" />
     </a>
     <p class="barra__lugar" aria-live="polite"><span class="barra__punto" aria-hidden="true"></span><span class="barra__texto">Casona limeña</span></p>
-    <div class="barra__der">
-      <button type="button" class="barra__boton barra__sonido" aria-pressed="true" aria-label="Silenciar efectos" title="Sonido">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="icono-on"><path d="M4 9h4l5-4v14l-5-4H4zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /></svg>
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="icono-off"><path d="M4 9h4l5-4v14l-5-4H4zM17 9l5 6M22 9l-5 6" /></svg>
-      </button>
-    </div>
   </header>
 
   <button type="button" class="flecha flecha--izquierda" data-dir="izquierda" aria-label="Mirar a la izquierda" hidden>
@@ -73,16 +67,6 @@ const { clase } = Astro.props;
     <h2 class="ficha__titulo" id="ficha-titulo" tabindex="-1"></h2>
     <p class="ficha__lugar" hidden></p>
     <p class="ficha__texto"></p>
-    <button type="button" class="ficha__audio" aria-pressed="false">
-      <span class="ficha__play" aria-hidden="true">
-        <svg viewBox="0 0 24 24" class="icono-play"><path d="M8 5v14l11-7z" /></svg>
-        <svg viewBox="0 0 24 24" class="icono-pausa"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
-      </span>
-      <span class="ficha__audio-info">
-        <span><strong class="ficha__audio-accion">Escuchar</strong> <span class="ficha__audio-texto"></span></span>
-        <span class="ficha__barra" aria-hidden="true"><span></span></span>
-      </span>
-    </button>
     <div class="ficha__dato">
       <strong>¿Sabías que…?</strong>
       <p></p>

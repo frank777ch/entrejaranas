@@ -239,7 +239,6 @@ async function asomarse(g: Genero) {
   if (ocupado) return;
   if (asomado?.id === g.id) return entrar(g);
   asomado = g;
-  ui.toque(lista(g) ? 4 : 0);
   ui.modo('asomo');
   ui.mostrarFlechas({});
   ui.mostrarFicha(null);
@@ -271,7 +270,6 @@ async function entrar(g: Genero) {
   if (ocupado || !lista(g)) return;
   ocupado = true;
   asomado = null;
-  ui.toque(7);
   ui.mostrarCartel(null);
   ocultarPuntos(true);
   const t = await cargar(g.id);
@@ -310,7 +308,6 @@ async function salir() {
   if (ocupado || !sala) return;
   ocupado = true;
   const g = sala;
-  ui.toque(0);
   ui.mostrarFicha(null);
   enFicha = null;
   ocultarPuntos(true);
@@ -345,7 +342,6 @@ async function abrirFicha(o: Objeto) {
   if (!p?.caja) return;
   const todas = piezas();
   const indice = todas.indexOf(o);
-  ui.toque(sala ? 5 + (indice % 3) : 2);
   enFicha = { o, antes: enFicha?.antes ?? { ...visor.vista } };
   vistos.add(o.id);
   ocultarPuntos(true);
@@ -393,7 +389,6 @@ ui.alUsarFlecha((d) => {
     }
     return;
   }
-  ui.toque(-5);
   const r = visor.rango(fovBase());
   const { yaw, pitch } = visor.vista;
   // Cada flecha lleva al borde de ese lado o, si ya está ahí, de vuelta al centro

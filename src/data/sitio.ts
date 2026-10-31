@@ -14,7 +14,7 @@ export const sitio = {
   museoVirtual: {
     nombre: 'Museo Virtual de la Jarana',
     descripcion:
-      'Entra a una casona limeña y recorre sus cinco salas: tondero, marinera limeña, vals criollo, polka y festejo. Acércate a cada pieza, escucha su música y conoce su historia.',
+      'Entra a una casona limeña y recorre sus cinco salas: tondero, marinera limeña, vals criollo, polka y festejo. Acércate a cada pieza y conoce su historia.',
     // Salas y piezas: src/data/museo.ts. Imágenes de cada sala: herramientas/fija-ilustrada
   },
 
