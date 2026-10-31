@@ -27,7 +27,7 @@ export const LUGARES = {
       'busto-pinglo': { caja: [110, 170, 290, 440] },
       pintura: { caja: [290, 70, 660, 520] },
       pareja: { caja: [690, 150, 1130, 800] },
-      cancionero: { caja: [1170, 290, 1400, 470] },
+      cancionero: { caja: [1170, 250, 1400, 480] },
       guitarra: { caja: [1500, 240, 1720, 760] },
     },
   },
