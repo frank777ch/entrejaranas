@@ -76,6 +76,13 @@
   font-family: var(--f-titulo);
   font-size: 0.92rem;
   white-space: nowrap;
+  min-width: 0;
+}
+
+.barra__texto {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .barra__punto {
@@ -96,6 +103,40 @@
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* Botón para silenciar la música de la sala */
+.sonido {
+  margin-left: auto;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--borde-vidrio);
+  background: var(--vidrio);
+  transition: background 0.2s;
+}
+
+.sonido:hover,
+.sonido:focus-visible {
+  background: color-mix(in srgb, var(--sala) 30%, rgb(28 12 6 / 0.85));
+}
+
+.sonido svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sonido[aria-pressed='true'] .sonido__on,
+.sonido[aria-pressed='false'] .sonido__off {
+  display: none;
 }
 
 /* Flechas en los bordes */
@@ -330,6 +371,18 @@
   margin-top: 0.5rem !important;
   color: var(--oro);
   font-size: 0.85rem;
+}
+
+.info-sala__musica {
+  margin-top: 0.5rem !important;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.info-sala__tema {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* Ficha del objeto */

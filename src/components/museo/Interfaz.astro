@@ -18,6 +18,10 @@ const { clase } = Astro.props;
       <img src="/museo/logo-mi-museo-criollo.webp" alt="Mi museo criollo" width="1073" height="367" />
     </a>
     <p class="barra__lugar" aria-live="polite"><span class="barra__punto" aria-hidden="true"></span><span class="barra__texto">Casona limeña</span></p>
+    <button type="button" class="sonido" aria-pressed="false" aria-label="Silenciar la música" hidden>
+      <svg class="sonido__on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" /><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /></svg>
+      <svg class="sonido__off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" /><path d="M17 9.5l5 5M22 9.5l-5 5" /></svg>
+    </button>
   </header>
 
   <button type="button" class="flecha flecha--izquierda" data-dir="izquierda" aria-label="Mirar a la izquierda" hidden>
@@ -58,6 +62,9 @@ const { clase } = Astro.props;
     <div class="info-sala__cuerpo" hidden>
       <p class="info-sala__texto"></p>
       <p class="info-sala__interpretes"></p>
+      <p class="info-sala__musica" hidden>
+        Suena <a class="info-sala__tema" target="_blank" rel="noopener"></a>
+      </p>
     </div>
   </section>
 

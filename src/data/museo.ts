@@ -20,6 +20,18 @@ export interface Objeto {
   dato: string;
 }
 
+/** Música de fondo de una sala: solo grabaciones de dominio público o con licencia libre */
+export interface Musica {
+  /** Ruta del audio en public/ */
+  archivo: string;
+  tema: string;
+  interpretes: string;
+  /** Lugar, año y disco de la grabación */
+  grabacion: string;
+  /** Página de la fuente, con su licencia */
+  fuente: string;
+}
+
 export interface Genero {
   id: GeneroId;
   /** Número de la sala en el recorrido (boceto del equipo) */
@@ -30,6 +42,8 @@ export interface Genero {
   ambientacion: string;
   intro: string;
   interpretes: string[];
+  /** Música de fondo al recorrer la sala; sin ella, la sala queda en silencio */
+  musica?: Musica;
   /** true: la sala se puede recorrer completa */
   completa: boolean;
   objetos: Objeto[];
@@ -53,6 +67,13 @@ export const generos: Genero[] = [
     intro:
       'Baile de pareja de la costa central, elegante y pícaro. También se le llama canto de jarana: se canta en contrapunto y se baila con pañuelo, en un cortejo lleno de gracia.',
     interpretes: ['Augusto Ascuez', 'Elías Ascuez', 'Abelardo Vásquez'],
+    musica: {
+      archivo: '/museo/musica/marinera.mp3',
+      tema: 'Dicen que las penas matan',
+      interpretes: 'Montes y Manrique',
+      grabacion: 'Nueva York, 1911 · disco Columbia',
+      fuente: 'https://commons.wikimedia.org/wiki/File:Dicen_que_las_penas_matan_-_Marinera_-_Montes_y_Manrique_-_New_York_1911.ogg',
+    },
     completa: true,
     // Piezas pensadas con el equipo de diseño (Drive, SALA 3, 30 de octubre); la sala la pinta Codex
     objetos: [
@@ -115,6 +136,13 @@ export const generos: Genero[] = [
     intro:
       'Baile alegre del norte del Perú, sobre todo de Piura y Lambayeque. Recrea el cortejo de las aves: la pareja se busca, se esquiva y se enamora al ritmo de guitarras, cajón y checo.',
     interpretes: [],
+    musica: {
+      archivo: '/museo/musica/tondero.mp3',
+      tema: 'Tondero chiclayano',
+      interpretes: 'Montes y Manrique',
+      grabacion: 'Nueva York, 1911 · disco Columbia',
+      fuente: 'https://commons.wikimedia.org/wiki/File:Tondero_Chiclayano_-_Montes_y_Manrique_-_New_York_1911.ogg',
+    },
     completa: true,
     // Piezas pensadas con el equipo de diseño (Drive, SALA 5, 31 de octubre); la sala la pinta Codex
     objetos: [
@@ -169,6 +197,13 @@ export const generos: Genero[] = [
     intro:
       'El vals criollo nació en los barrios y callejones de Lima y se volvió la voz de la ciudad: canciones de amor, de barrio y de nostalgia, en compás de tres tiempos y con guitarras.',
     interpretes: ['Felipe Pinglo Alva', 'Chabuca Granda', 'Lucha Reyes', 'Óscar Avilés', 'Jesús Vásquez', 'Arturo "Zambo" Cavero'],
+    musica: {
+      archivo: '/museo/musica/vals.mp3',
+      tema: 'Arica',
+      interpretes: 'Montes y Manrique',
+      grabacion: 'Nueva York, 1911 · disco Columbia P15',
+      fuente: 'https://commons.wikimedia.org/wiki/File:Arica_-_Vals_-_Montes_y_Manrique_-_New_York_1911.mp3',
+    },
     completa: true,
     // Piezas pensadas con el equipo de diseño (Drive, SALA 1, 23 de octubre); la sala la pinta Codex
     objetos: [
@@ -223,6 +258,13 @@ export const generos: Genero[] = [
     intro:
       'La polka llegó de Europa en el siglo XIX y en Lima se acriolló: rápida, juguetona y bailable, en compás de dos tiempos, con guitarras y mandolinas.',
     interpretes: [],
+    musica: {
+      archivo: '/museo/musica/polka.mp3',
+      tema: 'La japonesa',
+      interpretes: 'Montes y Manrique',
+      grabacion: 'Nueva York, 1911 · disco Columbia P38',
+      fuente: 'https://commons.wikimedia.org/wiki/File:LA_JAPONESA._polca_-_Montes_y_Manrique_._Columpia-P38.ogg',
+    },
     completa: true,
     // Piezas pensadas con el equipo de diseño (Drive, SALA 2, 30 de octubre); la sala la pinta Codex
     objetos: [

@@ -99,6 +99,13 @@ export function mostrarInfoSala(g: Genero | null, vistos = 0) {
   $('.info-sala__contador').textContent = `${vistos}/${g.objetos.length}`;
   $('.info-sala__texto').textContent = g.intro;
   $('.info-sala__interpretes').textContent = g.interpretes.length ? `Intérpretes: ${g.interpretes.join(', ')}` : '';
+  // Crédito de la música de fondo, con enlace a la fuente y su licencia
+  $('.info-sala__musica').hidden = !g.musica;
+  if (g.musica) {
+    const tema = $<HTMLAnchorElement>('.info-sala__tema');
+    tema.textContent = `«${g.musica.tema}», ${g.musica.interpretes} (${g.musica.grabacion}) · dominio público`;
+    tema.href = g.musica.fuente;
+  }
 }
 
 const infoAbrir = $<HTMLButtonElement>('.info-sala__abrir');

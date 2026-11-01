@@ -6,6 +6,7 @@
 // Las tomas se arman con: node herramientas/fija-ilustrada/componer.mjs
 import { casona, generos, type Genero, type GeneroId, type Objeto } from '../../data/museo';
 import * as ui from './interfaz';
+import * as musica from './musica';
 import { Visor, type Textura, type Vista } from './visor-360';
 
 type Lugar = 'casona' | GeneroId;
@@ -317,10 +318,13 @@ async function entrar(g: Genero) {
   enFicha = null;
   ui.mostrarCartel(null);
   ocultarPuntos(true);
+  // Todavía dentro del clic de "Entrar": así el navegador deja sonar la música
+  musica.sonar(g.musica ?? null);
   try {
     await cargar(g.id);
   } catch {
     // Sin la toma no se puede entrar: de vuelta a la sala principal, con aviso
+    musica.sonar(null);
     enCasona();
     ocupado = false;
     void reposo(T(600));
@@ -371,6 +375,7 @@ async function salir() {
   ocultarPuntos(true);
   ui.mostrarRegreso(null);
   ui.mostrarInfoSala(null);
+  musica.sonar(null);
   try {
     const alejar = visor.ir({ fov: Math.min(visor.fovCubrir(), visor.vista.fov * 1.2) }, T(700));
     await visor.mostrar(texturas.casona!, T(650));
