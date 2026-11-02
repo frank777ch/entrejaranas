@@ -63,7 +63,7 @@ Detrás de aquella tarde de música y danza existía, sin embargo, una historia 
 
 Entre Jaranas nació como una iniciativa de los estudiantes del octavo ciclo de la Escuela de Comunicación Social de la UNMSM, en el marco del curso de Planificación Estratégica. Lo que inicialmente fue una propuesta académica terminó convirtiéndose en una experiencia que exigió organización, creatividad y esfuerzo colectivo.
 
-La docente Yaneth Villegas, quien acompañó el desarrollo del proyecto, destacó que fueron los propios alumnos quienes asumieron la responsabilidad de concebir, planificar y producir la actividad.
+La docente Janeth Villegas, quien acompañó el desarrollo del proyecto, destacó que fueron los propios alumnos quienes asumieron la responsabilidad de concebir, planificar y producir la actividad.
 
 ![Integrantes del proyecto junto a los bailarines invitados, que recibieron un reconocimiento.](../../assets/noticias/cronica-7.jpg)
 
