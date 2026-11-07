@@ -4,6 +4,12 @@ import { Image } from 'astro:assets';
 import Video from './Video.astro';
 
 const talleres = (await getCollection('talleres')).sort((a, b) => a.data.orden - b.data.orden);
+
+const equipo = [
+  { nombre: 'Sandra Fernández Cossio', rol: 'Directora general y profesora de danzas afroperuanas' },
+  { nombre: 'Flavia Betetta Palomino', rol: 'Profesora de danzas afroperuanas' },
+  { nombre: 'Rubén Arroyo Purizaga', rol: 'Profesor del taller de percusión afroperuana' },
+];
 ---
 
 <section id="talleres" class="seccion talleres">
@@ -36,6 +42,20 @@ const talleres = (await getCollection('talleres')).sort((a, b) => a.data.orden -
         ))
       }
     </ol>
+
+    <div class="equipo revelar">
+      <h3 class="equipo__titulo">El equipo de La Carimba</h3>
+      <ul class="equipo__lista">
+        {
+          equipo.map((p) => (
+            <li>
+              <strong>{p.nombre}</strong>
+              <span>{p.rol}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -125,5 +145,36 @@ const talleres = (await getCollection('talleres')).sort((a, b) => a.data.orden -
   .modulo h3 {
     font-size: 1.5rem;
     margin-block: 0.4rem 0.75rem;
+  }
+
+  .equipo {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    text-align: center;
+  }
+  .equipo__titulo {
+    font-size: 1.5rem;
+    font-style: italic;
+    color: var(--vino);
+  }
+  .equipo__lista {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem clamp(1rem, 3vw, 2rem);
+  }
+  .equipo__lista li {
+    display: grid;
+    gap: 0.35rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--cafe);
+  }
+  .equipo__lista strong {
+    font-family: var(--f-titulo);
+    font-size: 1.2rem;
+  }
+  .equipo__lista span {
+    font-size: 0.95rem;
   }
 </style>
