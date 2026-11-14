@@ -1,12 +1,17 @@
 ---
 // Convierte un enlace de YouTube, Vimeo o Cloudflare Stream en un video incrustado.
 // Un enlace directo a un .mp4 se reproduce con el reproductor del navegador.
+// `portada` se muestra antes de dar play (Cloudflare Stream y .mp4; YouTube y Vimeo usan la suya).
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+
 interface Props {
   url: string;
   titulo: string;
+  portada?: ImageMetadata;
 }
 
-const { url, titulo } = Astro.props;
+const { url, titulo, portada } = Astro.props;
 
 function aEmbed(enlace: string): string | null {
   const u = new URL(enlace);
@@ -29,13 +34,24 @@ function aEmbed(enlace: string): string | null {
   return null;
 }
 
-const embed = aEmbed(url);
-const directo = !embed && /\.(mp4|webm)(\?|$)/i.test(url);
+const embedBase = aEmbed(url);
+const directo = !embedBase && /\.(mp4|webm)(\?|$)/i.test(url);
+
+// El reproductor de Stream pide la portada como URL absoluta en ?poster=.
+// En una vista previa de Cloudflare Pages (rama distinta de main) la portada se busca en ese mismo
+// despliegue (CF_PAGES_URL), porque en producción todavía no existe; si no, en `site`.
+const env = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env ?? {};
+const base = env.CF_PAGES_URL && env.CF_PAGES_BRANCH && env.CF_PAGES_BRANCH !== 'main' ? env.CF_PAGES_URL : Astro.url;
+const poster = portada
+  ? new URL((await getImage({ src: portada, width: 1280, format: 'jpg' })).src, base).href
+  : undefined;
+const esStream = !!embedBase && /cloudflarestream\.com|videodelivery\.net/.test(embedBase);
+const embed = embedBase && poster && esStream ? `${embedBase}?poster=${encodeURIComponent(poster)}` : embedBase;
 ---
 
 {
   directo ? (
-    <video src={url} title={titulo} controls preload="metadata" playsinline />
+    <video src={url} title={titulo} poster={poster} controls preload="metadata" playsinline />
   ) : embed ? (
     <iframe
       src={embed}

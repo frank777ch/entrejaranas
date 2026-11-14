@@ -25,7 +25,7 @@ const fondos = ['vino', 'oro', 'cafe', 'teja'];
           <li id={`documental-${d.id}`} class:list={['doc', 'revelar', { 'doc--inv': i % 2 === 1 }]}>
             <div class:list={['doc__medio', `doc__medio--${fondos[i % fondos.length]}`]}>
               {d.data.video ? (
-                <Video url={d.data.video} titulo={d.data.titulo} />
+                <Video url={d.data.video} titulo={d.data.titulo} portada={d.data.imagen} />
               ) : d.data.imagen ? (
                 <Image
                   src={d.data.imagen}
