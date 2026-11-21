@@ -86,8 +86,8 @@ export const comisiones: Comision[] = [
       'Realiza la producción audiovisual para la página web y las redes sociales de Entre Jaranas, y la cobertura de los eventos.',
     ],
     integrantes: [
-      { nombre: 'Andrea Paco López' },
-      { nombre: 'Anabely López Díaz' },
+      { nombre: 'Anabely López Díaz', rol: 'Líder de la comisión' },
+      { nombre: 'Andrea Paco López', rol: 'Sublíder de la comisión' },
       { nombre: 'Marjorie Coico Aguilar' },
       { nombre: 'Say Pablo Correa' },
       { nombre: 'Daniel Huamani Cáceres' },
@@ -103,8 +103,8 @@ export const comisiones: Comision[] = [
       'Busca constantemente entrevistados para la página web y las redes sociales, gestiona permisos de posibles lugares para las actividades y planifica el protocolo de los eventos oficiales.',
     ],
     integrantes: [
-      { nombre: 'Jharitza Saavedra Vargas', rol: 'Coordinadora general' },
-      { nombre: 'Wendy Malpartida Ochoa', rol: 'Subcoordinadora' },
+      { nombre: 'Jharitza Saavedra Vargas', rol: 'Líder de la comisión' },
+      { nombre: 'Wendy Malpartida Ochoa', rol: 'Sublíder de la comisión' },
       { nombre: 'Gabriel Oyola Barazorda' },
       { nombre: 'Gabriel Moises Aguero Zuñiga' },
       { nombre: 'Lucero De la Cruz Nalvarte' },
@@ -133,7 +133,7 @@ export const comisiones: Comision[] = [
       'Gestiona el contacto con medios tradicionales, institucionales (RTV San Marcos, Oficina de Imagen FLCH, Escuela de Comunicación Social) y universitarios alternativos como 8 Gatos; redacta notas de prensa, elabora pautas y planes de medios, coordina la conducción de eventos y lidera la atención a medios en las activaciones presenciales.',
     ],
     integrantes: [
-      { nombre: 'Saomy Medina Inga', rol: 'Coordinación general' },
+      { nombre: 'Saomy Medina Inga', rol: 'Líder de la comisión' },
       { nombre: 'Sayuri Sosa Meza' },
       { nombre: 'Ricardo Pillco Mayuri' },
       { nombre: 'Franz Serva Ponce' },
