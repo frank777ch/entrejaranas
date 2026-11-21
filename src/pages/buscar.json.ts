@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { sitio } from '../data/sitio';
 import { generos } from '../data/museo';
+import { comisiones } from '../data/directorio';
 
 // Índice del buscador. Se genera al compilar a partir del contenido,
 // así que todo lo que se agregue en src/content/ aparece solo.
@@ -30,6 +31,13 @@ export const GET: APIRoute = async () => {
     { tipo: 'Sección', titulo: 'Minitalleres', texto: 'Módulos con video: teoría, pasos básicos y pasos avanzados.', url: '/#talleres' },
     { tipo: 'Sección', titulo: 'Nuevas Promesas', texto: 'Mapa de jóvenes intérpretes de música criolla en Lima. Postula.', url: '/#promesas' },
     { tipo: 'Sección', titulo: 'Noticias', texto: 'Noticias, crónicas y notas de prensa.', url: '/#noticias' },
+    // Cada comisión del directorio, con sus integrantes, para que un nombre lleve directo a ella
+    ...comisiones.map((c) => ({
+      tipo: 'Directorio',
+      titulo: `Comisión de ${c.nombre}`,
+      texto: `${c.descripcion[0]} Integrantes: ${c.integrantes.map((p) => p.nombre).join(', ')}.`,
+      url: `/directorio#${c.id}`,
+    })),
     { tipo: 'Sección', titulo: 'Contacto', texto: 'Escríbenos: talleres, prensa, alianzas, formulario, correo.', url: '/#contacto' },
   ];
 

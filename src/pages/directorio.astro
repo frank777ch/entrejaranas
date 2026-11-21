@@ -1,0 +1,229 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { comisiones } from '../data/directorio';
+
+// Foto grupal de cada comisión: src/assets/directorio/<id-de-la-comision>.jpg (ver src/data/directorio.ts)
+const archivos = import.meta.glob<{ default: ImageMetadata }>('../assets/directorio/*.{jpg,jpeg,png,webp}', { eager: true });
+const fotos = new Map(Object.entries(archivos).map(([ruta, m]) => [ruta.split('/').pop()!.replace(/\.\w+$/, ''), m.default]));
+
+const total = comisiones.reduce((n, c) => n + c.integrantes.length, 0);
+---
+
+<Base titulo="Directorio" descripcion={`Las ${comisiones.length} comisiones y los ${total} integrantes que hacen Entre Jaranas.`}>
+  <section class="seccion">
+    <div class="contenedor">
+      <header class="dir__cabeza">
+        <p class="antetitulo">Directorio</p>
+        <h1 class="titulo-seccion">Las manos detrás <em>de la jarana</em></h1>
+        <p class="dir__bajada">
+          {total} sanmarquinos organizados en {comisiones.length} comisiones hacen posible Entre Jaranas.
+        </p>
+      </header>
+
+      <nav class="dir__indice" aria-label="Comisiones">
+        <ul>
+          {
+            comisiones.map((c) => (
+              <li>
+                <a href={`#${c.id}`}>{c.nombre}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      {
+        comisiones.map((c, i) => {
+          const foto = fotos.get(c.id);
+          return (
+            <section id={c.id} class:list={['comision', { 'comision--invertida': i % 2 === 1 }]} aria-labelledby={`t-${c.id}`}>
+              {foto && (
+                <figure class="comision__foto revelar">
+                  <a href={foto.src} target="_blank" rel="noopener">
+                    <Image
+                      src={foto}
+                      alt={`Comisión de ${c.nombre}: ${c.integrantes.map((p) => p.nombre).join(', ')}`}
+                      widths={[480, 720, 960, 1280, 1800]}
+                      quality={85}
+                      sizes="(max-width: 900px) calc(100vw - 2rem), 640px"
+                    />
+                  </a>
+                </figure>
+              )}
+              <div class="comision__texto revelar">
+                <p class="comision__etiqueta">Comisión</p>
+                <h2 id={`t-${c.id}`}>{c.nombre}</h2>
+                {c.descripcion.map((p) => (
+                  <p class="comision__desc">{p}</p>
+                ))}
+                <h3 class="comision__sub">Integrantes</h3>
+                <ul class="comision__integrantes">
+                  {c.integrantes.map((p) => (
+                    <li>
+                      <strong>{p.nombre}</strong>
+                      {p.rol && <span>{p.rol}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          );
+        })
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .dir__cabeza {
+    max-width: 52rem;
+    display: grid;
+    gap: 1rem;
+  }
+  .dir__cabeza .antetitulo {
+    margin-bottom: 0;
+  }
+  .dir__bajada {
+    font-family: var(--f-titulo);
+    font-size: 1.3rem;
+    line-height: 1.45;
+    color: var(--cafe);
+  }
+
+  .dir__indice {
+    margin-block: clamp(2rem, 4vw, 3rem);
+  }
+  .dir__indice ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .dir__indice a {
+    display: inline-block;
+    padding: 0.4rem 0.95rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--cafe);
+    color: var(--cafe);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+  .dir__indice a:hover {
+    background: var(--cafe);
+    color: var(--crema);
+  }
+
+  .comision {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+    padding-block: clamp(2.5rem, 5vw, 3.5rem);
+    border-top: 1px solid rgb(82 32 17 / 0.18);
+    scroll-margin-top: 6rem;
+  }
+  .comision--invertida .comision__foto {
+    order: 2;
+  }
+
+  .comision__foto {
+    margin: 0;
+    background: var(--blanco);
+    padding: 0.6rem;
+    border-radius: 6px;
+    box-shadow: var(--sombra);
+    transform: rotate(-1deg);
+  }
+  .comision--invertida .comision__foto {
+    transform: rotate(1deg);
+  }
+  .comision__foto img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+  }
+
+  .comision__texto {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .comision__etiqueta {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--vino);
+  }
+  .comision h2 {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    line-height: 1.15;
+    margin: 0;
+  }
+  .comision__desc {
+    color: var(--tinta);
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+  .comision__sub {
+    font-family: var(--f-cuerpo);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cafe);
+    margin: 0.75rem 0 0;
+  }
+  .comision__integrantes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 0.55rem 1.25rem;
+  }
+  .comision__integrantes li {
+    display: grid;
+    position: relative;
+    padding-left: 1rem;
+  }
+  .comision__integrantes li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--vino);
+  }
+  .comision__integrantes strong {
+    color: var(--cafe);
+    line-height: 1.35;
+  }
+  .comision__integrantes span {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--vino);
+  }
+
+  @media (max-width: 900px) {
+    .comision {
+      grid-template-columns: 1fr;
+    }
+    .comision--invertida .comision__foto {
+      order: 0;
+    }
+    .comision__foto,
+    .comision--invertida .comision__foto {
+      transform: none;
+    }
+  }
+</style>
