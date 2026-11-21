@@ -1,4 +1,5 @@
-// Directorio del equipo: comisiones e integrantes (fuente: «Organización de las comisiones»).
+// Directorio del equipo: comisiones e integrantes (fuente: «Organización de las comisiones»;
+// orden, nombres y roles según la hoja de corrección del 21-11-2026; descripciones textuales del PDF).
 // Foto grupal de cada comisión: src/assets/directorio/<id>.jpg (por ejemplo plataforma.jpg).
 
 export interface Integrante {
@@ -18,16 +19,75 @@ export const comisiones: Comision[] = [
     id: 'coordinacion-general',
     nombre: 'Coordinación General',
     descripcion: [
-      'Gestiona la dirección del proyecto, acompañando a sus líderes y brindando las operaciones correspondientes.',
-      'Hace el seguimiento oportuno con todas las comisiones, ofreciendo retroalimentación y generando espacios de intercambio de ideas, para cohesionar e involucrar a todos los equipos en un mismo camino.',
+      'La comisión de Coordinación General es la encargada de gestionar la dirección del proyecto, acompañando a sus líderes y brindando las operaciones correspondientes.',
+      'Su objetivo principal es realizar el seguimiento oportuno con todas las comisiones, ofreciendo retroalimentación y generando espacios de intercambio de ideas. De esta manera busca cohesionar e involucrar a todos los equipos de la organización para ir en un mismo camino.',
     ],
-    integrantes: [{ nombre: 'Alejandro Rodríguez Malqui' }, { nombre: 'Sofia Mantilla Ortiz' }],
+    integrantes: [{ nombre: 'Alejandro Rodríguez Malqui' }, { nombre: 'Sofía Mantilla Ortiz' }],
+  },
+  {
+    id: 'comunicacion-interna',
+    nombre: 'Comunicación Interna',
+    descripcion: [
+      'La comisión de Comunicación Interna es la encargada de gestionar el flujo de información, la coordinación y el diálogo entre los integrantes del proyecto mediante diversos canales, procesos y dinámicas.',
+      'Su objetivo principal es mantener al equipo informado, escuchado, alineado y motivado, facilitando el trabajo colaborativo, la resolución de dificultades y el sentido de pertenencia para alcanzar juntos las metas planteadas.',
+    ],
+    integrantes: [
+      { nombre: 'Alma Navarro Cueva', rol: 'Lideresa de la comisión' },
+      { nombre: 'Sharon Toribio Urreta' },
+      { nombre: 'Valentín Ayala Huamán' },
+    ],
+  },
+  {
+    id: 'economia',
+    nombre: 'Economía y Finanzas',
+    descripcion: [
+      'La Comisión de Economía es responsable de planificar, diseñar, organizar y liderar actividades de recaudación de fondos, así como de convocar a los integrantes para su participación en estas.',
+      'Asimismo, se encarga de administrar los fondos recaudados, gestionar los recursos económicos disponibles y distribuir el dinero de acuerdo con las necesidades del proyecto “Entre Jaranas”.',
+    ],
+    integrantes: [
+      { nombre: 'Romina Cruzado Fernández', rol: 'Lideresa de la comisión' },
+      { nombre: 'Mayra Cabanillas Herrera' },
+      { nombre: 'Leo De la Torre Parra' },
+      { nombre: 'Jhonatan Laureano Laime' },
+    ],
+  },
+  {
+    id: 'audiovisuales',
+    nombre: 'Audiovisuales',
+    descripcion: [
+      'La comisión de Audiovisuales se encarga de la realización de producción audiovisual necesaria para la página web y las redes sociales de Entre Jaranas, así como la cobertura de los eventos.',
+    ],
+    integrantes: [
+      { nombre: 'Anabely López Díaz', rol: 'Lideresa de la comisión' },
+      { nombre: 'Andrea Paco López', rol: 'Sublideresa de la comisión' },
+      { nombre: 'Daniel Huamaní Huancas' },
+      { nombre: 'Andree Muriano Ponce' },
+      { nombre: 'Marjorie Coico Aguilar' },
+      { nombre: 'Say Pablo Correa' },
+      { nombre: 'Imanol Castro Gómez' },
+    ],
+  },
+  {
+    id: 'diseno',
+    nombre: 'Diseño Gráfico',
+    descripcion: [
+      'La comisión de Diseño es la encargada de conceptualizar, diseñar y desarrollar los recursos visuales del proyecto, asegurando la coherencia gráfica y la identidad visual en todos sus materiales.',
+      'Entre sus funciones se encuentran la elaboración de flyers, publicaciones para redes sociales, merchandising y otras piezas gráficas, así como la creación y actualización del manual de identidad visual.',
+    ],
+    integrantes: [
+      { nombre: 'Cinthia Quispe Sulla', rol: 'Lideresa de la comisión' },
+      { nombre: 'Nicolle Carbajal Olazabal', rol: 'Sublideresa de la comisión' },
+      { nombre: 'Pierina Flores Altamirano' },
+      { nombre: 'Fabián León Cutisaca' },
+      { nombre: 'Lorena Mamani Polo' },
+      { nombre: 'Pamela Meneses Ayala' },
+    ],
   },
   {
     id: 'plataforma',
     nombre: 'Plataforma',
     descripcion: [
-      'Planifica, organiza, diseña y programa todo lo que compete a la página web del proyecto.',
+      'La comisión de Plataforma es la encargada de planificar, organizar, diseñar y programar todo lo competente a la página web del proyecto.',
       'Actualiza constantemente la plataforma en función de los contenidos que se producen.',
     ],
     integrantes: [
@@ -37,76 +97,30 @@ export const comisiones: Comision[] = [
     ],
   },
   {
-    id: 'comunicacion-interna',
-    nombre: 'Comunicación Interna',
+    id: 'prensa',
+    nombre: 'Prensa',
     descripcion: [
-      'Gestiona el flujo de información, la coordinación y el diálogo entre los integrantes del proyecto mediante diversos canales, procesos y dinámicas.',
-      'Mantiene al equipo informado, escuchado, alineado y motivado, facilitando el trabajo colaborativo, la resolución de dificultades y el sentido de pertenencia.',
+      'La Comisión de Prensa es responsable de planificar, diseñar y ejecutar la estrategia de difusión, cobertura mediática y posicionamiento público del proyecto cultural "Entre Jaranas". Se encarga de gestionar el contacto con medios de comunicación tradicionales, institucionales (RTV San Marcos, Oficina de Imagen FLCH, Escuela de Comunicación Social) y plataformas universitarias alternativas (como 8 gatos). Asimismo, redacta y distribuye las notas de prensa y cartas de presentación, elabora las pautas y planes de medios para las entrevistas, coordina la conducción de eventos, gestiona las vocerías y lidera la atención a medios y reportería de campo durante las activaciones presenciales.',
     ],
     integrantes: [
-      { nombre: 'Alma Navarro Cueva', rol: 'Líder de la comisión' },
-      { nombre: 'Sharon Toribio Urreta' },
-      { nombre: 'Valentín Ayala Huamán' },
-    ],
-  },
-  {
-    id: 'economia',
-    nombre: 'Economía',
-    descripcion: [
-      'Planifica, diseña, organiza y lidera las actividades de recaudación de fondos, y convoca a los integrantes para participar en ellas.',
-      'Administra los fondos recaudados, gestiona los recursos económicos disponibles y los distribuye según las necesidades de Entre Jaranas.',
-    ],
-    integrantes: [
-      { nombre: 'Romina Cruzado Fernandez', rol: 'Líder de la comisión' },
-      { nombre: 'Mayra Cabanillas Herrera' },
-      { nombre: 'Leo De la Torre Parra' },
-      { nombre: 'Jhonatan Laureano Laime' },
-    ],
-  },
-  {
-    id: 'diseno',
-    nombre: 'Diseño',
-    descripcion: [
-      'Conceptualiza, diseña y desarrolla los recursos visuales del proyecto, asegurando la coherencia gráfica y la identidad visual en todos sus materiales.',
-      'Elabora flyers, publicaciones para redes sociales, merchandising y otras piezas gráficas, y crea y actualiza el manual de identidad visual.',
-    ],
-    integrantes: [
-      { nombre: 'Cinthia Quispe Sulla', rol: 'Líder de la comisión' },
-      { nombre: 'Nicolle Carbajal Olazabal', rol: 'Sublíder de la comisión' },
-      { nombre: 'Pierina Flores Altamirano' },
-      { nombre: 'Fabián León Cutisaca' },
-      { nombre: 'Lorena Mamani Polo' },
-      { nombre: 'Pamela Meneses Ayala' },
-    ],
-  },
-  {
-    id: 'audiovisuales',
-    nombre: 'Audiovisuales',
-    descripcion: [
-      'Realiza la producción audiovisual para la página web y las redes sociales de Entre Jaranas, y la cobertura de los eventos.',
-    ],
-    integrantes: [
-      { nombre: 'Anabely López Díaz', rol: 'Líder de la comisión' },
-      { nombre: 'Andrea Paco López', rol: 'Sublíder de la comisión' },
-      { nombre: 'Marjorie Coico Aguilar' },
-      { nombre: 'Say Pablo Correa' },
-      { nombre: 'Daniel Huamani Cáceres' },
-      { nombre: 'Andre Muriano Ponce' },
-      { nombre: 'Imanol Castro Gómez' },
+      { nombre: 'Saomy Medina Inga', rol: 'Lideresa de la comisión' },
+      { nombre: 'Sayury Sosa Meza' },
+      { nombre: 'Ricardo Pillco Mayuri' },
+      { nombre: 'Franz Serva Ponce' },
     ],
   },
   {
     id: 'relaciones-publicas',
-    nombre: 'Relaciones Públicas',
+    nombre: 'Relaciones Públicas y Protocolo',
     descripcion: [
-      'Contacta, relaciona, planifica y organiza, desde una visión protocolar, la participación de los artistas en los medios audiovisuales y la producción de los eventos presenciales del proyecto.',
-      'Busca constantemente entrevistados para la página web y las redes sociales, gestiona permisos de posibles lugares para las actividades y planifica el protocolo de los eventos oficiales.',
+      'La comisión de Relaciones Públicas es la encargada de contactar, relacionar, planificar y organizar desde un visión protocolar todo lo competente a la participación de los artistas en los medios audiovisuales y producción de eventos presenciales del proyecto.',
+      'Actualizan constantemente la búsqueda de entrevistados para difundir en la página web y redes sociales, permisos de posibles lugares para las actividades y planificación e implementación protocolar de los eventos oficiales.',
     ],
     integrantes: [
-      { nombre: 'Jharitza Saavedra Vargas', rol: 'Líder de la comisión' },
-      { nombre: 'Wendy Malpartida Ochoa', rol: 'Sublíder de la comisión' },
+      { nombre: 'Jharitza Saavedra Vargas', rol: 'Lideresa de la comisión' },
+      { nombre: 'Wendy Malpartida Ochoa', rol: 'Sublideresa de la comisión' },
+      { nombre: 'Gabriel Agüero Zúñiga' },
       { nombre: 'Gabriel Oyola Barazorda' },
-      { nombre: 'Gabriel Moises Aguero Zuñiga' },
       { nombre: 'Lucero De la Cruz Nalvarte' },
       { nombre: 'Fabiola Navarro Espinal' },
     ],
@@ -115,8 +129,7 @@ export const comisiones: Comision[] = [
     id: 'redes',
     nombre: 'Redes',
     descripcion: [
-      'Gestiona las redes sociales oficiales del proyecto: planifica, crea y publica contenidos alineados con sus objetivos.',
-      'Elabora la parrilla semanal, redacta copies y guiones, propone campañas y tendencias, interactúa con la comunidad digital y monitorea métricas para mejorar el alcance.',
+      'La comisión de Redes es la encargada de gestionar las redes sociales oficiales del proyecto, planificar, crear y publicar contenidos alineados con sus objetivos. Entre sus funciones están elaborar la parrilla semanal, redactar copies y guiones, proponer campañas y tendencias, interactuar con la comunidad digital y monitorear métricas para evaluar y mejorar el alcance y la interacción.',
     ],
     integrantes: [
       { nombre: 'Malena Gutiérrez de la Cruz', rol: 'Líder de la comisión' },
@@ -125,19 +138,4 @@ export const comisiones: Comision[] = [
       { nombre: 'Ana Cruz Bustamante' },
     ],
   },
-  {
-    id: 'prensa',
-    nombre: 'Prensa',
-    descripcion: [
-      'Planifica, diseña y ejecuta la estrategia de difusión, cobertura mediática y posicionamiento público de Entre Jaranas.',
-      'Gestiona el contacto con medios tradicionales, institucionales (RTV San Marcos, Oficina de Imagen FLCH, Escuela de Comunicación Social) y universitarios alternativos como 8 Gatos; redacta notas de prensa, elabora pautas y planes de medios, coordina la conducción de eventos y lidera la atención a medios en las activaciones presenciales.',
-    ],
-    integrantes: [
-      { nombre: 'Saomy Medina Inga', rol: 'Líder de la comisión' },
-      { nombre: 'Sayuri Sosa Meza' },
-      { nombre: 'Ricardo Pillco Mayuri' },
-      { nombre: 'Franz Serva Ponce' },
-    ],
-  },
 ];
-
