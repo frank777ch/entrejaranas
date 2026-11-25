@@ -1,4 +1,5 @@
 ---
+taller: festejo
 titulo: Teoría del festejo
 descripcion: Flavia Betetta, profesora de danzas afroperuanas de La Carimba, cuenta de dónde viene el festejo, qué celebra y cómo se siente su ritmo antes de dar el primer paso.
 imagen: ../../assets/talleres/modulo-1-teoria.jpg

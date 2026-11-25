@@ -28,7 +28,12 @@ export const GET: APIRoute = async () => {
       url: `/museo-virtual?sala=${g.id}`,
     })),
     { tipo: 'Sección', titulo: 'Microdocumentales', texto: 'Experiencias: historias de la música criolla.', url: '/#experiencias' },
-    { tipo: 'Sección', titulo: 'Minitalleres', texto: 'Módulos con video: teoría, pasos básicos y pasos avanzados.', url: '/#talleres' },
+    {
+      tipo: 'Sección',
+      titulo: 'Minitalleres',
+      texto: 'Módulos con video: festejo con La Carimba (teoría, pasos básicos y avanzados) y cajón con Marco Oliveros (técnicas básicas, festejo, polka y vals).',
+      url: '/#talleres',
+    },
     { tipo: 'Sección', titulo: 'Nuevas Promesas', texto: 'Mapa de jóvenes intérpretes de música criolla en Lima. Postula.', url: '/#promesas' },
     { tipo: 'Sección', titulo: 'Noticias', texto: 'Noticias, crónicas y notas de prensa.', url: '/#noticias' },
     // Cada comisión del directorio, con sus integrantes, para que un nombre lleve directo a ella
@@ -53,6 +58,13 @@ export const GET: APIRoute = async () => {
     texto: d.data.descripcion,
     url: `/#documental-${d.id}`,
   }));
+  const nombreTaller = { festejo: 'Minitaller de festejo', cajon: 'Minitaller de cajón' };
+  const talleres = (await getCollection('talleres')).map((t) => ({
+    tipo: nombreTaller[t.data.taller],
+    titulo: t.data.titulo,
+    texto: t.data.descripcion,
+    url: `/#taller-${t.id}`,
+  }));
   const promesas = (await getCollection('promesas')).map((p) => ({
     tipo: 'Nueva promesa',
     titulo: p.data.nombre,
@@ -60,6 +72,6 @@ export const GET: APIRoute = async () => {
     url: `/#promesa-${p.id}`,
   }));
 
-  const indice: Resultado[] = [...secciones, ...documentales, ...promesas, ...noticias];
+  const indice: Resultado[] = [...secciones, ...documentales, ...talleres, ...promesas, ...noticias];
   return new Response(JSON.stringify(indice), { headers: { 'Content-Type': 'application/json' } });
 };
