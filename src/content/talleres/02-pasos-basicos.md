@@ -1,4 +1,5 @@
 ---
+taller: festejo
 titulo: Pasos básicos
 descripcion: La marcación y los primeros pasos del festejo, explicados uno por uno y bailados junto a las alumnas de La Carimba para seguirlos desde casa.
 imagen: ../../assets/talleres/modulo-2-pasos-basicos.jpg

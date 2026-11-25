@@ -1,4 +1,5 @@
 ---
+taller: festejo
 titulo: Pasos avanzados
 descripcion: Giros, desplazamientos y combinaciones para armar una coreografía corta de festejo con todo lo aprendido en los módulos anteriores.
 imagen: ../../assets/talleres/modulo-3-pasos-avanzados.jpg

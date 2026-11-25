@@ -43,10 +43,14 @@ const talleres = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/talleres' }),
   schema: ({ image }) =>
     z.object({
+      // A qué minitaller pertenece el módulo (cada uno se muestra en su bloque, ver Talleres.astro)
+      taller: z.enum(['festejo', 'cajon']).default('festejo'),
       titulo: z.string(),
       descripcion: z.string(),
+      // Portada; se muestra antes de dar play (o en lugar del video si todavía no hay)
       imagen: image().optional(),
       video: enlace().optional(),
+      // Orden dentro de su taller: 1, 2, 3…
       orden: z.number().default(0),
     }),
 });

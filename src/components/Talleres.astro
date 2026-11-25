@@ -3,59 +3,86 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Video from './Video.astro';
 
-const talleres = (await getCollection('talleres')).sort((a, b) => a.data.orden - b.data.orden);
+const modulos = (await getCollection('talleres')).sort((a, b) => a.data.orden - b.data.orden);
 
-const equipo = [
-  { nombre: 'Sandra Fernández Cossio', rol: 'Directora general y profesora de danzas afroperuanas' },
-  { nombre: 'Flavia Betetta Palomino', rol: 'Profesora de danzas afroperuanas' },
-  { nombre: 'Rubén Arroyo Purizaga', rol: 'Profesor del taller de percusión afroperuana' },
-];
+// Cada minitaller es un bloque con sus módulos (los .md de src/content/talleres con ese `taller`)
+const talleres = [
+  {
+    id: 'festejo',
+    titulo: 'Baila festejo',
+    con: 'con La Carimba',
+    intro: 'Tres módulos en video con la escuela La Carimba, del Callao: la teoría, los pasos básicos y los pasos avanzados del festejo.',
+    equipoTitulo: 'El equipo de La Carimba',
+    equipo: [
+      { nombre: 'Sandra Fernández Cossio', rol: 'Directora general y profesora de danzas afroperuanas' },
+      { nombre: 'Flavia Betetta Palomino', rol: 'Profesora de danzas afroperuanas' },
+      { nombre: 'Rubén Arroyo Purizaga', rol: 'Profesor del taller de percusión afroperuana' },
+    ],
+  },
+  {
+    id: 'cajon',
+    titulo: 'Toca cajón',
+    con: 'con Marco Oliveros',
+    intro: 'Tres módulos en video con la Casa del Cajón: las técnicas básicas del instrumento y los ritmos del festejo, la polka y el vals criollo.',
+    equipoTitulo: 'Enseña',
+    equipo: [{ nombre: 'Marco Oliveros', rol: 'Director del Centro Cultural de la Casa del Cajón' }],
+  },
+].map((t) => ({ ...t, modulos: modulos.filter((m) => m.data.taller === t.id) }));
 ---
 
 <section id="talleres" class="seccion talleres">
   <div class="contenedor">
     <div class="cabeza revelar">
       <p class="antetitulo">Minitalleres</p>
-      <h2 class="titulo-seccion">Aprende a <em>bailar festejo</em></h2>
-      <p>Tres módulos en video con la escuela La Carimba, del Callao: la teoría, los pasos básicos y los pasos avanzados del festejo.</p>
+      <h2 class="titulo-seccion">Aprende a <em>bailar</em> y a <em>tocar</em></h2>
+      <p>Dos talleres en video para seguir desde casa: festejo con la escuela La Carimba y cajón con Marco Oliveros, de la Casa del Cajón.</p>
     </div>
 
-    <ol class="modulos">
-      {
-        talleres.map((t, i) => (
-          <li id={`taller-${t.id}`} class="modulo revelar" style={`--i:${i}`}>
-            <div class="modulo__medio">
-              {t.data.video ? (
-                <Video url={t.data.video} titulo={t.data.titulo} />
-              ) : t.data.imagen ? (
-                <Image src={t.data.imagen} alt="" width={600} />
-              ) : (
-                <span class="modulo__pronto">Video próximamente</span>
-              )}
-            </div>
-            <div class="modulo__cuerpo">
-              <span class="modulo__etiqueta">Módulo {i + 1}</span>
-              <h3>{t.data.titulo}</h3>
-              <p>{t.data.descripcion}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ol>
+    {
+      talleres.map((taller) => (
+        <article id={`minitaller-${taller.id}`} class="taller">
+          <header class="taller__cabeza revelar">
+            <h3 class="taller__titulo">
+              {taller.titulo} <em>{taller.con}</em>
+            </h3>
+            <p>{taller.intro}</p>
+          </header>
 
-    <div class="equipo revelar">
-      <h3 class="equipo__titulo">El equipo de La Carimba</h3>
-      <ul class="equipo__lista">
-        {
-          equipo.map((p) => (
-            <li>
-              <strong>{p.nombre}</strong>
-              <span>{p.rol}</span>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
+          <ol class="modulos">
+            {taller.modulos.map((t, i) => (
+              <li id={`taller-${t.id}`} class="modulo revelar" style={`--i:${i}`}>
+                <div class="modulo__medio">
+                  {t.data.video ? (
+                    <Video url={t.data.video} titulo={t.data.titulo} portada={t.data.imagen} />
+                  ) : t.data.imagen ? (
+                    <Image src={t.data.imagen} alt="" width={600} />
+                  ) : (
+                    <span class="modulo__pronto">Video próximamente</span>
+                  )}
+                </div>
+                <div class="modulo__cuerpo">
+                  <span class="modulo__etiqueta">Módulo {i + 1}</span>
+                  <h4>{t.data.titulo}</h4>
+                  <p>{t.data.descripcion}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <div class="equipo revelar">
+            <h4 class="equipo__titulo">{taller.equipoTitulo}</h4>
+            <ul class="equipo__lista">
+              {taller.equipo.map((p) => (
+                <li>
+                  <strong>{p.nombre}</strong>
+                  <span>{p.rol}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </article>
+      ))
+    }
   </div>
 </section>
 
@@ -80,9 +107,32 @@ const equipo = [
     margin-bottom: 0;
   }
 
+  .taller {
+    margin-top: clamp(3.5rem, 7vw, 5rem);
+  }
+  .taller + .taller {
+    padding-top: clamp(3.5rem, 7vw, 5rem);
+    border-top: 2px dashed var(--cafe);
+  }
+  .taller__cabeza {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    max-width: 620px;
+    margin-inline: auto;
+  }
+  .taller__titulo {
+    font-size: clamp(1.75rem, 4vw, 2.4rem);
+    margin: 0;
+  }
+  .taller__titulo em {
+    color: var(--vino);
+  }
+
   .modulos {
     list-style: none;
-    margin: 3.5rem 0 0;
+    margin: 2.5rem 0 0;
     padding: 0;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -142,7 +192,7 @@ const equipo = [
     text-transform: uppercase;
     color: var(--vino);
   }
-  .modulo h3 {
+  .modulo h4 {
     font-size: 1.5rem;
     margin-block: 0.4rem 0.75rem;
   }
@@ -161,7 +211,8 @@ const equipo = [
     margin: 1.75rem 0 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 320px));
+    justify-content: center;
     gap: 1.5rem clamp(1rem, 3vw, 2rem);
   }
   .equipo__lista li {
