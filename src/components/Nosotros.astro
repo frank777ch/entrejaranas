@@ -15,8 +15,6 @@ const noticias = (await getCollection('noticias'))
 // Foto grupal: basta con poner el archivo en src/assets/fotos/equipo.jpg (o .png / .webp)
 const fotos = import.meta.glob<{ default: ImageMetadata }>('../assets/fotos/equipo.{jpg,jpeg,png,webp}', { eager: true });
 const fotoEquipo = Object.values(fotos)[0]?.default;
-
-const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
 
 <section id="nosotros" class="seccion">
@@ -69,34 +67,48 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
       </div>
     </div>
 
-    <aside id="noticias" class="prensa revelar" aria-labelledby="noticias-titulo">
+    <!-- Noticias: arriba la destacada, que va cambiando sola entre las cuatro más recientes
+         (se pausa con el mouse encima); debajo, la lista con todas. Sin fechas, a propósito. -->
+    <aside id="noticias" class="prensa revelar" aria-labelledby="noticias-titulo" data-rota>
       <h2 id="noticias-titulo" class="prensa__titulo">Noticias</h2>
-      <ol>
+      <div class="prensa__escena" aria-live="off">
         {
-          noticias.map((n) => (
-            <li id={`noticia-${n.id}`}>
-              <article class="noticia">
-                <time datetime={n.data.fecha.toISOString()}>{formatoFecha.format(n.data.fecha)}</time>
-                <h3>
-                  {n.data.enlace ? (
-                    <a href={n.data.enlace} target="_blank" rel="noopener">
-                      {n.data.titulo}
-                    </a>
-                  ) : n.href ? (
-                    <a href={n.href}>{n.data.titulo}</a>
-                  ) : (
-                    n.data.titulo
-                  )}
-                </h3>
-                <p>{n.data.resumen}</p>
-                {n.href && !n.data.enlace && (
-                  <a href={n.href} class="noticia__mas">
-                    Leer la nota
-                  </a>
-                )}
-              </article>
-            </li>
+          noticias.map((n, i) => (
+            <article class:list={['destacada', { activa: i === 0 }]}>
+              {n.data.imagen && (
+                <Image src={n.data.imagen} alt={n.data.imagenAlt ?? ''} width={640} quality={85} class="destacada__img" />
+              )}
+              <span class="destacada__tipo">{n.data.tipo}</span>
+              <h3>{n.href ? <a href={n.href} {...(n.data.enlace && { target: '_blank', rel: 'noopener' })}>{n.data.titulo}</a> : n.data.titulo}</h3>
+              <p>{n.data.resumen}</p>
+              {n.href && (
+                <a href={n.href} class="noticia__mas" tabindex="-1" {...(n.data.enlace && { target: '_blank', rel: 'noopener' })}>
+                  Leer la nota
+                </a>
+              )}
+            </article>
           ))
+        }
+      </div>
+      <ol class="prensa__lista">
+        {
+          noticias.map((n, i) =>
+            n.href ? (
+              <li id={`noticia-${n.id}`}>
+                <a href={n.href} class:list={['prensa__item', { activa: i === 0 }]} {...(n.data.enlace && { target: '_blank', rel: 'noopener' })}>
+                  {n.data.titulo}
+                  <i class="prensa__barra" />
+                </a>
+              </li>
+            ) : (
+              <li id={`noticia-${n.id}`}>
+                <button type="button" class:list={['prensa__item', { activa: i === 0 }]}>
+                  {n.data.titulo}
+                  <i class="prensa__barra" />
+                </button>
+              </li>
+            ),
+          )
         }
       </ol>
     </aside>
@@ -204,18 +216,41 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     font-size: 1.6rem;
     margin-bottom: 1rem;
   }
-  .prensa ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  /* Destacada: todas apiladas en la misma celda; solo la activa se ve, así la caja no cambia de alto */
+  .prensa__escena {
+    display: grid;
   }
-  .prensa li + li {
-    border-top: 1px dashed rgb(240 231 216 / 0.25);
+  .destacada {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.6s ease,
+      visibility 0s linear 0.6s;
   }
-  .noticia {
-    padding-block: 1rem;
+  .destacada.activa {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s ease;
   }
-  .noticia time {
+  .destacada__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 0.9rem;
+    transform: scale(1.03);
+    transition: transform 7s linear;
+  }
+  .destacada.activa .destacada__img {
+    transform: scale(1);
+  }
+  .destacada__tipo {
     display: inline-block;
     font-size: 0.72rem;
     font-weight: 700;
@@ -226,18 +261,32 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     border-radius: 999px;
     padding: 0.15rem 0.6rem;
   }
-  .noticia h3 {
+  .destacada h3 {
     color: var(--crema);
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     margin-block: 0.6rem 0.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-  .noticia h3 a {
+  .destacada .noticia__mas {
+    margin-top: auto;
+    padding-top: 0.6rem;
+  }
+  .destacada h3 a {
     text-decoration-color: var(--oro);
   }
-  .noticia p {
+  .destacada p {
     font-size: 0.88rem;
     opacity: 0.8;
     line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .noticia__mas {
     display: inline-block;
@@ -248,20 +297,103 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     text-underline-offset: 3px;
   }
 
+  /* Lista: la activa se ilumina y su línea dorada marca cuánto falta para la siguiente */
+  .prensa__lista {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+  }
+  .prensa__lista li {
+    border-top: 1px dashed rgb(240 231 216 / 0.25);
+  }
+  .prensa__item {
+    all: unset;
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0.75rem 0;
+    cursor: pointer;
+    font-family: var(--f-titulo);
+    font-weight: 700;
+    font-size: 0.92rem;
+    line-height: 1.3;
+    color: var(--crema);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+  .prensa__item:hover,
+  .prensa__item.activa {
+    opacity: 1;
+  }
+  .prensa__item:focus-visible {
+    outline: 2px solid var(--oro);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .prensa__barra {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--oro);
+  }
+  .prensa__item.activa .prensa__barra {
+    animation: prensa-avanza 7s linear forwards;
+  }
+  .prensa:hover .prensa__barra,
+  .prensa:focus-within .prensa__barra {
+    animation-play-state: paused;
+  }
+  @keyframes prensa-avanza {
+    to {
+      width: 100%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .destacada,
+    .destacada.activa,
+    .destacada__img {
+      transition: none;
+    }
+    .prensa__item.activa .prensa__barra {
+      animation: none;
+      width: 100%;
+    }
+  }
+
   @media (max-width: 1080px) {
     .nosotros {
       grid-template-columns: 1fr;
     }
     .prensa {
       position: static;
-    }
-    .prensa ol {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 0 1.5rem;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 0 2rem;
+      align-items: start;
     }
-    .prensa li + li {
+    .prensa__titulo {
+      grid-column: 1 / -1;
+    }
+    .prensa__lista {
+      margin-top: 0;
+    }
+    .prensa__lista li:first-child {
       border-top: 0;
+    }
+  }
+  @media (max-width: 640px) {
+    .prensa {
+      grid-template-columns: 1fr;
+    }
+    .prensa__lista {
+      margin-top: 1rem;
+    }
+    .prensa__lista li:first-child {
+      border-top: 1px dashed rgb(240 231 216 / 0.25);
     }
   }
   @media (max-width: 720px) {
@@ -275,3 +407,36 @@ const formatoFecha = new Intl.DateTimeFormat('es-PE', { day: 'numeric', month: '
     }
   }
 </style>
+
+<script>
+  // Noticias que van cambiando: la destacada pasa a la siguiente cuando termina la línea dorada
+  // de la lista (la animación se pausa con el mouse encima o con el foco del teclado).
+  // Pasar el mouse por un título de la lista lo muestra arriba; hacer clic abre la nota.
+  document.querySelectorAll<HTMLElement>('[data-rota]').forEach((caja) => {
+    const destacadas = caja.querySelectorAll('.destacada');
+    const items = caja.querySelectorAll<HTMLElement>('.prensa__item');
+    if (destacadas.length < 2) return;
+    let actual = 0;
+
+    const mostrar = (i: number) => {
+      actual = (i + destacadas.length) % destacadas.length;
+      destacadas.forEach((d, k) => d.classList.toggle('activa', k === actual));
+      items.forEach((it, k) => {
+        it.classList.remove('activa');
+        if (k === actual) {
+          void it.offsetWidth; // reinicia la animación de la línea
+          it.classList.add('activa');
+        }
+      });
+    };
+
+    items.forEach((it, k) => {
+      it.addEventListener('mouseenter', () => k !== actual && mostrar(k));
+      it.addEventListener('focus', () => k !== actual && mostrar(k));
+      if (it.tagName === 'BUTTON') it.addEventListener('click', () => mostrar(k));
+      it.querySelector('.prensa__barra')?.addEventListener('animationend', () => {
+        if (k === actual) mostrar(actual + 1);
+      });
+    });
+  });
+</script>
